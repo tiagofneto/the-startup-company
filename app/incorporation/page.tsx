@@ -2,12 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import CompanyInfoForm from '@/components/incorporation/info-form'
 import CapTable from '@/components/incorporation/cap-table'
 import Preview from '@/components/incorporation/preview'
 
-export default function IncorporationPage() {
+export default function CompanyProfileForm() {
   const [formData, setFormData] = useState({
     companyName: '',
     email: '',
@@ -37,7 +36,6 @@ export default function IncorporationPage() {
     const capTableTotalShares = updatedCapTable.reduce((sum, row) => sum + Number(row.ordinaryShares), 0)
     setIsFormValid(capTableTotalShares === totalShares && totalShares > 0)
     
-    // Only update capTable if percentages have changed
     if (JSON.stringify(updatedCapTable) !== JSON.stringify(capTable)) {
       setCapTable(updatedCapTable)
     }
@@ -62,29 +60,26 @@ export default function IncorporationPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-8">Company Incorporation</h1>
-      <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
-        <div className="lg:w-1/2 p-8 overflow-y-auto">
-          <Card>
-          <CardContent className="p-6">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">Create Company Profile</h1>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <CompanyInfoForm formData={formData} onInputChange={handleInputChange} />
-              <CapTable 
-                capTable={capTable} 
-                onCapTableChange={handleCapTableChange}
-                totalShares={Number(formData.ordinaryShares)}
-              />
-              <Button type="submit" className="w-full" disabled={!isFormValid}>
-                Create Company Profile
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
+      <div className="lg:w-1/2 p-8 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6 text-gray-800">Create Company Profile</h1>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <CompanyInfoForm formData={formData} onInputChange={handleInputChange} />
+            <CapTable 
+              capTable={capTable} 
+              onCapTableChange={handleCapTableChange}
+              totalShares={Number(formData.ordinaryShares)}
+            />
+            <Button type="submit" className="w-full" disabled={!isFormValid}>
+              Create Company Profile
+            </Button>
+          </form>
+        </div>
       </div>
-      <div className="lg:w-1/2 p-8 bg-white shadow-lg overflow-y-auto">
-        <Preview formData={formData} capTable={capTable} />
+      <div className="lg:w-1/2 p-8 bg-white overflow-y-auto flex-grow">
+        <div className="max-w-2xl mx-auto h-full flex flex-col">
+          <Preview formData={formData} capTable={capTable} />
         </div>
       </div>
     </div>
