@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import ThemeToggle from "@/components/theme-toggle"
+import { signIn } from "@/auth"
 
 export default function Home() {
   return (
@@ -23,6 +24,14 @@ export default function Home() {
               <Link href="/search">Search Companies House</Link>
             </Button>
             <ThemeToggle />
+            <form
+              action={async () => {
+                "use server"
+                await signIn("google")
+              }}
+            >
+              <button type="submit">Signin with Google</button>
+            </form>
           </div>
         </div>
       </div>
