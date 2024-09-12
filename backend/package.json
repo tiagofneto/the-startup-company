@@ -6,6 +6,7 @@
   "private": true,
   "dependencies": {
     "@aztec/accounts": "^0.54.0",
-    "@aztec/aztec.js": "^0.54.0"
+    "@aztec/aztec.js": "^0.54.0",
+    "express": "^4.21.0"
   }
 }

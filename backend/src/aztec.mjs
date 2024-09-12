@@ -30,7 +30,10 @@ export async function createCompany(contractAddress, name, email, director, tota
 
   const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson), ownerWallet);
 
+  console.log(`Creating company ${name} with email ${email}, director ${director}, and total shares ${totalShares}`);
+
   const tx = await contract.methods.create_company(name, email, director, totalShares).send().wait();
+
   console.log(`Sent create company transaction ${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
 
