@@ -8,7 +8,7 @@ const pxe = createPXEClient(PXE_URL);
 
 export async function deploy() {
   const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
-  const ownerAddress = ownerWallet.getCompleteAddress();
+  // const ownerAddress = ownerWallet.getCompleteAddress();
 
   const CompanyRegistryArtifact = loadContractArtifact(CompanyRegistryJson);
   const companyRegistry = await Contract.deploy(ownerWallet, CompanyRegistryArtifact, [])
@@ -26,10 +26,13 @@ export async function deploy() {
 }
 
 export async function createCompany(contractAddress, name, email, director, totalShares) {
-  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson), pxe);
+  const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
+
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson), ownerWallet);
 
   const tx = await contract.methods.create_company(name, email, director, totalShares).send().wait();
-  console.log('Transaction details:', tx);
+  console.log(`Sent create company transaction ${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
 
   return tx;
 }
