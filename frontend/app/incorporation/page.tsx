@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import CompanyInfoForm from '@/components/incorporation/info-form'
 import CapTable from '@/components/incorporation/cap-table'
 import Preview from '@/components/incorporation/preview'
+import { createCompany } from '@/services/api' // Add this import
 
 export default function CompanyProfileForm() {
   const [formData, setFormData] = useState({
@@ -49,11 +50,20 @@ export default function CompanyProfileForm() {
     setCapTable(newCapTable)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (isFormValid) {
-      console.log('Form submitted:', { ...formData, capTable })
-      // Here you would typically send the data to your backend
+      try {
+        const response = await createCompany({
+          name: formData.companyName,
+          email: formData.email,
+          director: formData.directorName,
+          totalShares: formData.ordinaryShares,
+        })
+        console.log('Company created successfully:', response)
+      } catch (error) {
+        console.error('Error creating company:', error)
+      }
     } else {
       alert('Please ensure the total shares in the cap table match the number of ordinary shares.')
     }
