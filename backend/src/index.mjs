@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { deploy, createCompany } from './aztec.mjs';
+import { deploy, createCompany, getCompany } from './aztec.mjs';
 import express from 'express';
 import cors from 'cors';
 import sampleCompanies from '../data/companies.json' assert { type: "json" };
@@ -35,7 +35,28 @@ initializeServer()
   });
 
 
-app.post('/create-company', async (req, res) => {
+app.get('/company', async (req, res) => {
+  try {
+    const { id } = req.query;
+    
+    if (!id) {
+      return res.status(400).json({ error: 'Missing company ID' });
+    }
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
+    const company = await getCompany(companyRegistry, id);
+    
+    res.status(200).json(company);
+  } catch (error) {
+    console.error('Error fetching company:', error);
+    res.status(500).json({ error: 'Failed to fetch company' });
+  }
+});
+
+
+app.post('/company', async (req, res) => {
   try {
     const { name, email, director, totalShares } = req.body;
     
@@ -44,7 +65,7 @@ app.post('/create-company', async (req, res) => {
     }
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    const { companyRegistry} = addresses;
+    const { companyRegistry } = addresses;
 
     const tx = await createCompany(companyRegistry, name, email, director, BigInt(totalShares));
     

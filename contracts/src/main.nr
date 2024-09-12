@@ -25,4 +25,10 @@ contract CompanyRegistry {
         storage.companies.at(id).write(company);
         storage.company_count.write(id);
     }
+
+    #[aztec(public)]
+    #[aztec(view)]
+    fn get_company(id: Field) -> Company {
+        storage.companies.at(U128::from_field(id)).read()
+    }
 }

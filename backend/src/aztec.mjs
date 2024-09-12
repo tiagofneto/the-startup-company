@@ -39,3 +39,15 @@ export async function createCompany(contractAddress, name, email, director, tota
 
   return tx;
 }
+
+export async function getCompany(contractAddress, id) {
+  const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
+
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson), ownerWallet);
+
+  console.log(`Getting company ${id}`);
+  const company = await contract.methods.get_company(id).simulate();
+  console.log(`Company ${id}: ${company}`);
+
+  return company;
+}
