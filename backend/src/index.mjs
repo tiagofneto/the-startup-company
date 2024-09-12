@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { deploy, createCompany } from './aztec.mjs';
 import express from 'express';
 import cors from 'cors';
+import sampleCompanies from '../data/companies.json' assert { type: "json" };
 
 const port = 3000;
 const app = express();
@@ -11,9 +12,15 @@ app.use(cors());
 async function initializeServer() {
     console.log("Initializing server");
 
-    console.log("Deploying contract");
+    console.log("Deploying registry");
     const { companyRegistryAddress } = await deploy();
-    console.log("Contract deployed at", companyRegistryAddress);
+    console.log("Registry deployed at", companyRegistryAddress);
+
+    const companyCreationPromises = sampleCompanies.map(company => 
+        createCompany(companyRegistryAddress, company.name, company.email, company.director, BigInt(company.totalShares))
+    );
+
+    await Promise.all(companyCreationPromises);
 }
 
 initializeServer()
