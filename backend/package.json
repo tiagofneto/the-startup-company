@@ -7,6 +7,7 @@
   "dependencies": {
     "@aztec/accounts": "^0.54.0",
     "@aztec/aztec.js": "^0.54.0",
+    "cors": "^2.8.5",
     "express": "^4.21.0"
   }
 }
