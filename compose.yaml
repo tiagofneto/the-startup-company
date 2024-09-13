@@ -16,5 +16,12 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - PXE_URL=http://host.docker.internal:8080
+  frontend:
+    build: ./frontend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - backend
+    
 volumes:
   contracts_target:
