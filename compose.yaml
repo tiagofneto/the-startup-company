@@ -3,6 +3,7 @@ services:
     build: ./contracts
     volumes:
       - contracts_target:/app/target
+
   backend:
     build: ./backend
     ports:
@@ -16,6 +17,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - PXE_URL=http://host.docker.internal:8080
+
   frontend:
     build: ./frontend
     ports:
