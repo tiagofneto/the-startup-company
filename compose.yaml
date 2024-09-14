@@ -73,8 +73,6 @@ services:
       PXE_PORT: ${PXE_PORT:-8080}
       PORT: ${AZTEC_NODE_PORT:-8080}
       TEST_ACCOUNTS: ${TEST_ACCOUNTS:-true}
-    volumes:
-      - ./log:/usr/src/yarn-project/aztec/log:rw
     depends_on:
       - ethereum
     command: "start --sandbox"
