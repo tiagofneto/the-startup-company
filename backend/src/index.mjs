@@ -34,6 +34,9 @@ initializeServer()
     process.exit(1);
   });
 
+app.get('/health', (req, res) => {
+    res.sendStatus(200);
+});
 
 app.get('/company', async (req, res) => {
   try {

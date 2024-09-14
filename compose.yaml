@@ -17,13 +17,20 @@ services:
       - contracts_target:/contracts/target
     environment:
       PXE_URL: http://aztec:${PXE_PORT:-8080}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
   frontend:
     build: ./frontend
     ports:
       - "8000:8000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
   
   # ported from https://github.com/AztecProtocol/aztec-packages/blob/master/aztec-up/bin/docker-compose.sandbox.yml and added healthcheck
   ethereum:
@@ -50,7 +57,7 @@ services:
       test: ["CMD", "curl", "http://localhost:8080"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
       start_period: 10s
     environment:
       DEBUG: # Loaded from the user shell if explicitly set
