@@ -23,15 +23,6 @@ export default function Home() {
             <Button variant="outline" asChild size="lg" className="text-lg">
               <Link href="/search">Search Companies House</Link>
             </Button>
-            <ThemeToggle />
-            <form
-              action={async () => {
-                "use server"
-                await signIn("google")
-              }}
-            >
-              <button type="submit">Signin with Google</button>
-            </form>
           </div>
         </div>
       </div>
