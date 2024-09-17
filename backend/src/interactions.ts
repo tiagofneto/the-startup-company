@@ -25,3 +25,9 @@ export async function fetchCompany(id: number) {
     console.log('Company fetched successfully:', company);
     return company;
 }
+
+export async function getCompanies() {
+    console.log('Fetching companies from database');
+    const companyList = await db.select().from(companies) as Company[];
+    return companyList;
+}

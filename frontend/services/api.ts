@@ -14,3 +14,8 @@ export async function createCompany(companyData: any) {
     const response = await apiClient.post('/company', companyData);
     return response.data;
 }
+
+export async function getCompanies() {
+  const response = await apiClient.get('/companies');
+  return response.data;
+}

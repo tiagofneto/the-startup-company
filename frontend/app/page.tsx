@@ -21,7 +21,7 @@ export default function Home() {
               <Link href="/incorporation">Register Company</Link>
             </Button>
             <Button variant="outline" asChild size="lg" className="text-lg">
-              <Link href="/search">Search Companies House</Link>
+              <Link href="/companies">Search Companies House</Link>
             </Button>
           </div>
         </div>

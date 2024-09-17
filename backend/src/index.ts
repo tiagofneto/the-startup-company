@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { readFileSync } from 'fs';
-import { fetchCompany, uploadCompany } from './interactions.js';
+import { fetchCompany, getCompanies, uploadCompany } from './interactions.js';
 import { deploy, createCompany, getCompany } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
@@ -93,5 +93,15 @@ app.post('/company', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error creating company:', error);
     res.status(500).json({ error: 'Failed to create company' });
+  }
+});
+
+app.get('/companies', async (req: Request, res: Response) => {
+  try {
+    const companies = await getCompanies();
+    res.status(200).json(companies);
+  } catch (error) {
+    console.error('Error fetching companies:', error);
+    res.status(500).json({ error: 'Failed to fetch companies' });
   }
 });

@@ -34,8 +34,8 @@ export default function ModernHeader() {
           <Link href="/" className="text-sm text-foreground hover:text-primary transition-colors duration-300">
             Home
           </Link>
-          <Link href="/about" className="text-sm text-foreground hover:text-primary transition-colors duration-300">
-            About
+          <Link href="/companies" className="text-sm text-foreground hover:text-primary transition-colors duration-300">
+            Companies
           </Link>
           <Link href="/contact" className="text-sm text-foreground hover:text-primary transition-colors duration-300">
             Contact
@@ -103,8 +103,8 @@ export default function ModernHeader() {
           <Link href="/" className="block text-sm text-foreground hover:text-primary transition-colors duration-300">
             Home
           </Link>
-          <Link href="/about" className="block text-sm text-foreground hover:text-primary transition-colors duration-300">
-            About
+          <Link href="/companies" className="block text-sm text-foreground hover:text-primary transition-colors duration-300">
+            Companies
           </Link>
           <Link href="/contact" className="block text-sm text-foreground hover:text-primary transition-colors duration-300">
             Contact
