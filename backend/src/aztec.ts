@@ -1,16 +1,22 @@
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { Contract, loadContractArtifact, createPXEClient, AztecAddress } from '@aztec/aztec.js';
 import { getInitialTestAccountsWallets } from '@aztec/accounts/testing';
-import CompanyRegistryJson from "../../contracts/target/contracts-CompanyRegistry.json" assert { type: "json" };
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const { PXE_URL = 'http://localhost:8080' } = process.env;
 const pxe = createPXEClient(PXE_URL);
+
+const CompanyRegistryJson = JSON.parse(readFileSync(join(__dirname, '../../contracts/target/contracts-CompanyRegistry.json'), 'utf-8'));
 
 export async function deploy() {
   const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
   // const ownerAddress = ownerWallet.getCompleteAddress();
 
-  const CompanyRegistryArtifact = loadContractArtifact(CompanyRegistryJson);
+  const CompanyRegistryArtifact = loadContractArtifact(CompanyRegistryJson as any);
   const companyRegistry = await Contract.deploy(ownerWallet, CompanyRegistryArtifact, [])
     .send()
     .deployed();
@@ -25,10 +31,10 @@ export async function deploy() {
   return { companyRegistryAddress: address };
 }
 
-export async function createCompany(contractAddress, name, email, director, totalShares) {
+export async function createCompany(contractAddress: string, name: string, email: string, director: string, totalShares: BigInt) {
   const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
 
-  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson), ownerWallet);
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), ownerWallet);
 
   console.log(`Creating company ${name} with email ${email}, director ${director}, and total shares ${totalShares}`);
 
@@ -40,10 +46,10 @@ export async function createCompany(contractAddress, name, email, director, tota
   return tx;
 }
 
-export async function getCompany(contractAddress, id) {
+export async function getCompany(contractAddress: string, id: number) {
   const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
 
-  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson), ownerWallet);
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), ownerWallet);
 
   console.log(`Getting company ${id}`);
   const company = await contract.methods.get_company(id).simulate();

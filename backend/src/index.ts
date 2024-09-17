@@ -1,22 +1,30 @@
 import { readFileSync } from 'fs';
-import { deploy, createCompany, getCompany } from './aztec.mjs';
-import express from 'express';
+import { deploy, createCompany, getCompany } from './aztec.js';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
-import sampleCompanies from '../data/companies.json' assert { type: "json" };
 
 const port = 3000;
+
+let sampleCompanies: any;
+
+async function loadSampleCompanies() {
+  sampleCompanies = (await import('../data/companies.json', { assert: { type: 'json' } })).default;
+}
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 async function initializeServer() {
+    await loadSampleCompanies();
     console.log("Initializing server");
 
     console.log("Deploying registry");
     const { companyRegistryAddress } = await deploy();
     console.log("Registry deployed at", companyRegistryAddress);
 
-    const companyCreationPromises = sampleCompanies.map(company => 
+    // TODO company type
+    const companyCreationPromises = sampleCompanies.map((company: any) => 
         createCompany(companyRegistryAddress, company.name, company.email, company.director, BigInt(company.totalShares))
     );
 
@@ -34,11 +42,11 @@ initializeServer()
     process.exit(1);
   });
 
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
-app.get('/company', async (req, res) => {
+app.get('/company', async (req: Request, res: Response) => {
   try {
     const { id } = req.query;
     
@@ -49,7 +57,7 @@ app.get('/company', async (req, res) => {
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
-    const company = await getCompany(companyRegistry, id);
+    const company = await getCompany(companyRegistry, Number(id));
     
     res.status(200).json(company);
   } catch (error) {
@@ -59,7 +67,7 @@ app.get('/company', async (req, res) => {
 });
 
 
-app.post('/company', async (req, res) => {
+app.post('/company', async (req: Request, res: Response) => {
   try {
     const { name, email, director, totalShares } = req.body;
     
