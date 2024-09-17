@@ -10,6 +10,7 @@
     "@aztec/aztec.js": "^0.54.0",
     "@types/cors": "^2.8.17",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
     "express": "^4.21.0",
     "postgres": "^3.4.4"
@@ -24,6 +25,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-esm src/index.ts"
+    "dev": "ts-node-esm src/index.ts",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate"
   }
 }

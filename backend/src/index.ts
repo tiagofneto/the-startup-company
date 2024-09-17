@@ -1,11 +1,14 @@
+import 'dotenv/config';
 import { readFileSync } from 'fs';
+import { uploadCompany } from './interactions.js';
 import { deploy, createCompany, getCompany } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import { Company } from './types.js';
 
 const port = 3000;
 
-let sampleCompanies: any;
+let sampleCompanies: Company[];
 
 async function loadSampleCompanies() {
   sampleCompanies = (await import('../data/companies.json', { assert: { type: 'json' } })).default;
@@ -23,10 +26,10 @@ async function initializeServer() {
     const { companyRegistryAddress } = await deploy();
     console.log("Registry deployed at", companyRegistryAddress);
 
-    // TODO company type
-    const companyCreationPromises = sampleCompanies.map((company: any) => 
-        createCompany(companyRegistryAddress, company.name, company.email, company.director, BigInt(company.totalShares))
-    );
+    const companyCreationPromises = sampleCompanies.map((company: Company) => {
+        createCompany(companyRegistryAddress, company);
+        uploadCompany(company);
+    });
 
     await Promise.all(companyCreationPromises);
 }
@@ -78,8 +81,13 @@ app.post('/company', async (req: Request, res: Response) => {
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
-    const tx = await createCompany(companyRegistry, name, email, director, BigInt(totalShares));
-    
+    const company = { name, email, director, totalShares };
+
+    // Onchain
+    const tx = await createCompany(companyRegistry, company);
+    // Offchain
+    await uploadCompany(company);
+
     res.status(201).json(tx);
   } catch (error) {
     console.error('Error creating company:', error);

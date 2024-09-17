@@ -3,6 +3,7 @@ import { Contract, loadContractArtifact, createPXEClient, AztecAddress } from '@
 import { getInitialTestAccountsWallets } from '@aztec/accounts/testing';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { Company } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,14 +32,14 @@ export async function deploy() {
   return { companyRegistryAddress: address };
 }
 
-export async function createCompany(contractAddress: string, name: string, email: string, director: string, totalShares: BigInt) {
+export async function createCompany(contractAddress: string, company: Company) {
   const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
 
   const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), ownerWallet);
 
-  console.log(`Creating company ${name} with email ${email}, director ${director}, and total shares ${totalShares}`);
+  console.log(`Creating company ${company.name} with email ${company.email}, director ${company.director}, and total shares ${company.totalShares}`);
 
-  const tx = await contract.methods.create_company(name, email, director, totalShares).send().wait();
+  const tx = await contract.methods.create_company(company.name, company.email, company.director, company.totalShares).send().wait();
 
   console.log(`Sent create company transaction 0x${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
