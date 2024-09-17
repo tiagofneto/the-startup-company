@@ -1,7 +1,5 @@
-import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { 
   Inbox, 
   FileText, 
@@ -10,9 +8,10 @@ import {
   Users, 
   Settings,
   BarChart3,
-  Calendar,
-  HelpCircle,
-  AlertCircle
+  AlertCircle,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownLeft
 } from 'lucide-react'
 
 export default function CompanyDashboard() {
@@ -58,6 +57,10 @@ export default function CompanyDashboard() {
                 <Users className="mr-2 h-4 w-4" />
                 Team
               </Button>
+              <Button className="w-full justify-start" variant="ghost">
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Fundraising
+              </Button>
             </CardContent>
           </Card>
 
@@ -85,32 +88,96 @@ export default function CompanyDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming Events</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-4">
+                <li className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-14 text-center">
+                    <div className="font-semibold">JUN</div>
+                    <div className="text-3xl font-bold">15</div>
+                  </div>
+                  <div>
+                    <p className="font-medium">Board Meeting</p>
+                    <p className="text-sm text-muted-foreground">Annual strategy review</p>
+                  </div>
+                </li>
+                <li className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-14 text-center">
+                    <div className="font-semibold">JUN</div>
+                    <div className="text-3xl font-bold">22</div>
+                  </div>
+                  <div>
+                    <p className="font-medium">Team Offsite</p>
+                    <p className="text-sm text-muted-foreground">Quarterly team building event</p>
+                  </div>
+                </li>
+                <li className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-14 text-center">
+                    <div className="font-semibold">JUL</div>
+                    <div className="text-3xl font-bold">01</div>
+                  </div>
+                  <div>
+                    <p className="font-medium">Product Launch</p>
+                    <p className="text-sm text-muted-foreground">Release of new feature set</p>
+                  </div>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </aside>
 
         <main className="flex-1 space-y-6">
-          <Card>
+          <Card className="bg-primary text-primary-foreground">
             <CardHeader>
-              <CardTitle>Missing Actions</CardTitle>
+              <CardTitle>Financial Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {missingActions.map((action) => (
-                  <div key={action.id} className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <AlertCircle className={`h-6 w-6 ${
-                        action.priority === 'high' ? 'text-red-500' :
-                        action.priority === 'medium' ? 'text-yellow-500' : 'text-blue-500'
-                      }`} />
-                      <span>{action.action}</span>
-                    </div>
-                    <Button size="sm">Complete</Button>
-                  </div>
-                ))}
+              <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
+                <div className="text-center md:text-left">
+                  <p className="text-lg font-medium">Current Balance</p>
+                  <p className="text-4xl font-bold">$1,234,567.89</p>
+                </div>
+                <div className="flex space-x-2">
+                  <Button variant="secondary" size="lg">
+                    <ArrowUpRight className="mr-2 h-4 w-4" />
+                    Send Money
+                  </Button>
+                  <Button variant="secondary" size="lg">
+                    <ArrowDownLeft className="mr-2 h-4 w-4" />
+                    Receive Money
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Missing Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {missingActions.map((action) => (
+                    <div key={action.id} className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <AlertCircle className={`h-6 w-6 ${
+                          action.priority === 'high' ? 'text-red-500' :
+                          action.priority === 'medium' ? 'text-yellow-500' : 'text-blue-500'
+                        }`} />
+                        <span>{action.action}</span>
+                      </div>
+                      <Button size="sm">Complete</Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
@@ -137,46 +204,6 @@ export default function CompanyDashboard() {
                       <p className="text-sm text-muted-foreground">Project Y kicked off</p>
                     </div>
                     <span className="text-sm text-muted-foreground">3d ago</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Upcoming Events</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  <li className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 w-14 text-center">
-                      <div className="font-semibold">JUN</div>
-                      <div className="text-3xl font-bold">15</div>
-                    </div>
-                    <div>
-                      <p className="font-medium">Board Meeting</p>
-                      <p className="text-sm text-muted-foreground">Annual strategy review</p>
-                    </div>
-                  </li>
-                  <li className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 w-14 text-center">
-                      <div className="font-semibold">JUN</div>
-                      <div className="text-3xl font-bold">22</div>
-                    </div>
-                    <div>
-                      <p className="font-medium">Team Offsite</p>
-                      <p className="text-sm text-muted-foreground">Quarterly team building event</p>
-                    </div>
-                  </li>
-                  <li className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 w-14 text-center">
-                      <div className="font-semibold">JUL</div>
-                      <div className="text-3xl font-bold">01</div>
-                    </div>
-                    <div>
-                      <p className="font-medium">Product Launch</p>
-                      <p className="text-sm text-muted-foreground">Release of new feature set</p>
-                    </div>
                   </li>
                 </ul>
               </CardContent>
