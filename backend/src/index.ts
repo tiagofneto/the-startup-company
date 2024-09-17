@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { readFileSync } from 'fs';
-import { uploadCompany } from './interactions.js';
+import { fetchCompany, uploadCompany } from './interactions.js';
 import { deploy, createCompany, getCompany } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
@@ -57,10 +57,11 @@ app.get('/company', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Missing company ID' });
     }
 
-    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    const { companyRegistry } = addresses;
+    //const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    //const { companyRegistry } = addresses;
 
-    const company = await getCompany(companyRegistry, Number(id));
+    //const company = await getCompany(companyRegistry, Number(id));
+    const company = await fetchCompany(Number(id));
     
     res.status(200).json(company);
   } catch (error) {
