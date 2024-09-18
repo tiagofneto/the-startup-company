@@ -126,8 +126,8 @@ export default function CompanyRegistration() {
         <div className="grid w-full grid-cols-1 lg:grid-cols-2">
           {/* Form Section */}
           <div className="flex items-center justify-center bg-gray-50 p-8 dark:bg-gray-800">
-            <div className="relative h-full w-full max-w-lg">
-              <div className="mb-8">
+            <div className="relative h-full w-full max-w-lg ">
+              <div className="mb-8 pt-16">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Company Registration</h1>
                 <p className="mt-2 text-gray-600 dark:text-gray-300">Fill in the details to register your company</p>
               </div>

@@ -32,7 +32,7 @@ export default function CompaniesPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 text-center">Discover Companies</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center pt-16">Discover Companies</h1>
       <div className="max-w-md mx-auto mb-12">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
