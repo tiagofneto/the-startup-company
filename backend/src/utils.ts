@@ -1,5 +1,4 @@
 import { Fr } from '@aztec/circuits.js';
-import { Company } from './types.js';
 
 export const toString = (value: bigint) => {
     const vals: number[] = Array.from(new Fr(value).toBuffer());

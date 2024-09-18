@@ -15,6 +15,11 @@ export async function createCompany(companyData: any) {
     return response.data;
 }
 
+export async function getCompany(handle: string) {
+  const response = await apiClient.get(`/company?handle=${handle}`);
+  return response.data;
+}
+
 export async function getCompanies() {
   const response = await apiClient.get('/companies');
   return response.data;

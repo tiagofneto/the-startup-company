@@ -58,7 +58,8 @@ export async function getCompany(contractAddress: string, handle: string) {
   //console.log(`Company ${handle}: ${JSON.parse(JSON.stringify(company, (_, value) =>
   //  typeof value === 'bigint' ? toString(value) : value
   //))}`);
-  const company = companyFromBigIntObject(rawCompany);
+  const serializedCompany = companyFromBigIntObject(rawCompany);
+  const company = serializedCompany.handle ? serializedCompany : null;
   console.log(`Company ${handle}: ${JSON.stringify(company)}`);
 
   return company;

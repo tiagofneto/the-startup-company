@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronUpIcon, ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
-import { createCompany } from '@/services/api'
+import { createCompany, getCompany } from '@/services/api'
+import debounce from 'lodash/debounce';
 
 type FormData = {
   name: string
@@ -17,7 +18,7 @@ type Field = {
   name: keyof FormData
   label: string
   type: string
-  validate: (value: string) => string | null
+  validate: (value: string) => Promise<string | null>
 }
 
 const fields: Field[] = [
@@ -25,31 +26,31 @@ const fields: Field[] = [
     name: 'name', 
     label: 'Company Name', 
     type: 'text',
-    validate: (value) => value.length < 2 ? 'Company name is required' : null
+    validate: async (value) => value.length < 2 ? 'Company name is required' : null
   },
   { 
     name: 'handle', 
     label: 'Company Handle', 
     type: 'text',
-    validate: (value) => value.length < 3 ? 'Company handle must be at least 3 characters' : null
+    validate: async (value) => value.length < 3 ? 'Company handle must be at least 3 characters' : await getCompany(value) === null ? null : 'Company handle already exists'
   },
   { 
     name: 'director', 
     label: 'Director Name', 
     type: 'text',
-    validate: (value) => value.length < 2 ? 'Director name is required' : null
+    validate: async (value) => value.length < 2 ? 'Director name is required' : null
   },
   { 
     name: 'email', 
     label: 'Director Email', 
     type: 'email',
-    validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? null : 'Invalid email address'
+    validate: async (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? null : 'Invalid email address'
   },
   { 
     name: 'totalShares', 
     label: 'Total Number of Shares', 
     type: 'number',
-    validate: (value) => isNaN(Number(value)) || Number(value) <= 0 ? 'Must be a positive number' : null
+    validate: async (value) => isNaN(Number(value)) || Number(value) <= 0 ? 'Must be a positive number' : null
   },
 ]
 
@@ -65,20 +66,29 @@ export default function CompanyRegistration() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    validateField(name as keyof FormData, value)
+
+    setIsLoading(true)
+    await debouncedValidateField(name as keyof FormData, value)
+    setIsLoading(false)
   }
 
-  const validateField = (fieldName: keyof FormData, value: string) => {
+  const validateField = async (fieldName: keyof FormData, value: string) => {
     const field = fields.find(f => f.name === fieldName)
     if (field) {
-      const error = field.validate(value)
+      const error = await field.validate(value)
       setErrors(prev => ({ ...prev, [fieldName]: error }))
     }
   }
+
+  const debouncedValidateField = useCallback(
+    debounce(validateField, 3000),
+    []
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -174,8 +184,14 @@ export default function CompanyRegistration() {
                         }`}
                         placeholder={`Enter ${fields[currentField].label.toLowerCase()}`}
                       />
-                      {isFieldValid(fields[currentField].name) && (
-                        <CheckCircleIcon className="h-6 w-6 text-green-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
+                      {isLoading ? (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
+                        </div>
+                      ) : (
+                        isFieldValid(fields[currentField].name) && (
+                          <CheckCircleIcon className="h-6 w-6 text-green-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
+                        )
                       )}
                     </div>
                     {errors[fields[currentField].name] && (
