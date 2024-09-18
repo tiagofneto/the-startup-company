@@ -51,9 +51,9 @@ app.get('/health', (req: Request, res: Response) => {
 
 app.get('/company', async (req: Request, res: Response) => {
   try {
-    const { id } = req.query;
+    const { handle } = req.query;
     
-    if (!id) {
+    if (!handle) {
       return res.status(400).json({ error: 'Missing company ID' });
     }
 
@@ -61,7 +61,7 @@ app.get('/company', async (req: Request, res: Response) => {
     //const { companyRegistry } = addresses;
 
     //const company = await getCompany(companyRegistry, Number(id));
-    const company = await fetchCompany(Number(id));
+    const company = await fetchCompany(handle as string);
     
     res.status(200).json(company);
   } catch (error) {
@@ -73,16 +73,16 @@ app.get('/company', async (req: Request, res: Response) => {
 
 app.post('/company', async (req: Request, res: Response) => {
   try {
-    const { name, email, director, totalShares } = req.body;
+    const { name, handle, email, director, totalShares } = req.body;
     
-    if (!name || !email || !director || !totalShares) {
+    if (!name || !handle || !email || !director || !totalShares) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
-    const company = { name, email, director, totalShares };
+    const company = { name, handle, email, director, totalShares };
 
     // Onchain
     const tx = await createCompany(companyRegistry, company);

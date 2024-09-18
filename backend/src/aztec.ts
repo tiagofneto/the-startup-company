@@ -39,7 +39,7 @@ export async function createCompany(contractAddress: string, company: Company) {
 
   console.log(`Creating company:`, company);
 
-  const tx = await contract.methods.create_company(company.name, company.email, company.director, company.totalShares).send().wait();
+  const tx = await contract.methods.create_company(company.name, company.handle, company.email, company.director, company.totalShares).send().wait();
 
   console.log(`Sent create company transaction 0x${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
