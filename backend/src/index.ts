@@ -7,6 +7,7 @@ import cors from 'cors';
 import { Company } from './types.js';
 
 const port = 3000;
+const skipInit = process.argv.includes('--skip-init');
 
 let sampleCompanies: Company[];
 
@@ -19,6 +20,11 @@ app.use(express.json());
 app.use(cors());
 
 async function initializeServer() {
+    if (skipInit) {
+        console.log("Skipping initialization");
+        return;
+    }
+
     await loadSampleCompanies();
     console.log("Initializing server");
 
@@ -54,14 +60,14 @@ app.get('/company', async (req: Request, res: Response) => {
     const { handle } = req.query;
     
     if (!handle) {
-      return res.status(400).json({ error: 'Missing company ID' });
+      return res.status(400).json({ error: 'Missing company handle' });
     }
 
-    //const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    //const { companyRegistry } = addresses;
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
 
-    //const company = await getCompany(companyRegistry, Number(id));
-    const company = await fetchCompany(handle as string);
+    const company = await getCompany(companyRegistry, handle as string);
+    //const company = await fetchCompany(handle as string);
     
     res.status(200).json(company);
   } catch (error) {

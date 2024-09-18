@@ -26,6 +26,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node-esm src/index.ts",
+    "dev:skip-init": "ts-node-esm src/index.ts --skip-init",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate"
   }

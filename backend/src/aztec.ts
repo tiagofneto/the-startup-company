@@ -4,6 +4,7 @@ import { getInitialTestAccountsWallets } from '@aztec/accounts/testing';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { Company } from './types.js';
+import { companyFromBigIntObject, toString } from './utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,14 +48,18 @@ export async function createCompany(contractAddress: string, company: Company) {
   return tx;
 }
 
-export async function getCompany(contractAddress: string, id: number) {
+export async function getCompany(contractAddress: string, handle: string) {
   const [ownerWallet] = await getInitialTestAccountsWallets(pxe);
 
   const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), ownerWallet);
 
-  console.log(`Getting company ${id}`);
-  const company = await contract.methods.get_company(id).simulate();
-  console.log(`Company ${id}: ${company}`);
+  console.log(`Getting company ${handle}`);
+  const rawCompany = await contract.methods.get_company(handle).simulate();
+  //console.log(`Company ${handle}: ${JSON.parse(JSON.stringify(company, (_, value) =>
+  //  typeof value === 'bigint' ? toString(value) : value
+  //))}`);
+  const company = companyFromBigIntObject(rawCompany);
+  console.log(`Company ${handle}: ${JSON.stringify(company)}`);
 
   return company;
 }

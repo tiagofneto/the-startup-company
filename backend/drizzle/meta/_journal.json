@@ -15,6 +15,13 @@
       "when": 1726652329908,
       "tag": "0001_vengeful_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1726654499428,
+      "tag": "0002_easy_hairball",
+      "breakpoints": true
     }
   ]
 }
