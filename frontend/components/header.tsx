@@ -64,6 +64,15 @@ export default function ModernHeader() {
               </Button>
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-popover rounded-md shadow-lg py-1 z-10">
+                  <Link href="/user" passHref>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="w-full justify-start text-sm"
+                    >
+                      Profile
+                    </Button>
+                  </Link>
                   <Button
                     variant="ghost"
                     onClick={() => { signOut(); setIsDropdownOpen(false); }}
@@ -135,14 +144,24 @@ export default function ModernHeader() {
             <ThemeToggle />
           </div>
           {session?.user && (
-            <Button
-              onClick={() => signOut()}
-              variant="outline"
-              size="sm"
-              className="w-full text-sm mt-2"
-            >
-              Logout
-            </Button>
+            <div>
+              <Button
+                onClick={() => signOut()}
+                variant="outline"
+                size="sm"
+                className="w-full text-sm mt-2"
+              >
+                Logout
+              </Button>
+              <Button
+                onClick={() => signOut()}
+                variant="outline"
+                size="sm"
+                className="w-full text-sm mt-2"
+              >
+                Logout
+              </Button>
+            </div>
           )}
         </div>
       )}
