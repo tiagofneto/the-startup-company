@@ -32,9 +32,13 @@ async function initializeServer() {
     const { companyRegistryAddress } = await deploy();
     console.log("Registry deployed at", companyRegistryAddress);
 
-    const companyCreationPromises = sampleCompanies.map((company: Company) => {
-        createCompany(companyRegistryAddress, company);
-        uploadCompany(company);
+
+    const companyCreationPromises = sampleCompanies.map(async (company: Company) => {
+        await createCompany(companyRegistryAddress, company);
+        const dbCompany = await fetchCompany(company.handle);
+        if (!dbCompany) {
+            await uploadCompany(company);
+        }
     });
 
     await Promise.all(companyCreationPromises);

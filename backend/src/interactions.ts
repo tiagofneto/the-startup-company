@@ -21,7 +21,7 @@ export async function uploadCompany(company: Company) {
 
 export async function fetchCompany(handle: string) {
     console.log('Fetching company from database:', handle);
-    const company = await db.select().from(companies).where(eq(companies.handle, handle));
+    const company = (await db.select().from(companies).where(eq(companies.handle, handle)))[0];
     console.log('Company fetched successfully:', company);
     return company;
 }

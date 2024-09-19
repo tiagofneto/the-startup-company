@@ -1,23 +1,23 @@
 [
     {
-      "name": "Company 1",
-      "handle": "company1",
-      "email": "company1@example.com",
-      "director": "Director 1",
+      "name": "TechNova Solutions",
+      "handle": "technova",
+      "email": "info@technovasolutions.com",
+      "director": "Emily Chen",
       "totalShares": 1000000
     },
     {
-      "name": "Company 2",
-      "handle": "company2",
-      "email": "company2@example.com",
-      "director": "Director 2",
+      "name": "GreenLeaf Innovations",
+      "handle": "greenleaf",
+      "email": "contact@greenleafinnovations.com",
+      "director": "Marcus Rodriguez",
       "totalShares": 2000000
     },
     {
-      "name": "Company 3",
-      "handle": "company3",
-      "email": "company3@example.com",
-      "director": "Director 3",
+      "name": "Quantum Dynamics Corp",
+      "handle": "quantumdynamics",
+      "email": "hello@quantumdynamics.com",
+      "director": "Olivia Patel",
       "totalShares": 3000000
     }
   ]
