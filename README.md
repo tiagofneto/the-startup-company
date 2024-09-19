@@ -4,7 +4,13 @@
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## Getting Started
-1. Run the following command:
+1. Create a `.env` file from the `.env.example` and fill it with the appropriate values:
+```bash
+cp .env.example .env
+```
+Then edit the `.env` file with your specific configuration.
+
+2. Run the following command:
 ```bash
 docker compose up
 ```
