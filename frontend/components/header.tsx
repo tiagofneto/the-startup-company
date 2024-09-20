@@ -1,17 +1,34 @@
 'use client'
 
-import { useSession, signIn, signOut } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Menu, X, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ThemeToggle from "@/components/theme-toggle"
+import { createSupabaseClient } from "@/lib/utils"
+import { Session } from '@supabase/supabase-js'
+
+const supabase = createSupabaseClient()
 
 export default function ModernHeader() {
-  const { data: session } = useSession()
+  const [session, setSession] = useState<Session | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -26,6 +43,24 @@ export default function ModernHeader() {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
+
+  const handleSignIn = async () => {
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    })
+
+    if (error) {
+      console.error('Error signing in with Google:', error)
+    }
+  }
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Error signing out:', error)
+    }
+  }
 
   return (
     <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
@@ -50,11 +85,11 @@ export default function ModernHeader() {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center space-x-2 rounded-full px-3 py-1.5 text-sm"
               >
-                <span className="max-w-[100px] truncate">{session.user.name}</span>
-                {session.user.image && (
+                <span className="max-w-[100px] truncate">{session.user.user_metadata.full_name}</span>
+                {session.user.user_metadata.avatar_url && (
                   <Image
-                    src={session.user.image}
-                    alt={session.user.name || "User"}
+                    src={session.user.user_metadata.avatar_url}
+                    alt={session.user.user_metadata.full_name || "User"}
                     width={24}
                     height={24}
                     className="rounded-full"
@@ -75,7 +110,7 @@ export default function ModernHeader() {
                   </Link>
                   <Button
                     variant="ghost"
-                    onClick={() => { signOut(); setIsDropdownOpen(false); }}
+                    onClick={handleSignOut}
                     className="w-full justify-start text-sm"
                   >
                     Logout
@@ -85,7 +120,7 @@ export default function ModernHeader() {
             </div>
           ) : (
             <Button
-              onClick={() => signIn("google")}
+              onClick={handleSignIn}
               size="sm"
               className="text-sm"
             >
@@ -121,11 +156,11 @@ export default function ModernHeader() {
           <div className="pt-2 flex items-center justify-between">
             {session?.user ? (
               <div className="flex items-center space-x-2">
-                <span className="text-sm max-w-[100px] truncate">{session.user.name}</span>
-                {session.user.image && (
+                <span className="text-sm max-w-[100px] truncate">{session.user.user_metadata.full_name}</span>
+                {session.user.user_metadata.avatar_url && (
                   <Image
-                    src={session.user.image}
-                    alt={session.user.name || "User"}
+                    src={session.user.user_metadata.avatar_url}
+                    alt={session.user.user_metadata.full_name || "User"}
                     width={24}
                     height={24}
                     className="rounded-full"
@@ -134,7 +169,7 @@ export default function ModernHeader() {
               </div>
             ) : (
               <Button
-                onClick={() => signIn("google")}
+                onClick={handleSignIn}
                 size="sm"
                 className="text-sm"
               >
@@ -145,16 +180,14 @@ export default function ModernHeader() {
           </div>
           {session?.user && (
             <div>
-              <Button
-                onClick={() => signOut()}
-                variant="outline"
-                size="sm"
-                className="w-full text-sm mt-2"
+              <Link
+                href="/profile"
+                className="block text-sm text-foreground hover:text-primary transition-colors duration-300"
               >
-                Logout
-              </Button>
+                Profile
+              </Link>
               <Button
-                onClick={() => signOut()}
+                onClick={handleSignOut}
                 variant="outline"
                 size="sm"
                 className="w-full text-sm mt-2"

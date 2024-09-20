@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header";
-import { SessionProvider } from "next-auth/react";
 import { TanstackQueryProvider } from "@/components/tanstack-query-provider";
 
 const geistSans = localFont({
@@ -33,17 +32,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TanstackQueryProvider>
-          <SessionProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Header />
-              {children}
-            </ThemeProvider>
-          </SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            {children}
+          </ThemeProvider>
         </TanstackQueryProvider>
       </body>
     </html>

@@ -6,10 +6,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { useQuery } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { Session } from '@supabase/supabase-js'
+import { createSupabaseClient } from '@/lib/utils'
+
+const supabase = createSupabaseClient()
 
 export default function UserDashboard() {
-  const { data: session } = useSession()
+  const [session, setSession] = useState<Session | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+  }, [])
 
   const companiesQuery = useQuery({
     queryKey: ['companies', session?.user?.id],
@@ -46,7 +56,7 @@ export default function UserDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-semibold mb-8 text-gray-800 dark:text-gray-100 pt-16">Welcome back, John</h1>
+        <h1 className="text-3xl font-semibold mb-8 text-gray-800 dark:text-gray-100 pt-16">Welcome back, {session?.user?.user_metadata.full_name.split(' ')[0]}</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">

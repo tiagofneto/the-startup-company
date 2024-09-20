@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import ThemeToggle from "@/components/theme-toggle"
-import { signIn } from "@/auth"
 
 export default function Home() {
   return (
