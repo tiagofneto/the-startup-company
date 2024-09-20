@@ -8,24 +8,17 @@ import { Search } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { getCompanies } from '@/services/api'
+import { useQuery } from '@tanstack/react-query'
 
 export default function CompaniesPage() {
-  const [companies, setCompanies] = useState([])
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['companies'],
+    queryFn: getCompanies,
+  })
   const [searchTerm, setSearchTerm] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadCompanies() {
-      setIsLoading(true)
-      const fetchedCompanies = await getCompanies()
-      setCompanies(fetchedCompanies)
-      setIsLoading(false)
-    }
-    loadCompanies()
-  }, [])
 
   // TODO: fix type
-  const filteredCompanies = companies.filter((company: any) => 
+  const filteredCompanies = data?.filter((company: any) => 
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     company.handle.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -45,9 +38,13 @@ export default function CompaniesPage() {
           />
         </div>
       </div>
-      {isLoading ? (
+      {isPending ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      ) : isError ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-500 text-xl">Error: {error.message}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

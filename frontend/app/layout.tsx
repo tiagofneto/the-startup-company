@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header";
 import { SessionProvider } from "next-auth/react";
+import { TanstackQueryProvider } from "@/components/tanstack-query-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,21 +28,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <SessionProvider>
+        <TanstackQueryProvider>
+          <SessionProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
               <Header />
               {children}
-            </SessionProvider>
-        </ThemeProvider>
+            </ThemeProvider>
+          </SessionProvider>
+        </TanstackQueryProvider>
       </body>
     </html>
   );

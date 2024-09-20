@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronUpIcon, ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/solid'
 import { createCompany, getCompany } from '@/services/api'
 import debounce from 'lodash/debounce';
+import { useMutation } from '@tanstack/react-query'
 
 type FormData = {
   name: string
@@ -64,8 +65,6 @@ export default function CompanyRegistration() {
   })
   const [currentField, setCurrentField] = useState(0)
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,16 +108,17 @@ export default function CompanyRegistration() {
 
   const isFieldValid = (fieldName: keyof FormData) => !errors[fieldName] && formData[fieldName] !== ''
 
+  const { mutate, isPending, isError, error, isSuccess } = useMutation({
+    mutationFn: createCompany
+  })
+
   const handleSubmit = async () => {
     if (Object.values(errors).every(error => error === null) && Object.values(formData).every(value => value !== '')) {
-      setIsSubmitting(true)
-      await createCompany(formData)
-      setIsSubmitting(false)
-      setIsSubmitted(true)
+      mutate(formData)
     }
   }
 
-  if (isSubmitted) {
+  if (isSuccess) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
@@ -211,11 +211,11 @@ export default function CompanyRegistration() {
                 </button>
                 <button
                   onClick={nextField}
-                  disabled={currentField === fields.length - 1 && isSubmitting}
+                  disabled={currentField === fields.length - 1 && isPending}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition duration-150 ease-in-out"
                 >
                   {currentField === fields.length - 1 ? (
-                    isSubmitting ? 'Submitting...' : 'Submit'
+                    isPending ? 'Submitting...' : 'Submit'
                   ) : (
                     <>
                       Next
