@@ -1,11 +1,12 @@
 import 'dotenv/config';
-import { readFileSync } from 'fs';
-import { fetchCompany, getCompanies, uploadCompany } from './interactions.js';
-import { deploy, createCompany, getCompany } from './aztec.js';
+import { fetchCompany, uploadCompany } from './interactions.js';
+import { deploy, createCompany } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import { authenticateToken } from './middleware.js';
 import { Company } from './types.js';
-import jwt from 'jsonwebtoken';
+import { getCompanyHandler, createCompanyHandler, getCompaniesHandler } from './handlers/company.js';
+import { getProfile } from './handlers/user.js';
 
 const port = 3000;
 const skipInit = process.argv.includes('--skip-init');
@@ -60,87 +61,10 @@ app.get('/health', (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
-app.get('/company', async (req: Request, res: Response) => {
-  try {
-    const { handle } = req.query;
-    
-    if (!handle) {
-      return res.status(400).json({ error: 'Missing company handle' });
-    }
+// Company routes
+app.get('/company', getCompanyHandler);
+app.post('/company', createCompanyHandler);
+app.get('/companies', getCompaniesHandler);
 
-    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    const { companyRegistry } = addresses;
-
-    const company = await getCompany(companyRegistry, handle as string);
-    //const company = await fetchCompany(handle as string);
-    
-    res.status(200).json(company);
-  } catch (error) {
-    console.error('Error fetching company:', error);
-    res.status(500).json({ error: 'Failed to fetch company' });
-  }
-});
-
-
-app.post('/company', async (req: Request, res: Response) => {
-  try {
-    const { name, handle, email, director, totalShares } = req.body;
-    
-    if (!name || !handle || !email || !director || !totalShares) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    const { companyRegistry } = addresses;
-
-    const company = { name, handle, email, director, totalShares };
-
-    // Onchain
-    const tx = await createCompany(companyRegistry, company);
-    // Offchain
-    await uploadCompany(company);
-
-    res.status(201).json(tx);
-  } catch (error) {
-    console.error('Error creating company:', error);
-    res.status(500).json({ error: 'Failed to create company' });
-  }
-});
-
-app.get('/companies', async (req: Request, res: Response) => {
-  try {
-    const companies = await getCompanies();
-    res.status(200).json(companies);
-  } catch (error) {
-    console.error('Error fetching companies:', error);
-    res.status(500).json({ error: 'Failed to fetch companies' });
-  }
-});
-
-app.get('/profile', async (req: Request, res: Response) => {
-  try {
-    console.log('Fetching profile');
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const jwtToken = token.split(' ')[1];
-    let decoded;
-
-    try {
-      decoded = jwt.verify(jwtToken, process.env.SUPABASE_JWT_SECRET as string);
-    } catch (err) {
-      console.error('Error decoding JWT:', err);
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    console.log('Authorized');
-    console.log(decoded);
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    res.status(500).json({ error: 'Failed to fetch profile' });
-  }
-});
+// User routes
+app.get('/profile', authenticateToken, getProfile);
