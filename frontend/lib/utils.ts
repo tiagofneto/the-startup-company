@@ -12,3 +12,15 @@ export function createSupabaseClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 }
+
+export function getAccessToken() {
+  const { hostname } = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!)
+  const projectId = hostname.split('.')[0]
+
+  const storageKey = `sb-${projectId}-auth-token`
+  const sessionDataString = localStorage.getItem(storageKey)
+  const sessionData = JSON.parse(sessionDataString || 'null')
+  const token = sessionData?.access_token
+
+  return token
+}

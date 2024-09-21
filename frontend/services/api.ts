@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAccessToken } from '@/lib/utils';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -22,5 +23,14 @@ export async function getCompany(handle: string) {
 
 export async function getCompanies() {
   const response = await apiClient.get('/companies');
+  return response.data;
+}
+
+export async function getProfile() {
+  const response = await apiClient.get('/profile', {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
   return response.data;
 }

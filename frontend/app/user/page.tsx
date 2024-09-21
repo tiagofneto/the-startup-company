@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { createSupabaseClient } from '@/lib/utils'
 import { User as SupabaseUser } from '@supabase/supabase-js'
+import { getProfile } from '@/services/api'
 
 const supabase = createSupabaseClient()
 
@@ -53,6 +54,11 @@ export default function UserDashboard() {
     queryFn: async () => {
         return 'pending'
     }
+  })
+
+  const profileQuery = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: getProfile
   })
 
   return (

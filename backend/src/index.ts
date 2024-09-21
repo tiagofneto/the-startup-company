@@ -5,6 +5,7 @@ import { deploy, createCompany, getCompany } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { Company } from './types.js';
+import jwt from 'jsonwebtoken';
 
 const port = 3000;
 const skipInit = process.argv.includes('--skip-init');
@@ -113,5 +114,33 @@ app.get('/companies', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching companies:', error);
     res.status(500).json({ error: 'Failed to fetch companies' });
+  }
+});
+
+app.get('/profile', async (req: Request, res: Response) => {
+  try {
+    console.log('Fetching profile');
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const jwtToken = token.split(' ')[1];
+    let decoded;
+
+    try {
+      decoded = jwt.verify(jwtToken, process.env.SUPABASE_JWT_SECRET as string);
+    } catch (err) {
+      console.error('Error decoding JWT:', err);
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    console.log('Authorized');
+    console.log(decoded);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
