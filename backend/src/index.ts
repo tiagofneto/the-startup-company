@@ -42,7 +42,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 // Company routes
 app.get('/company', getCompanyHandler);
-app.post('/company', createCompanyHandler);
+app.post('/company', authenticateToken, createCompanyHandler);
 app.get('/companies', getCompaniesHandler);
 
 // User routes

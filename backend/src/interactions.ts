@@ -15,8 +15,9 @@ const db = drizzle(client);
 
 export async function uploadCompany(company: Company) {
     console.log('Uploading company to database:', company);
-    await db.insert(companies).values(company);
-    console.log('Company uploaded successfully');
+    const companyId = (await db.insert(companies).values(company).returning({ id: companies.id }))[0].id;
+    console.log('Company uploaded successfully with id:', companyId);
+    return companyId;
 }
 
 export async function fetchCompany(handle: string) {

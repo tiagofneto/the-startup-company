@@ -12,7 +12,11 @@ const apiClient = axios.create({
 
 // TODO: fix type
 export async function createCompany(companyData: any) {
-    const response = await apiClient.post('/company', companyData);
+    const response = await apiClient.post('/company', companyData, {
+        headers: {
+            Authorization: `Bearer ${getAccessToken()}`,
+        },
+    });
     return response.data;
 }
 

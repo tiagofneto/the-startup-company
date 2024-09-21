@@ -30,12 +30,12 @@ export default function UserDashboard() {
   })
 
   const companiesQuery = useQuery({
-    queryKey: ['companies'],
+    queryKey: ['user_companies'],
     queryFn: getUserCompanies
   })
 
   const documentsQuery = useQuery({
-    queryKey: ['documents'],
+    queryKey: ['user_documents'],
     queryFn: async () => {
         return [
             { name: 'Articles of Incorporation - TechCorp Inc.', id: 'doc1' },
@@ -80,7 +80,7 @@ export default function UserDashboard() {
                           />
                           <div>
                             <h3 className="font-semibold">{company.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{company.handle}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">@{company.handle}</p>
                           </div>
                         </div>
                         <ChevronRight className="text-gray-400" />

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
-import { fetchCompany, getCompanies, uploadCompany } from '../interactions.js';
+import { AuthenticatedRequest } from '../middleware.js';
+import { createUserCompany, fetchCompany, getCompanies, uploadCompany } from '../interactions.js';
 import { createCompany, getCompany } from '../aztec.js';
-import { Company } from '../types.js';
 
 export const getCompanyHandler = async (req: Request, res: Response) => {
   try {
@@ -25,9 +25,10 @@ export const getCompanyHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const createCompanyHandler = async (req: Request, res: Response) => {
+export const createCompanyHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { name, handle, email, director, totalShares } = req.body;
+    const user_id = req.user.sub;
     
     if (!name || !handle || !email || !director || !totalShares) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -41,7 +42,8 @@ export const createCompanyHandler = async (req: Request, res: Response) => {
     // Onchain
     const tx = await createCompany(companyRegistry, company);
     // Offchain
-    await uploadCompany(company);
+    const company_id = await uploadCompany(company);
+    await createUserCompany(user_id, company_id);
 
     res.status(201).json(tx);
   } catch (error) {
