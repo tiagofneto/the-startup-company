@@ -22,6 +22,13 @@
       "when": 1726654499428,
       "tag": "0002_easy_hairball",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1726930581462,
+      "tag": "0003_blushing_cloak",
+      "breakpoints": true
     }
   ]
 }
