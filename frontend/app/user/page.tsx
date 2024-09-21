@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { createSupabaseClient } from '@/lib/utils'
 import { User as SupabaseUser } from '@supabase/supabase-js'
-import { getProfile } from '@/services/api'
+import { getProfile, getUserCompanies } from '@/services/api'
 
 const supabase = createSupabaseClient()
 
@@ -24,21 +24,18 @@ export default function UserDashboard() {
     })
   }, [])
 
+  const profileQuery = useQuery({
+    queryKey: ['profile'],
+    queryFn: getProfile
+  })
+
   const companiesQuery = useQuery({
-    queryKey: ['companies', user?.id],
-    queryFn: async () => {
-        return [
-            { name: 'TechCorp Inc.', handle: '@techcorp', image: '/placeholder.svg' },
-            { name: 'InnovateLLC', handle: '@innovatellc', image: '/placeholder.svg' },
-            { name: 'FutureTech Solutions', handle: '@futuretech', image: '/placeholder.svg' },
-            { name: 'Quantum Dynamics', handle: '@quantumdyn', image: '/placeholder.svg' },
-            { name: 'Nexus Innovations', handle: '@nexusinno', image: '/placeholder.svg' },
-        ]
-    }
+    queryKey: ['companies'],
+    queryFn: getUserCompanies
   })
 
   const documentsQuery = useQuery({
-    queryKey: ['documents', user?.id],
+    queryKey: ['documents'],
     queryFn: async () => {
         return [
             { name: 'Articles of Incorporation - TechCorp Inc.', id: 'doc1' },
@@ -47,18 +44,6 @@ export default function UserDashboard() {
             { name: 'Business License - Quantum Dynamics', id: 'doc4' },
             { name: 'Partnership Agreement - Nexus Innovations', id: 'doc5' },
         ]}
-  })
-
-  const kycStatusQuery = useQuery({
-    queryKey: ['kycStatus', user?.id],
-    queryFn: async () => {
-        return 'pending'
-    }
-  })
-
-  const profileQuery = useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: getProfile
   })
 
   return (
@@ -80,7 +65,7 @@ export default function UserDashboard() {
                   </div>
                 ) : (
                   <div className="h-full overflow-y-auto pr-2">
-                    {companiesQuery.data?.map((company, index) => (
+                    {companiesQuery.data?.map((company: { name: string, handle: string, image: string }, index: any) => (
                       <div
                         key={index}
                         className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150"
@@ -116,7 +101,7 @@ export default function UserDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {kycStatusQuery.isPending ? (
+                {profileQuery.isPending ? (
                   <div className="flex justify-center items-center h-24">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                   </div>
@@ -125,7 +110,7 @@ export default function UserDashboard() {
                     <div className="flex items-center justify-between mb-4">
                       <span>Status:</span>
                       <span className="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100 rounded-full text-sm font-medium">
-                        {kycStatusQuery.data}
+                        {profileQuery.data.kyc_verified ? 'Verified' : 'Pending'}
                       </span>
                     </div>
                     <Button className="w-full">Complete KYC Verification</Button>

@@ -58,3 +58,9 @@ export async function fetchUserCompanies(user_id: string) {
     console.log('User companies fetched successfully:', fetchedUserCompanies);
     return fetchedUserCompanies;
 }
+
+export async function createUserCompany(user_id: string, company_id: number) {
+    console.log('Creating user company in database:', user_id, company_id);
+    await db.insert(userCompanies).values({ userId: user_id, companyId: company_id });
+    console.log('User company created successfully');
+}

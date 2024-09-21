@@ -47,4 +47,4 @@ app.get('/companies', getCompaniesHandler);
 
 // User routes
 app.get('/profile', authenticateToken, getProfile);
-app.get('/companies', authenticateToken, getUserCompanies);
+app.get('/user-companies', authenticateToken, getUserCompanies);

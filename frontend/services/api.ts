@@ -34,3 +34,12 @@ export async function getProfile() {
   });
   return response.data;
 }
+
+export async function getUserCompanies() {
+  const response = await apiClient.get('/user-companies', {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.data;
+}
