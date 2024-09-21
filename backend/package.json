@@ -21,14 +21,15 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.5.5",
     "drizzle-kit": "^0.24.2",
+    "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-esm src/index.ts",
-    "dev:skip-init": "ts-node-esm src/index.ts --skip-init",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node-esm' src/index.ts",
+    "dev:skip-init": "nodemon --watch 'src/**/*.ts' --exec 'ts-node-esm' src/index.ts --skip-init",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate"
   }
