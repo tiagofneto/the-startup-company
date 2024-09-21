@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres';
 import { Company } from './types.js';
-import { companies, userProfiles } from './schema.js';
+import { companies, userCompanies, userProfiles } from './schema.js';
 import { eq } from 'drizzle-orm';
 
 const connectionString = process.env.SUPABASE_DATABASE_URI as string;
@@ -43,4 +43,18 @@ export async function createOrGetUser(user_id: string) {
 
     console.log('User fetched/created successfully');
     return user;
+}
+
+export async function fetchUserCompanies(user_id: string) {
+    console.log('Fetching user companies from database:', user_id);
+    const fetchedUserCompanies = await db.select({
+        name: companies.name,
+        handle: companies.handle
+    }).
+    from(userCompanies)
+    .innerJoin(companies, eq(userCompanies.companyId, companies.id))
+    .where(eq(userCompanies.userId, user_id));
+
+    console.log('User companies fetched successfully:', fetchedUserCompanies);
+    return fetchedUserCompanies;
 }
