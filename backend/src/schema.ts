@@ -6,7 +6,8 @@ import {
     integer,
     pgSchema,
     uuid,
-    boolean
+    boolean,
+    primaryKey
   } from 'drizzle-orm/pg-core';
 
   const authSchema = pgSchema('auth');
@@ -26,7 +27,17 @@ import {
   });
 
   export const userProfiles = pgTable('user_profiles', {
-    user_id: uuid('user_id').primaryKey().references(() => users.id).notNull(),
-    companies: integer('companies').array().references(() => companies.id).notNull().default([]),
+    id: uuid('user_id').primaryKey().references(() => users.id).notNull(),
     kyc_verified: boolean('kyc_verified').notNull().default(false),
   });
+
+  export const userCompanies = pgTable('user_companies', {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => userProfiles.id),
+    companyId: integer('company_id')
+      .notNull()
+      .references(() => companies.id),
+  }, (t) => ({
+    id: primaryKey({ columns: [t.userId, t.companyId] }),
+  }));

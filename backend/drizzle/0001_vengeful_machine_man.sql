@@ -1,1 +1,0 @@
-ALTER TABLE "companies" ADD COLUMN "handle" varchar(255) NOT NULL;

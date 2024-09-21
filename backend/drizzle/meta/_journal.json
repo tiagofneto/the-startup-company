@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1726580104521,
-      "tag": "0000_dry_morgan_stark",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1726652329908,
-      "tag": "0001_vengeful_machine_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1726654499428,
-      "tag": "0002_easy_hairball",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1726930581462,
-      "tag": "0003_blushing_cloak",
+      "when": 1726931710159,
+      "tag": "0000_same_nebula",
       "breakpoints": true
     }
   ]
