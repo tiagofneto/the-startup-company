@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { createSupabaseClient } from '@/lib/utils'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { getProfile, getUserCompanies } from '@/services/api'
+import Link from 'next/link'
 
 const supabase = createSupabaseClient()
 
@@ -66,25 +67,27 @@ export default function UserDashboard() {
                 ) : (
                   <div className="h-full overflow-y-auto pr-2">
                     {companiesQuery.data?.map((company: { name: string, handle: string, image: string }, index: any) => (
-                      <div
-                        key={index}
-                        className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150"
-                      >
-                        <div className="flex items-center">
-                          <Image
-                            src={company.image || '/placeholder.svg?height=40&width=40'}
-                            alt={`${company.name} logo`}
-                            width={40}
-                            height={40}
-                            className="rounded-full mr-4"
-                          />
-                          <div>
-                            <h3 className="font-semibold">{company.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">@{company.handle}</p>
+                      <Link href={`/dashboard`} passHref>
+                        <div
+                          key={index}
+                          className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150"
+                        >
+                          <div className="flex items-center">
+                            <Image
+                              src={company.image || '/placeholder.svg'}
+                              alt={`${company.name} logo`}
+                              width={40}
+                              height={40}
+                              className="rounded-full mr-4"
+                            />
+                            <div>
+                              <h3 className="font-semibold">{company.name}</h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">@{company.handle}</p>
+                            </div>
                           </div>
+                          <ChevronRight className="text-gray-400" />
                         </div>
-                        <ChevronRight className="text-gray-400" />
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 )}
