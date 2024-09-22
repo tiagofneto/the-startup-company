@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { 
   Inbox, 
   FileText, 
@@ -11,22 +12,46 @@ import {
   AlertCircle,
   TrendingUp,
   ArrowUpRight,
-  ArrowDownLeft
+  ArrowDownLeft,
+  Plus
 } from 'lucide-react'
 
 export default function CompanyDashboard() {
   const companyName = "TechNova Solutions"
+  const companyLogo = ""
   const missingActions = [
     { id: 1, action: "Complete KYC verification", priority: "high" },
     { id: 2, action: "Set up cap table", priority: "medium" },
     { id: 3, action: "Add company logo", priority: "low" },
   ]
+  const capTable = [
+    { name: "John Doe", shares: 1000000, percentage: 50, isDirector: true },
+    { name: "Jane Smith", shares: 500000, percentage: 25, isDirector: true },
+    { name: "Acme Ventures", shares: 300000, percentage: 15, isDirector: false },
+    { name: "Employee Pool", shares: 200000, percentage: 10, isDirector: false },
+  ]
+  const people = [
+    { name: "Alice Johnson", role: "CEO" },
+    { name: "Bob Williams", role: "CTO", avatar: "/placeholder.svg" },
+    { name: "Carol Brown", role: "CFO" },
+    { name: "David Lee", role: "COO", avatar: "/placeholder.svg" },
+    { name: "Eva Garcia", role: "CMO", avatar: "/placeholder.svg" },
+  ]
 
   return (
     <div className="container mx-auto p-6 space-y-8">
-      <header className="text-center mb-8 pt-16">
-        <h1 className="text-4xl font-bold tracking-tight mb-2">{companyName}</h1>
-        <p className="text-xl text-muted-foreground">@technova</p>
+      <header className="flex items-center justify-between mb-8 pt-16">
+        <div className="flex items-center space-x-4">
+          <Avatar className="h-20 w-20">
+            <AvatarImage src={companyLogo} alt={companyName} />
+            <AvatarFallback>{companyName.slice(0, 2)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">{companyName}</h1>
+            <p className="text-xl text-muted-foreground">@technova</p>
+          </div>
+        </div>
+        <Button variant="outline">Edit Profile</Button>
       </header>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -86,6 +111,37 @@ export default function CompanyDashboard() {
                 <span className="text-sm text-muted-foreground">Growth</span>
                 <span className="font-medium text-green-500">+15%</span>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-4">
+                <li className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">New team member added</p>
+                    <p className="text-sm text-muted-foreground">John Doe joined as Developer</p>
+                  </div>
+                  <span className="text-sm text-muted-foreground">2h ago</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">Invoice paid</p>
+                    <p className="text-sm text-muted-foreground">$5,000 received from Client X</p>
+                  </div>
+                  <span className="text-sm text-muted-foreground">1d ago</span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">New project started</p>
+                    <p className="text-sm text-muted-foreground">Project Y kicked off</p>
+                  </div>
+                  <span className="text-sm text-muted-foreground">3d ago</span>
+                </li>
+              </ul>
             </CardContent>
           </Card>
 
@@ -156,6 +212,32 @@ export default function CompanyDashboard() {
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
+
+            <Card>
+              <CardHeader>
+                <CardTitle>People</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {people.map((person, index) => (
+                    <div key={index} className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarImage src={person.avatar} alt={person.name} />
+                        <AvatarFallback>{person.name.slice(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">{person.name}</p>
+                        <p className="text-sm text-muted-foreground">{person.role}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button className="w-full mt-4">
+                  <Plus className="mr-2 h-4 w-4" /> Add Person
+                </Button>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Missing Actions</CardTitle>
@@ -177,38 +259,38 @@ export default function CompanyDashboard() {
                 </div>
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  <li className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">New team member added</p>
-                      <p className="text-sm text-muted-foreground">John Doe joined as Developer</p>
-                    </div>
-                    <span className="text-sm text-muted-foreground">2h ago</span>
-                  </li>
-                  <li className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">Invoice paid</p>
-                      <p className="text-sm text-muted-foreground">$5,000 received from Client X</p>
-                    </div>
-                    <span className="text-sm text-muted-foreground">1d ago</span>
-                  </li>
-                  <li className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">New project started</p>
-                      <p className="text-sm text-muted-foreground">Project Y kicked off</p>
-                    </div>
-                    <span className="text-sm text-muted-foreground">3d ago</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
           </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Cap Table</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2">Shareholder</th>
+                      <th className="text-right py-2">Ordinary Shares</th>
+                      <th className="text-right py-2">Percentage</th>
+                      <th className="text-center py-2">Director</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {capTable.map((shareholder, index) => (
+                      <tr key={index} className="border-b last:border-b-0">
+                        <td className="py-2">{shareholder.name}</td>
+                        <td className="text-right py-2">{shareholder.shares.toLocaleString()}</td>
+                        <td className="text-right py-2">{shareholder.percentage}%</td>
+                        <td className="text-center py-2">{shareholder.isDirector ? "Yes" : "No"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
         </main>
       </div>
     </div>
