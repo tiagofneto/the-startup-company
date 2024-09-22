@@ -47,3 +47,12 @@ export async function getUserCompanies() {
   });
   return response.data;
 }
+
+export async function getCompanyPeople(handle: string) {
+  const response = await apiClient.get(`/company-people?handle=${handle}`, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.data;
+}

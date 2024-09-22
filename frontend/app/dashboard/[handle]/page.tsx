@@ -1,3 +1,5 @@
+'use client'
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -16,10 +18,10 @@ import {
   Plus
 } from 'lucide-react'
 import { computeAvatarFallback } from "@/lib/utils"
+import { getCompany, getCompanyPeople } from "@/services/api"
+import { useQuery } from '@tanstack/react-query'
 
-export default function CompanyDashboard() {
-  const companyName = "TechNova Solutions"
-  const companyLogo = ""
+export default function CompanyDashboard({params}: {params: {handle: string}}) {
   const missingActions = [
     { id: 1, action: "Complete KYC verification", priority: "high" },
     { id: 2, action: "Set up cap table", priority: "medium" },
@@ -31,25 +33,34 @@ export default function CompanyDashboard() {
     { name: "Acme Ventures", shares: 300000, percentage: 15, isDirector: false },
     { name: "Employee Pool", shares: 200000, percentage: 10, isDirector: false },
   ]
-  const people = [
-    { name: "Alice Johnson", role: "CEO" },
-    { name: "Bob Williams", role: "CTO", avatar: "/placeholder.svg" },
-    { name: "Carol Brown", role: "CFO" },
-    { name: "David Lee", role: "COO", avatar: "/placeholder.svg" },
-    { name: "Eva Garcia", role: "CMO", avatar: "/placeholder.svg" },
-  ]
+
+  const companyQuery = useQuery({
+    queryKey: ['company', params.handle],
+    queryFn: () => getCompany(params.handle)
+  })
+
+  const peopleQuery = useQuery({
+    queryKey: ['people', params.handle],
+    queryFn: () => getCompanyPeople(params.handle)
+  })
+
+  if (companyQuery.isPending) {
+    return <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
+    </div>
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-8">
       <header className="flex items-center justify-between mb-8 pt-16">
         <div className="flex items-center space-x-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={companyLogo} alt={companyName || "Company"} />
-            <AvatarFallback>{computeAvatarFallback(companyName || "Company")}</AvatarFallback>
+            <AvatarImage src={companyQuery.data?.logo} alt={companyQuery.data?.name || "Company"} />
+            <AvatarFallback>{computeAvatarFallback(companyQuery.data?.name || "Company")}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{companyName}</h1>
-            <p className="text-xl text-muted-foreground">@technova</p>
+            <h1 className="text-3xl font-bold tracking-tight">{companyQuery.data?.name}</h1>
+            <p className="text-xl text-muted-foreground">{companyQuery.data?.handle}</p>
           </div>
         </div>
         <Button variant="outline">Edit Profile</Button>
@@ -219,20 +230,26 @@ export default function CompanyDashboard() {
                 <CardTitle>People</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {people.map((person, index) => (
-                    <div key={index} className="flex items-center space-x-4">
-                      <Avatar>
-                        <AvatarImage src={person.avatar} alt={person.name || "Person"} />
-                        <AvatarFallback>{computeAvatarFallback(person.name || "Person")}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{person.name}</p>
-                        <p className="text-sm text-muted-foreground">{person.role}</p>
+                {peopleQuery.isPending ? (
+                  <div className="flex justify-center items-center h-32">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {peopleQuery.data?.map((person: any, index: number) => (
+                      <div key={index} className="flex items-center space-x-4">
+                        <Avatar>
+                          <AvatarImage src={person.avatar} alt={person.id || "Person"} />
+                          <AvatarFallback>{computeAvatarFallback(person.id || "Person")}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{person.id.slice(0, 10)}...</p>
+                          <p className="text-sm text-muted-foreground">CEO</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
                 <Button className="w-full mt-4">
                   <Plus className="mr-2 h-4 w-4" /> Add Person
                 </Button>

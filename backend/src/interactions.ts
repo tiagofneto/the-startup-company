@@ -65,3 +65,16 @@ export async function createUserCompany(user_id: string, company_id: number) {
     await db.insert(userCompanies).values({ userId: user_id, companyId: company_id });
     console.log('User company created successfully');
 }
+
+export async function fetchCompanyPeople(handle: string) {
+    console.log('Fetching company people from database:', handle);
+    const fetchedCompanyPeople = await db.select({
+        id: userCompanies.userId,
+    }).
+    from(userCompanies)
+    .innerJoin(companies, eq(userCompanies.companyId, companies.id))
+    .where(eq(companies.handle, handle));
+
+    console.log('Company people fetched successfully:', fetchedCompanyPeople);
+    return fetchedCompanyPeople;
+}

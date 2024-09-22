@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
 import { createUserCompany, fetchCompany, getCompanies, uploadCompany } from '../interactions.js';
 import { createCompany, getCompany } from '../aztec.js';
+import { fetchCompanyPeople } from '../interactions.js';
 
 export const getCompanyHandler = async (req: Request, res: Response) => {
   try {
@@ -61,3 +62,14 @@ export const getCompaniesHandler = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch companies' });
   }
 };
+
+export const getPeopleHandler = async (req: Request, res: Response) => {
+  try {
+    const { handle } = req.query;
+    const people = await fetchCompanyPeople(handle as string);
+    res.status(200).json(people);
+  } catch (error) {
+    console.error('Error fetching people:', error);
+    res.status(500).json({ error: 'Failed to fetch people' });
+  }
+}
