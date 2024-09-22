@@ -15,6 +15,7 @@ import {
   ArrowDownLeft,
   Plus
 } from 'lucide-react'
+import { computeAvatarFallback } from "@/lib/utils"
 
 export default function CompanyDashboard() {
   const companyName = "TechNova Solutions"
@@ -43,8 +44,8 @@ export default function CompanyDashboard() {
       <header className="flex items-center justify-between mb-8 pt-16">
         <div className="flex items-center space-x-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={companyLogo} alt={companyName} />
-            <AvatarFallback>{companyName.slice(0, 2)}</AvatarFallback>
+            <AvatarImage src={companyLogo} alt={companyName || "Company"} />
+            <AvatarFallback>{computeAvatarFallback(companyName || "Company")}</AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{companyName}</h1>
@@ -222,8 +223,8 @@ export default function CompanyDashboard() {
                   {people.map((person, index) => (
                     <div key={index} className="flex items-center space-x-4">
                       <Avatar>
-                        <AvatarImage src={person.avatar} alt={person.name} />
-                        <AvatarFallback>{person.name.slice(0, 2)}</AvatarFallback>
+                        <AvatarImage src={person.avatar} alt={person.name || "Person"} />
+                        <AvatarFallback>{computeAvatarFallback(person.name || "Person")}</AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium">{person.name}</p>

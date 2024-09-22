@@ -24,3 +24,17 @@ export function getAccessToken() {
 
   return token
 }
+
+export function computeAvatarFallback(name: string) {
+  if (!name) return '';
+  
+  const words = name.trim().split(/\s+/);
+
+  if (words.length === 1) {
+    return name.slice(0, 2);
+  } else {
+    const firstInitial = words[0][0];
+    const lastInitial = words[words.length - 1][0];
+    return (firstInitial + lastInitial);
+  }
+}

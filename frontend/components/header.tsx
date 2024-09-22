@@ -6,8 +6,9 @@ import { useState, useEffect } from "react"
 import { Menu, X, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ThemeToggle from "@/components/theme-toggle"
-import { createSupabaseClient } from "@/lib/utils"
+import { computeAvatarFallback, createSupabaseClient } from "@/lib/utils"
 import { Session } from '@supabase/supabase-js'
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 const supabase = createSupabaseClient()
 
@@ -86,15 +87,10 @@ export default function ModernHeader() {
                 className="flex items-center space-x-2 rounded-full px-3 py-1.5 text-sm"
               >
                 <span className="max-w-[100px] truncate">{session.user.user_metadata.full_name}</span>
-                {session.user.user_metadata.avatar_url && (
-                  <Image
-                    src={session.user.user_metadata.avatar_url}
-                    alt={session.user.user_metadata.full_name || "User"}
-                    width={24}
-                    height={24}
-                    className="rounded-full"
-                  />
-                )}
+                <Avatar className="h-7 w-7">
+                  <AvatarImage src={session.user.user_metadata.avatar_url} alt={session.user.user_metadata.full_name || "User"}/>
+                  <AvatarFallback>{computeAvatarFallback(session.user.user_metadata.full_name || "User")}</AvatarFallback>
+                </Avatar>
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </Button>
               {isDropdownOpen && (

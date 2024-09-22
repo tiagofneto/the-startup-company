@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { createSupabaseClient } from '@/lib/utils'
+import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { getProfile, getUserCompanies } from '@/services/api'
 import Link from 'next/link'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 const supabase = createSupabaseClient()
 
@@ -73,13 +74,10 @@ export default function UserDashboard() {
                           className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150"
                         >
                           <div className="flex items-center">
-                            <Image
-                              src={company.image || '/placeholder.svg'}
-                              alt={`${company.name} logo`}
-                              width={40}
-                              height={40}
-                              className="rounded-full mr-4"
-                            />
+                            <Avatar className="h-10 w-10 mr-4">
+                              <AvatarImage src={company.image} alt={`${company.name} logo`}/>
+                              <AvatarFallback>{computeAvatarFallback(company.name || "Company")}</AvatarFallback>
+                            </Avatar>
                             <div>
                               <h3 className="font-semibold">{company.name}</h3>
                               <p className="text-sm text-gray-600 dark:text-gray-400">@{company.handle}</p>
