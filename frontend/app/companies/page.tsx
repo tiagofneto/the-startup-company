@@ -67,7 +67,7 @@ export default function CompaniesPage() {
                   {company.description && (
                     <p className="text-sm text-gray-300 line-clamp-2 mb-4">{company.description}</p>
                   )}
-                  <Link href={`/dashboard`} passHref>
+                  <Link href={`/dashboard/${company.handle}`} passHref>
                     <Button className="w-full bg-white text-black hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
                       View Company
                     </Button>

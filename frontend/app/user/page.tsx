@@ -68,7 +68,7 @@ export default function UserDashboard() {
                 ) : (
                   <div className="h-full overflow-y-auto pr-2">
                     {companiesQuery.data?.map((company: { name: string, handle: string, image: string }, index: any) => (
-                      <Link href={`/dashboard`} passHref>
+                      <Link href={`/dashboard/${company.handle}`} passHref>
                         <div
                           key={index}
                           className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150"

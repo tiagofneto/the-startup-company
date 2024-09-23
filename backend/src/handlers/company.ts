@@ -16,8 +16,8 @@ export const getCompanyHandler = async (req: Request, res: Response) => {
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
-    const company = await getCompany(companyRegistry, handle as string);
-    //const company = await fetchCompany(handle as string);
+    //const company = await getCompany(companyRegistry, handle as string);
+    const company = await fetchCompany(handle as string);
     
     res.status(200).json(company);
   } catch (error) {
