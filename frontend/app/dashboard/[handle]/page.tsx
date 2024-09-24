@@ -239,12 +239,12 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                     {peopleQuery.data?.map((person: any, index: number) => (
                       <div key={index} className="flex items-center space-x-4">
                         <Avatar>
-                          <AvatarImage src={person.avatar} alt={person.id || "Person"} />
-                          <AvatarFallback>{computeAvatarFallback(person.id || "Person")}</AvatarFallback>
+                          <AvatarImage src={person.avatar} alt={person.email || "Person"} />
+                          <AvatarFallback>{computeAvatarFallback(person.email || "Person")}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{person.id.slice(0, 10)}...</p>
-                          <p className="text-sm text-muted-foreground">CEO</p>
+                          <p className="font-medium">{person.email}</p>
+                          <p className="text-sm text-muted-foreground">Director</p>
                         </div>
                       </div>
                     ))}

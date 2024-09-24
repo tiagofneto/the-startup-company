@@ -12,8 +12,9 @@ import {
 
   const authSchema = pgSchema('auth');
 
-  const users = authSchema.table('users', {
+  export const users = authSchema.table('users', {
     id: uuid('id').primaryKey(),
+    email: varchar('email', { length: 255 }).notNull().unique(),
   });
   
   export const companies = pgTable('companies', {
@@ -32,12 +33,10 @@ import {
   });
 
   export const userCompanies = pgTable('user_companies', {
-    userId: uuid('user_id')
-      .notNull()
-      .references(() => userProfiles.id),
+    email: varchar('email', { length: 255 }).notNull(),
     companyId: integer('company_id')
       .notNull()
       .references(() => companies.id),
   }, (t) => ({
-    id: primaryKey({ columns: [t.userId, t.companyId] }),
+    id: primaryKey({ columns: [t.email, t.companyId] }),
   }));

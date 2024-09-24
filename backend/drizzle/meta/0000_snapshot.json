@@ -1,5 +1,5 @@
 {
-  "id": "1332ee61-b922-4ce9-908b-bf46fcad9c6d",
+  "id": "8304ab2f-40d4-4218-98e5-d82ac14b0777",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -69,9 +69,9 @@
       "name": "user_companies",
       "schema": "",
       "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -84,19 +84,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "user_companies_user_id_user_profiles_user_id_fk": {
-          "name": "user_companies_user_id_user_profiles_user_id_fk",
-          "tableFrom": "user_companies",
-          "tableTo": "user_profiles",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "user_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "user_companies_company_id_companies_id_fk": {
           "name": "user_companies_company_id_companies_id_fk",
           "tableFrom": "user_companies",
@@ -112,10 +99,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "user_companies_user_id_company_id_pk": {
-          "name": "user_companies_user_id_company_id_pk",
+        "user_companies_email_company_id_pk": {
+          "name": "user_companies_email_company_id_pk",
           "columns": [
-            "user_id",
+            "email",
             "company_id"
           ]
         }
@@ -159,6 +146,36 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "auth.users": {
+      "name": "users",
+      "schema": "auth",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      }
     }
   },
   "enums": {},
