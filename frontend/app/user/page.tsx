@@ -1,17 +1,26 @@
 'use client'
 
-import Image from 'next/image'
 import { ChevronRight, FileText, Shield, User } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils'
 import { User as SupabaseUser } from '@supabase/supabase-js'
-import { getProfile, getUserCompanies } from '@/services/api'
+import { getProfile, getUserCompanies, verifyKyc } from '@/services/api'
 import Link from 'next/link'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { OpenPassportQRcode, OpenPassport1StepInputs } from '@openpassport/sdk';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
 
 const supabase = createSupabaseClient()
 
@@ -47,6 +56,27 @@ export default function UserDashboard() {
             { name: 'Partnership Agreement - Nexus Innovations', id: 'doc5' },
         ]}
   })
+
+  const queryClient = useQueryClient()
+
+  const kycMutation = useMutation({
+    mutationFn: verifyKyc,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    }
+  })
+
+  const handleSuccessfulVerification = (proof: OpenPassport1StepInputs) => {
+    kycMutation.mutate(proof)
+  };
+
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
@@ -114,7 +144,28 @@ export default function UserDashboard() {
                         {profileQuery.data.kyc_verified ? 'Verified' : 'Pending'}
                       </span>
                     </div>
-                    <Button className="w-full">Complete KYC Verification</Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">Complete KYC Verification</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>KYC Verification</DialogTitle>
+                          <DialogDescription>
+                            Use the OpenPassport app to complete your KYC verification.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <OpenPassportQRcode
+                          appName="The Startup Company"
+                          scope="@thestartupcompany"
+                          userId={user.id}
+                          requirements={[]}
+                          onSuccess={handleSuccessfulVerification}
+                          devMode={true}
+                          size={300}
+                        />
+                      </DialogContent>
+                    </Dialog>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
                       Unlock all features with KYC
                     </p>

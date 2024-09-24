@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getAccessToken } from '@/lib/utils';
+import { OpenPassport1StepInputs } from '@openpassport/sdk';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -54,5 +55,17 @@ export async function getCompanyPeople(handle: string) {
       Authorization: `Bearer ${getAccessToken()}`,
     },
   });
+  return response.data;
+}
+
+export async function verifyKyc(proof: OpenPassport1StepInputs) {
+  const response = await apiClient.post('/verify-kyc', 
+    { proof: proof },
+    {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    }
+  );
   return response.data;
 }

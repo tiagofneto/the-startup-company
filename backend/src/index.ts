@@ -4,7 +4,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { authenticateToken } from './middleware.js';
 import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler } from './handlers/company.js';
-import { getProfile, getUserCompanies } from './handlers/user.js';
+import { getProfile, getUserCompanies, verifyKyc } from './handlers/user.js';
 
 const port = 3000;
 const skipInit = process.argv.includes('--skip-init');
@@ -50,3 +50,5 @@ app.get('/company-people', getPeopleHandler);
 // User routes
 app.get('/profile', authenticateToken, getProfile);
 app.get('/user-companies', authenticateToken, getUserCompanies);
+app.post('/verify-kyc', authenticateToken, verifyKyc);
+
