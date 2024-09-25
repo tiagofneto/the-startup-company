@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { createUserCompany, fetchCompany, getCompanies, uploadCompany } from '../interactions.js';
+import { createCompanyUser, createUserCompany, fetchCompany, getCompanies, uploadCompany } from '../interactions.js';
 import { createCompany, getCompany } from '../aztec.js';
 import { fetchCompanyPeople } from '../interactions.js';
 
@@ -71,5 +71,20 @@ export const getPeopleHandler = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching people:', error);
     res.status(500).json({ error: 'Failed to fetch people' });
+  }
+}
+
+export const createCompanyUserHandler = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { email, company_id } = req.body;
+
+    // TODO: check if user has permission to add people
+    const user_id = req.user.sub;
+
+    await createCompanyUser(email, company_id);
+    res.status(201).json({ message: 'User created successfully' });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Failed to create user' });
   }
 }

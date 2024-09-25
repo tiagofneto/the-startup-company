@@ -3,7 +3,7 @@ import { deploy } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { authenticateToken } from './middleware.js';
-import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler } from './handlers/company.js';
+import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler, createCompanyUserHandler } from './handlers/company.js';
 import { getProfile, getUserCompanies, verifyKyc } from './handlers/user.js';
 
 const port = 3000;
@@ -46,7 +46,7 @@ app.post('/company', authenticateToken, createCompanyHandler);
 app.get('/companies', getCompaniesHandler);
 // TODO permissioned
 app.get('/company-people', getPeopleHandler);
-
+app.post('/company-user', authenticateToken, createCompanyUserHandler);
 // User routes
 app.get('/profile', authenticateToken, getProfile);
 app.get('/user-companies', authenticateToken, getUserCompanies);

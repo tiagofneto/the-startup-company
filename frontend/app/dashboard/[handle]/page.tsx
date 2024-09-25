@@ -15,13 +15,28 @@ import {
   TrendingUp,
   ArrowUpRight,
   ArrowDownLeft,
-  Plus
+  Plus,
 } from 'lucide-react'
 import { computeAvatarFallback } from "@/lib/utils"
-import { getCompany, getCompanyPeople } from "@/services/api"
-import { useQuery } from '@tanstack/react-query'
+import { createCompanyUser, getCompany, getCompanyPeople } from "@/services/api"
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
 
 export default function CompanyDashboard({params}: {params: {handle: string}}) {
+  const [email, setEmail] = useState('')
+
   const missingActions = [
     { id: 1, action: "Complete KYC verification", priority: "high" },
     { id: 2, action: "Set up cap table", priority: "medium" },
@@ -43,6 +58,21 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
     queryKey: ['people', params.handle],
     queryFn: () => getCompanyPeople(params.handle)
   })
+
+  const queryClient = useQueryClient()
+
+  const addPersonMutation = useMutation({
+    mutationFn: (email: string) => createCompanyUser(email, companyQuery.data?.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['people', params.handle] })
+    }
+  })
+
+  const addPerson = () => {
+    const emailToAdd = email;
+    setEmail('')
+    addPersonMutation.mutate(emailToAdd)
+  }
 
   if (companyQuery.isPending) {
     return <div className="flex justify-center items-center h-64">
@@ -250,9 +280,39 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                     ))}
                   </div>
                 )}
-                <Button className="w-full mt-4">
-                  <Plus className="mr-2 h-4 w-4" /> Add Person
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full mt-4">
+                      <Plus className="mr-2 h-4 w-4" /> Add Person
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add Person</DialogTitle>
+                      <DialogDescription>
+                        Enter the person's email address and select their role.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid flex-1 gap-2">
+                      <Label htmlFor="email" className="sr-only">
+                        Email
+                      </Label>
+                      <Input
+                        id="email"
+                        value={email}
+                        placeholder="Email"
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <DialogFooter className="sm:justify-start">
+                      <DialogClose asChild>
+                        <Button type="button" variant="secondary" onClick={addPerson}>
+                          <Plus className="mr-2 h-4 w-4" /> Add 
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
 

@@ -69,3 +69,12 @@ export async function verifyKyc(proof: OpenPassport1StepInputs) {
   );
   return response.data;
 }
+
+export async function createCompanyUser(email: string, company_id: number) {
+  const response = await apiClient.post('/company-user', { email, company_id }, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.data;
+}
