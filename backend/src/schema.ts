@@ -7,7 +7,8 @@ import {
     pgSchema,
     uuid,
     boolean,
-    primaryKey
+    primaryKey,
+    jsonb
   } from 'drizzle-orm/pg-core';
 
   const authSchema = pgSchema('auth');
@@ -15,6 +16,7 @@ import {
   export const users = authSchema.table('users', {
     id: uuid('id').primaryKey(),
     email: varchar('email', { length: 255 }).notNull().unique(),
+    raw_user_meta_data: jsonb('raw_user_meta_data').notNull(),
   });
   
   export const companies = pgTable('companies', {

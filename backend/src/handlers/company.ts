@@ -66,7 +66,14 @@ export const getCompaniesHandler = async (req: Request, res: Response) => {
 export const getPeopleHandler = async (req: Request, res: Response) => {
   try {
     const { handle } = req.query;
-    const people = await fetchCompanyPeople(handle as string);
+    const people = (await fetchCompanyPeople(handle as string)).map((person) => {
+      const metadata = person.raw_user_meta_data as { full_name: string, picture: string };
+      return {
+        email: person.email,
+        name: metadata?.full_name,
+        picture: metadata?.picture
+      }
+    });
     res.status(200).json(people);
   } catch (error) {
     console.error('Error fetching people:', error);

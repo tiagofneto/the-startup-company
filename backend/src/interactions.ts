@@ -87,9 +87,11 @@ export async function fetchCompanyPeople(handle: string) {
     console.log('Fetching company people from database:', handle);
     const fetchedCompanyPeople = await db.select({
         email: userCompanies.email,
+        raw_user_meta_data: users.raw_user_meta_data
     }).
     from(userCompanies)
     .innerJoin(companies, eq(userCompanies.companyId, companies.id))
+    .leftJoin(users, eq(userCompanies.email, users.email))
     .where(eq(companies.handle, handle));
 
     console.log('Company people fetched successfully:', fetchedCompanyPeople);
