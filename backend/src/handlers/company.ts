@@ -13,8 +13,8 @@ export const getCompanyHandler = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Missing company handle' });
     }
 
-    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    const { companyRegistry } = addresses;
+    //const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    //const { companyRegistry } = addresses;
 
     //const company = await getCompany(companyRegistry, handle as string);
     const company = await fetchCompany(handle as string);
@@ -35,8 +35,8 @@ export const createCompanyHandler = async (req: AuthenticatedRequest, res: Respo
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    const { companyRegistry } = addresses;
+    //const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    //const { companyRegistry } = addresses;
 
     const company = { name, handle, email, director, totalShares };
 
