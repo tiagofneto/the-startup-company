@@ -41,12 +41,13 @@ export const createCompanyHandler = async (req: AuthenticatedRequest, res: Respo
     const company = { name, handle, email, director, totalShares };
 
     // Onchain
-    const tx = await createCompany(companyRegistry, company);
+    //const tx = await createCompany(companyRegistry, company);
     // Offchain
     const company_id = await uploadCompany(company);
     await createUserCompany(user_id, company_id);
 
-    res.status(201).json(tx);
+    //res.status(201).json(tx);
+    res.status(201).json(company_id);
   } catch (error) {
     console.error('Error creating company:', error);
     res.status(500).json({ error: 'Failed to create company' });
