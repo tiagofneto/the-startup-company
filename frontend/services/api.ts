@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getAccessToken } from '@/lib/utils';
-import { OpenPassport1StepInputs } from '@openpassport/sdk';
+import { OpenPassport1StepInputs } from '@proofofpassport/sdk';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 

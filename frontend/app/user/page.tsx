@@ -11,7 +11,8 @@ import { User as SupabaseUser } from '@supabase/supabase-js'
 import { getProfile, getUserCompanies, verifyKyc } from '@/services/api'
 import Link from 'next/link'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { OpenPassportQRcode, OpenPassport1StepInputs } from '@openpassport/sdk';
+import { OpenPassport1StepInputs, OpenPassportQRcode } from '@proofofpassport/sdk/dist/sdk/src/browser';
+
 import {
   Dialog,
   DialogContent,
