@@ -39,9 +39,10 @@ export async function updateSession(request: NextRequest) {
     !user &&
     request.nextUrl.pathname !== '/'
   ) {
-    // no user, redirect to the root page
+    // no user, redirect to the root page with a query parameter
     const url = request.nextUrl.clone()
     url.pathname = '/'
+    url.searchParams.set('requiresAuth', 'true')
     return NextResponse.redirect(url)
   }
 
