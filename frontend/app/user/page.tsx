@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils'
+import { computeAvatarFallback } from '@/lib/utils'
+import { createClient } from "@/lib/supabase/client"
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { getProfile, getUserCompanies, verifyKyc } from '@/services/api'
 import Link from 'next/link'
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/dialog"
 
 
-const supabase = createSupabaseClient()
+const supabase = createClient()
 
 export default function UserDashboard() {
   const [user, setUser] = useState<SupabaseUser | null>(null)

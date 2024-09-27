@@ -6,11 +6,12 @@ import { useState, useEffect } from "react"
 import { Menu, X, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ThemeToggle from "@/components/theme-toggle"
-import { computeAvatarFallback, createSupabaseClient } from "@/lib/utils"
+import { computeAvatarFallback } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 import { Session } from '@supabase/supabase-js'
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
-const supabase = createSupabaseClient()
+const supabase = createClient()
 
 export default function ModernHeader() {
   const [session, setSession] = useState<Session | null>(null)
