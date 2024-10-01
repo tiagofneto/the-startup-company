@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { deploy } from './aztec.js';
+import { deploy, getWallet } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { authenticateToken } from './middleware.js';
@@ -21,7 +21,8 @@ async function initializeServer() {
 
     console.log("Initializing server");
     console.log("Deploying registry");
-    const { companyRegistryAddress } = await deploy();
+    const wallet = await getWallet();
+    const { companyRegistryAddress } = await deploy(wallet);
     console.log("Registry deployed at", companyRegistryAddress);
 }
 
