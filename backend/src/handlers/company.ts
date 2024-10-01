@@ -71,6 +71,7 @@ export const getPeopleHandler = async (req: Request, res: Response) => {
       const metadata = person.raw_user_meta_data as { full_name: string, picture: string };
       return {
         email: person.email,
+        kyc_verified: person.kyc_verified,
         name: metadata?.full_name,
         picture: metadata?.picture
       }
