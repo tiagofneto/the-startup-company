@@ -15,14 +15,41 @@ contract CompanyRegistry {
         companies: Map<str<31>, PublicMutable<Company, Context>, Context>,
         // Handle -> isTaken
         handles: Map<str<31>, PublicMutable<bool, Context>, Context>,
+        balances: Map<str<31>, PublicMutable<U128, Context>, Context>,
         token_address: PublicMutable<AztecAddress, Context>,
-        balance: Map<str<31>, PublicMutable<U128, Context>, Context>,
     }
 
     #[public]
     #[initializer]
     fn constructor(token_address: AztecAddress) {
         storage.token_address.write(token_address);
+    }
+
+    #[public]
+    fn transfer_tokens_to_handle(from: str<31>, to: str<31>, amount: U128) {
+        let balance = storage.balances.at(from).read();
+        assert(balance >= amount, "Insufficient balance");
+
+        storage.balances.at(from).write(balance - amount);
+
+        let to_balance = storage.balances.at(to).read();
+        storage.balances.at(to).write(to_balance + amount);
+    }
+
+    #[public]
+    fn transfer_tokens_to_address(from: str<31>, to: AztecAddress, amount: U128) {
+        let balance = storage.balances.at(from).read();
+        assert(balance >= amount, "Insufficient balance");
+
+        storage.balances.at(from).write(balance - amount);
+
+        let token_address = storage.token_address.read();
+        Token::at(token_address).transfer_public(
+            context.this_address(),
+            to,
+            amount.to_integer(),
+            0
+        ).call(&mut context);
     }
 
     #[public]
@@ -39,7 +66,12 @@ contract CompanyRegistry {
 
         storage.companies.at(handle).write(company);
         storage.handles.at(handle).write(true);
-        storage.balance.at(director).write(INITIAL_BALANCE);
+
+        Token::at(storage.token_address.read()).mint_public(
+            context.this_address(),
+            INITIAL_BALANCE.to_integer(),
+        ).call(&mut context);
+        storage.balances.at(handle).write(INITIAL_BALANCE);
     }
 
     #[public]
@@ -53,4 +85,11 @@ contract CompanyRegistry {
     fn is_handle_taken(handle: str<31>) -> bool {
         storage.handles.at(handle).read()
     }
+
+    #[public]
+    #[view]
+    fn get_balance(handle: str<31>) -> U128 {
+        storage.balances.at(handle).read()
+    }
+
 }
