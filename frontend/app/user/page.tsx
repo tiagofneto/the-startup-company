@@ -11,7 +11,7 @@ import { User as SupabaseUser } from '@supabase/supabase-js'
 import { getProfile, getUserCompanies, verifyKyc } from '@/services/api'
 import Link from 'next/link'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { OpenPassportQRcode, OpenPassport1StepInputs } from '@openpassport/sdk';
+import { OpenPassportQRcode, OpenPassport1StepInputs, OpenPassportVerifierReport } from '@openpassport/sdk';
 
 import {
   Dialog,
@@ -67,7 +67,7 @@ export default function UserDashboard() {
     }
   })
 
-  const handleSuccessfulVerification = (proof: OpenPassport1StepInputs) => {
+  const handleSuccessfulVerification = (proof: OpenPassport1StepInputs, verificatonResult: OpenPassportVerifierReport) => {
     kycMutation.mutate(proof)
   };
 

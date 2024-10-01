@@ -97,3 +97,9 @@ export async function fetchCompanyPeople(handle: string) {
     console.log('Company people fetched successfully:', fetchedCompanyPeople);
     return fetchedCompanyPeople;
 }
+
+export async function setKycVerified(user_id: string, verified: boolean = true) {
+    console.log('Setting KYC verified in database:', user_id);
+    await db.update(userProfiles).set({ kyc_verified: verified }).where(eq(userProfiles.id, user_id));
+    console.log('KYC verified set successfully');
+}
