@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, FileText, Shield, User } from 'lucide-react'
+import { ChevronRight, FileText, Shield, User, CheckCircle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -141,35 +141,43 @@ export default function UserDashboard() {
                   <>
                     <div className="flex items-center justify-between mb-4">
                       <span>Status:</span>
-                      <span className="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100 rounded-full text-sm font-medium">
+                      <span className={`px-3 py-1 ${profileQuery.data.kyc_verified ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}>
                         {profileQuery.data.kyc_verified ? 'Verified' : 'Pending'}
                       </span>
                     </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className="w-full">Complete KYC Verification</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>KYC Verification</DialogTitle>
-                          <DialogDescription>
-                            Use the OpenPassport app to complete your KYC verification.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <OpenPassportQRcode
-                          appName="The Startup Company"
-                          scope="@thestartupcompany"
-                          userId={user.id}
-                          requirements={[]}
-                          onSuccess={handleSuccessfulVerification}
-                          devMode={true}
-                          size={300}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-                      Unlock all features with KYC
-                    </p>
+                    {profileQuery.data.kyc_verified ? (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                        Your KYC verification is complete. All features are unlocked.
+                      </p>
+                    ) : (
+                      <>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button className="w-full">Complete KYC Verification</Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>KYC Verification</DialogTitle>
+                              <DialogDescription>
+                                Use the OpenPassport app to complete your KYC verification.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <OpenPassportQRcode
+                              appName="The Startup Company"
+                              scope="@thestartupcompany"
+                              userId={user.id}
+                              requirements={[]}
+                              onSuccess={handleSuccessfulVerification}
+                              devMode={true}
+                              size={300}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                          Unlock all features with KYC
+                        </p>
+                      </>
+                    )}
                   </>
                 )}
               </CardContent>
