@@ -1,7 +1,7 @@
 use dep::compressed_string::FieldCompressedString;
 use dep::protocol_types::traits::{Serialize, Deserialize};
 
-struct Company {
+pub struct Company {
     name: FieldCompressedString,
     handle: FieldCompressedString,
     email: FieldCompressedString,
