@@ -41,6 +41,9 @@ export async function deploy(wallet: AccountWalletWithSecretKey) {
     .deployed();
   console.log(`CompanyRegistry deployed at ${companyRegistry.address.toString()}`);
 
+  await tokenContract.methods.set_minter(companyRegistry.address, true).send().wait();
+  console.log('Token contract minter set');
+
   const addresses = { companyRegistry: companyRegistry.address.toString(), token: tokenContract.address.toString() };
   writeFileSync('addresses.json', JSON.stringify(addresses, null, 2));
 
