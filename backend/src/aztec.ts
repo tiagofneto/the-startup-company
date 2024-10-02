@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 import { Company } from './types.js';
 import { companyFromBigIntObject } from './utils.js';
 import { getSchnorrAccount } from '@aztec/accounts/schnorr';
-import { TokenContract } from '@aztec/noir-contracts.js'
+import { TokenContract, TokenContractArtifact } from '@aztec/noir-contracts.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -77,7 +77,7 @@ export async function getCompany(wallet: AccountWalletWithSecretKey, contractAdd
   return company;
 }
 
-export async function transfer_tokens_to_handle(wallet: AccountWalletWithSecretKey, contractAddress: string, from: string, to: string, amount: number) {
+export async function transferTokensToHandle(wallet: AccountWalletWithSecretKey, contractAddress: string, from: string, to: string, amount: number) {
   const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
 
   console.log(`Transferring ${amount} tokens from ${from} to ${to}`);
@@ -90,7 +90,7 @@ export async function transfer_tokens_to_handle(wallet: AccountWalletWithSecretK
   return tx;
 }
 
-export async function transfer_tokens_to_address(wallet: AccountWalletWithSecretKey, contractAddress: string, from: string, to: AztecAddress, amount: number) {
+export async function transferTokensToAddress(wallet: AccountWalletWithSecretKey, contractAddress: string, from: string, to: AztecAddress, amount: number) {
   const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
 
   console.log(`Transferring ${amount} tokens from ${from} to ${to}`);
@@ -101,4 +101,24 @@ export async function transfer_tokens_to_address(wallet: AccountWalletWithSecret
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
 
   return tx;
+}
+
+export async function getCompanyBalance(wallet: AccountWalletWithSecretKey, contractAddress: string, handle: string) {
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
+
+  console.log(`Getting company ${handle} balance`);
+  const balance = await contract.methods.get_balance(handle).simulate();
+  console.log(`Company ${handle} balance: ${balance}`);
+
+  return balance;
+}
+
+export async function getTokenBalance(wallet: AccountWalletWithSecretKey, tokenAddress: string, address: AztecAddress) {
+  const contract = await Contract.at(AztecAddress.fromString(tokenAddress), loadContractArtifact(TokenContractArtifact as any), wallet);
+
+  console.log(`Getting token balance for ${address}`);
+  const balance = await contract.methods.balance_of_public(address).simulate();
+  console.log(`Token balance for ${address}: ${balance}`);
+
+  return balance;
 }

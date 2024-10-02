@@ -137,8 +137,8 @@ contract CompanyRegistry {
 
     #[public]
     #[view]
-    fn get_balance(handle: str<31>) -> U128 {
-        storage.balances.at(handle).read()
+    fn get_balance(handle: str<31>) -> Field {
+        storage.balances.at(handle).read().to_integer()
     }
 
 }
