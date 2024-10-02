@@ -26,28 +26,33 @@ contract CompanyRegistry {
     }
 
     #[public]
-    fn transfer_tokens_to_handle(from: str<31>, to: str<31>, amount: U128) {
+    fn transfer_tokens_to_handle(from: str<31>, to: str<31>, amount: Field) {
         let balance = storage.balances.at(from).read();
-        assert(balance >= amount, "Insufficient balance");
+        let amount_int = U128::from_integer(amount);
+        assert(balance >= amount_int, "Insufficient balance");
 
-        storage.balances.at(from).write(balance - amount);
+        let handle_exists = storage.handles.at(to).read();
+        assert(handle_exists, "Receiver handle does not exist");
+
+        storage.balances.at(from).write(balance - amount_int);
 
         let to_balance = storage.balances.at(to).read();
-        storage.balances.at(to).write(to_balance + amount);
+        storage.balances.at(to).write(to_balance + amount_int);
     }
 
     #[public]
-    fn transfer_tokens_to_address(from: str<31>, to: AztecAddress, amount: U128) {
+    fn transfer_tokens_to_address(from: str<31>, to: AztecAddress, amount: Field) {
         let balance = storage.balances.at(from).read();
-        assert(balance >= amount, "Insufficient balance");
+        let amount_int = U128::from_integer(amount);
+        assert(balance >= amount_int, "Insufficient balance");
 
-        storage.balances.at(from).write(balance - amount);
+        storage.balances.at(from).write(balance - amount_int);
 
         let token_address = storage.token_address.read();
         Token::at(token_address).transfer_public(
             context.this_address(),
             to,
-            amount.to_integer(),
+            amount,
             0
         ).call(&mut context);
     }

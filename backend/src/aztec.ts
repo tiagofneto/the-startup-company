@@ -1,6 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { Contract, loadContractArtifact, createPXEClient, AztecAddress, Fr, GrumpkinScalar, AccountWalletWithSecretKey, waitForPXE } from '@aztec/aztec.js';
-import { getInitialTestAccountsWallets } from '@aztec/accounts/testing';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { Company } from './types.js';
@@ -86,6 +85,19 @@ export async function transfer_tokens_to_handle(wallet: AccountWalletWithSecretK
   const tx = await contract.methods.transfer_tokens_to_handle(from, to, amount).send().wait();
 
   console.log(`Sent transfer tokens to handle transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+
+  return tx;
+}
+
+export async function transfer_tokens_to_address(wallet: AccountWalletWithSecretKey, contractAddress: string, from: string, to: AztecAddress, amount: number) {
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
+
+  console.log(`Transferring ${amount} tokens from ${from} to ${to}`);
+
+  const tx = await contract.methods.transfer_tokens_to_address(from, to, amount).send().wait();
+
+  console.log(`Sent transfer tokens to address transaction 0x${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
 
   return tx;
