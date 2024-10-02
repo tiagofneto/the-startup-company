@@ -22,8 +22,9 @@ async function initializeServer() {
     console.log("Initializing server");
     console.log("Deploying registry");
     const wallet = await getWallet();
-    const { companyRegistryAddress } = await deploy(wallet);
-    console.log("Registry deployed at", companyRegistryAddress);
+    const addresses = await deploy(wallet);
+    console.log("Token deployed at", addresses.token);
+    console.log("Registry deployed at", addresses.companyRegistry);
 }
 
 initializeServer()
