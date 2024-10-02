@@ -134,3 +134,13 @@ export async function createStream(wallet: AccountWalletWithSecretKey, contractA
 
   return tx;
 }
+
+export async function claimStream(wallet: AccountWalletWithSecretKey, contractAddress: string, id: number) {
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
+
+  console.log(`Claiming stream ${id}`);
+  const tx = await contract.methods.claim_stream(id).send().wait();
+
+  console.log(`Sent claim stream transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+}
