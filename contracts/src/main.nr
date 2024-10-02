@@ -5,7 +5,7 @@ contract CompanyRegistry {
     use dep::aztec::{prelude::{Map, PublicMutable, AztecAddress}, macros::{storage::storage, functions::{public, view, initializer}}};
     use dep::compressed_string::FieldCompressedString;
     use dep::token::Token;
-    use crate::types::Company;
+    use crate::types::{Company, Stream};
 
     global INITIAL_BALANCE: U128 = U128::from_field(100);
 
@@ -15,8 +15,13 @@ contract CompanyRegistry {
         companies: Map<str<31>, PublicMutable<Company, Context>, Context>,
         // Handle -> isTaken
         handles: Map<str<31>, PublicMutable<bool, Context>, Context>,
+
         balances: Map<str<31>, PublicMutable<U128, Context>, Context>,
         token_address: PublicMutable<AztecAddress, Context>,
+
+        // StreamID -> Stream
+        streams: Map<u64, PublicMutable<Stream, Context>, Context>,
+        stream_counter: PublicMutable<u64, Context>,
     }
 
     #[public]
@@ -77,6 +82,45 @@ contract CompanyRegistry {
             INITIAL_BALANCE.to_integer(),
         ).call(&mut context);
         storage.balances.at(handle).write(INITIAL_BALANCE);
+    }
+
+    #[public]
+    fn create_stream(handle: str<31>, rate: Field, target_address: AztecAddress) {
+        let stream = Stream {
+            company_handle: handle,
+            total_claimed: U128::from_integer(0),
+            rate: U128::from_integer(rate),
+            start_date: context.timestamp(),
+            target_address: target_address,
+        };
+
+        let id = storage.stream_counter.read();
+        storage.streams.at(id).write(stream);
+        storage.stream_counter.write(id + 1);
+    }
+
+    #[public]
+    fn claim_stream(id: u64) {
+        let mut stream = storage.streams.at(id).read();
+        let time_diff = U128::from_integer(context.timestamp()) - U128::from_integer(stream.start_date);
+        let amount = stream.rate * time_diff - stream.total_claimed;
+
+        let company_balance = storage.balances.at(stream.company_handle).read();
+        assert(company_balance >= amount, "Insufficient company balance");
+
+        let token_address = storage.token_address.read();
+        Token::at(token_address).transfer_public(
+            context.this_address(),
+            stream.target_address,
+            amount.to_integer(),
+            0
+        ).call(&mut context);
+        storage.balances.at(stream.company_handle).write(company_balance - amount);
+
+        // TODO check if it's possible to have reference instead of value (no need to rewrite)
+        stream.total_claimed = stream.total_claimed + amount;
+        storage.streams.at(id).write(stream);
+
     }
 
     #[public]
