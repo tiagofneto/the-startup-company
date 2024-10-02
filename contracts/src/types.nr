@@ -4,8 +4,7 @@ use dep::aztec::prelude::AztecAddress;
 
 #[derive(Serialize, Deserialize)]
 pub struct Stream {
-    // TODO convert to FieldCompressedString
-    company_handle: str<31>,
+    company_handle: FieldCompressedString,
     total_claimed: U128,
     // Tokens per second
     rate: U128,

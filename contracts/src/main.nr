@@ -86,9 +86,12 @@ contract CompanyRegistry {
 
     #[public]
     fn create_stream(handle: str<31>, rate: Field, target_address: AztecAddress) {
+        let handle_exists = storage.handles.at(handle).read();
+        assert(handle_exists, "Company handle does not exist");
+
         let stream = Stream {
-            company_handle: handle,
-            total_claimed: U128::from_integer(0),
+            company_handle: FieldCompressedString::from_string(handle),
+            total_claimed: U128::zero(),
             rate: U128::from_integer(rate),
             start_date: context.timestamp(),
             target_address: target_address,
@@ -101,11 +104,14 @@ contract CompanyRegistry {
 
     #[public]
     fn claim_stream(id: u64) {
+        let stream_counter = storage.stream_counter.read();
+        assert(id < stream_counter, "Stream does not exist");
+
         let mut stream = storage.streams.at(id).read();
         let time_diff = U128::from_integer(context.timestamp()) - U128::from_integer(stream.start_date);
         let amount = stream.rate * time_diff - stream.total_claimed;
 
-        let company_balance = storage.balances.at(stream.company_handle).read();
+        let company_balance = storage.balances.at(str<31>::from(stream.company_handle.to_bytes())).read();
         assert(company_balance >= amount, "Insufficient company balance");
 
         let token_address = storage.token_address.read();
@@ -115,7 +121,7 @@ contract CompanyRegistry {
             amount.to_integer(),
             0
         ).call(&mut context);
-        storage.balances.at(stream.company_handle).write(company_balance - amount);
+        storage.balances.at(str<31>::from(stream.company_handle.to_bytes())).write(company_balance - amount);
 
         // TODO check if it's possible to have reference instead of value (no need to rewrite)
         stream.total_claimed = stream.total_claimed + amount;

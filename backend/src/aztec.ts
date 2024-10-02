@@ -122,3 +122,15 @@ export async function getTokenBalance(wallet: AccountWalletWithSecretKey, tokenA
 
   return balance;
 }
+
+export async function createStream(wallet: AccountWalletWithSecretKey, contractAddress: string, handle: string, rate: number, targetAddress: AztecAddress) {
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
+
+  console.log(`Creating stream for company ${handle} to ${targetAddress} at rate ${rate}`);
+  const tx = await contract.methods.create_stream(handle, rate, targetAddress).send().wait();
+
+  console.log(`Sent create stream transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+
+  return tx;
+}
