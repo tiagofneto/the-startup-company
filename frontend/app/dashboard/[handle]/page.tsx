@@ -268,7 +268,7 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                 ) : (
                   <div className="space-y-4">
                     {peopleQuery.data?.map((person: any) => (
-                      <PersonDialog key={person.id} person={person}>
+                      <PersonDialog key={person.id} person={person} companyId={companyQuery.data?.id}>
                         <div className="flex items-center justify-between bg-background rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
                           <div className="flex items-center space-x-4">
                             <Avatar>

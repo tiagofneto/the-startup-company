@@ -56,9 +56,11 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
 export const getUserStreams = async (req: AuthenticatedRequest, res: Response) => {
   try {
     // TODO: check if user has permission to view streams
-    const id = req.user.sub;
+    //const id = req.user.sub;
 
-    const streams = await fetchUserStreams(id);
+    const user_id = req.query.user_id as string;
+
+    const streams = await fetchUserStreams(user_id);
     res.status(200).json(streams);
   } catch (error) {
     console.error('Error fetching user streams:', error);

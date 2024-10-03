@@ -50,7 +50,7 @@ import {
       .references(() => companies.id),
     userId: uuid('user_id')
       .notNull()
-      .references(() => userProfiles.id),
+      .references(() => users.id),
     rate: integer('rate').notNull(),
     startDate: timestamp('start_date', { withTimezone: true }).notNull().defaultNow(),
     totalClaimed: integer('total_claimed').notNull().default(0),

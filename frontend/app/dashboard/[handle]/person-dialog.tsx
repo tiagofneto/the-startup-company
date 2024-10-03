@@ -11,22 +11,7 @@ import { computeAvatarFallback } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Workflow, PlusCircle } from 'lucide-react'
 import { BorderBeam } from '@/components/ui/border-beam'
-
-// Dummy functions for money streams
-const getMoneyStreams = async (personId: string) => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 500))
-  return [
-    { id: '1', monthlyRate: 1000 },
-    { id: '2', monthlyRate: 1500 },
-  ]
-}
-
-const createMoneyStream = async (personId: string, monthlyRate: number) => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 500))
-  return { id: Date.now().toString(), monthlyRate }
-}
+import { createStream, getUserStreams } from '@/services/api'
 
 interface PersonDialogProps {
   person: {
@@ -36,22 +21,22 @@ interface PersonDialogProps {
     picture: string;
     kyc_verified: boolean;
   };
+  companyId: number;
   children: ReactNode;
 }
 
-export function PersonDialog({ person, children }: PersonDialogProps) {
+export function PersonDialog({ person, companyId, children }: PersonDialogProps) {
   const [newStreamMonthlyRate, setNewStreamMonthlyRate] = useState('')
 
   const queryClient = useQueryClient()
 
   const streamsQuery = useQuery({
     queryKey: ['streams', person.id],
-    queryFn: () => getMoneyStreams(person.id),
+    queryFn: () => getUserStreams(person.id),
   })
 
   const addStreamMutation = useMutation({
-    mutationFn: ({ personId, monthlyRate }: { personId: string, monthlyRate: number }) =>
-      createMoneyStream(personId, monthlyRate),
+    mutationFn: ({ personId, monthlyRate }: { personId: string, monthlyRate: number }) => createStream(personId, companyId, monthlyRate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['streams', person.id] })
     }
@@ -105,7 +90,7 @@ export function PersonDialog({ person, children }: PersonDialogProps) {
                 <ul className="space-y-2">
                   {streamsQuery.data.map((stream: any) => (
                     <li key={stream.id} className="relative flex justify-between items-center p-2 bg-muted rounded-md">
-                      <span className="font-medium">${stream.monthlyRate.toFixed(2)}</span>
+                      <span className="font-medium">${stream.rate.toFixed(2)}</span>
                       <span className="text-sm text-muted-foreground">per month</span>
                       <BorderBeam size={75} duration={5} colorFrom='#000' colorTo='#fff'/>
                     </li>
