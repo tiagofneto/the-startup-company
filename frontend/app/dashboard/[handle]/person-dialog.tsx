@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { computeAvatarFallback } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DollarSign, PlusCircle } from 'lucide-react'
+import { Workflow, PlusCircle } from 'lucide-react'
+import { BorderBeam } from '@/components/ui/border-beam'
 
 // Dummy functions for money streams
 const getMoneyStreams = async (personId: string) => {
@@ -91,8 +92,8 @@ export function PersonDialog({ person, children }: PersonDialogProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center">
-                <DollarSign className="mr-2 h-5 w-5" />
-                Money Streams
+                <Workflow className="mr-2 h-5 w-5" />
+                Streams
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -103,9 +104,10 @@ export function PersonDialog({ person, children }: PersonDialogProps) {
               ) : streamsQuery.data && streamsQuery.data.length > 0 ? (
                 <ul className="space-y-2">
                   {streamsQuery.data.map((stream: any) => (
-                    <li key={stream.id} className="flex justify-between items-center p-2 bg-muted rounded-md">
+                    <li key={stream.id} className="relative flex justify-between items-center p-2 bg-muted rounded-md">
                       <span className="font-medium">${stream.monthlyRate.toFixed(2)}</span>
                       <span className="text-sm text-muted-foreground">per month</span>
+                      <BorderBeam size={75} duration={5} colorFrom='#000' colorTo='#fff'/>
                     </li>
                   ))}
                 </ul>
