@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres';
 import { Company } from './types.js';
-import { companies, userCompanies, userProfiles } from './schema.js';
+import { companies, streams, userCompanies, userProfiles } from './schema.js';
 import { eq } from 'drizzle-orm';
 import { users } from './schema.js';
 
@@ -86,6 +86,7 @@ export async function createCompanyUser(email: string, company_id: number) {
 export async function fetchCompanyPeople(handle: string) {
     console.log('Fetching company people from database:', handle);
     const fetchedCompanyPeople = await db.select({
+        id: users.id,
         email: userCompanies.email,
         raw_user_meta_data: users.raw_user_meta_data,
         kyc_verified: userProfiles.kyc_verified
@@ -104,4 +105,17 @@ export async function setKycVerified(user_id: string, verified: boolean = true) 
     console.log('Setting KYC verified in database:', user_id);
     await db.update(userProfiles).set({ kyc_verified: verified }).where(eq(userProfiles.id, user_id));
     console.log('KYC verified set successfully');
+}
+
+export async function createStream(user_id: string, company_id: number, rate: number) {
+    console.log('Creating stream in database:', user_id, company_id, rate);
+    await db.insert(streams).values({ userId: user_id, companyId: company_id, rate: rate });
+    console.log('Stream created successfully');
+}
+
+export async function fetchUserStreams(user_id: string) {
+    console.log('Fetching streams from database:', user_id);
+    const fetchedStreams = await db.select().from(streams).where(eq(streams.userId, user_id));
+    console.log('Streams fetched successfully:', fetchedStreams);
+    return fetchedStreams;
 }

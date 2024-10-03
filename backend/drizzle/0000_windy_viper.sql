@@ -9,6 +9,15 @@ CREATE TABLE IF NOT EXISTS "companies" (
 	CONSTRAINT "companies_handle_unique" UNIQUE("handle")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "streams" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"company_id" integer NOT NULL,
+	"user_id" uuid NOT NULL,
+	"rate" integer NOT NULL,
+	"start_date" timestamp with time zone DEFAULT now() NOT NULL,
+	"total_claimed" integer DEFAULT 0 NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_companies" (
 	"email" varchar(255) NOT NULL,
 	"company_id" integer NOT NULL,
@@ -23,8 +32,21 @@ CREATE TABLE IF NOT EXISTS "user_profiles" (
 CREATE TABLE IF NOT EXISTS "auth"."users" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"email" varchar(255) NOT NULL,
+	"raw_user_meta_data" jsonb NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "streams" ADD CONSTRAINT "streams_company_id_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "streams" ADD CONSTRAINT "streams_user_id_user_profiles_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user_profiles"("user_id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_companies" ADD CONSTRAINT "user_companies_company_id_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE no action ON UPDATE no action;

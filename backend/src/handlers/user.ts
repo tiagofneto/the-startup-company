@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware.js';
-import { createOrGetUser, fetchUserCompanies, setKycVerified } from '../interactions.js';
+import { createOrGetUser, fetchUserCompanies, fetchUserStreams, setKycVerified } from '../interactions.js';
 import { OpenPassport1StepInputs, OpenPassport1StepVerifier } from '@openpassport/sdk';
 
 
@@ -51,4 +51,17 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
         console.error('Error verifying KYC:', error);
         res.status(500).json({ error: 'Failed to verify KYC' });
     }
+}
+
+export const getUserStreams = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    // TODO: check if user has permission to view streams
+    const id = req.user.sub;
+
+    const streams = await fetchUserStreams(id);
+    res.status(200).json(streams);
+  } catch (error) {
+    console.error('Error fetching user streams:', error);
+    res.status(500).json({ error: 'Failed to fetch user streams' });
+  }
 }
