@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { createCompanyUser, createStream, createUserCompany, fetchCompany, getCompanies, uploadCompany } from '../interactions.js';
+import { createCompanyUser, createStream, createUserCompany, fetchCompany, fetchUserCompanyStreams, getCompanies, uploadCompany } from '../interactions.js';
 import { createCompany, getCompany } from '../aztec.js';
 import { fetchCompanyPeople } from '../interactions.js';
 
@@ -114,5 +114,19 @@ export const createStreamHandler = async (req: AuthenticatedRequest, res: Respon
   } catch (error) {
     console.error('Error creating stream:', error);
     res.status(500).json({ error: 'Failed to create stream' });
+  }
+}
+
+export const getUserCompanyStreamsHandler = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    // TODO: check if user has permission to view streams
+    //const user_id = req.user.sub;
+
+    const { company_id, user_id } = req.query;
+    const streams = await fetchUserCompanyStreams(parseInt(company_id as string), user_id as string);
+    res.status(200).json(streams);
+  } catch (error) {
+    console.error('Error fetching company streams:', error);
+    res.status(500).json({ error: 'Failed to fetch company streams' });
   }
 }

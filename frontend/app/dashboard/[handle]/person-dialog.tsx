@@ -11,7 +11,7 @@ import { computeAvatarFallback } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Workflow, PlusCircle } from 'lucide-react'
 import { BorderBeam } from '@/components/ui/border-beam'
-import { createStream, getUserStreams } from '@/services/api'
+import { createStream, getUserCompanyStreams } from '@/services/api'
 
 interface PersonDialogProps {
   person: {
@@ -32,7 +32,7 @@ export function PersonDialog({ person, companyId, children }: PersonDialogProps)
 
   const streamsQuery = useQuery({
     queryKey: ['streams', person.id],
-    queryFn: () => getUserStreams(person.id),
+    queryFn: () => getUserCompanyStreams(companyId, person.id),
   })
 
   const addStreamMutation = useMutation({
@@ -97,7 +97,7 @@ export function PersonDialog({ person, companyId, children }: PersonDialogProps)
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted-foreground">No active money streams</p>
+                <p className="text-sm text-muted-foreground">No active streams</p>
               )}
               <div className="mt-4 space-y-2">
                 <Label htmlFor="monthlyRate">New Stream Monthly Rate ($)</Label>

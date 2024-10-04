@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres';
 import { Company } from './types.js';
 import { companies, streams, userCompanies, userProfiles } from './schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { users } from './schema.js';
 
 const connectionString = process.env.SUPABASE_DATABASE_URI as string;
@@ -116,6 +116,21 @@ export async function createStream(user_id: string, company_id: number, rate: nu
 export async function fetchUserStreams(user_id: string) {
     console.log('Fetching streams from database:', user_id);
     const fetchedStreams = await db.select().from(streams).where(eq(streams.userId, user_id));
+    console.log('Streams fetched successfully:', fetchedStreams);
+    return fetchedStreams;
+}
+
+export async function fetchUserCompanyStreams(company_id: number, user_id: string) {
+    console.log('Fetching streams from database for user:', user_id, 'and company:', company_id);
+    const fetchedStreams = await db
+        .select()
+        .from(streams)
+        .where(
+            and(
+                eq(streams.companyId, company_id),
+                eq(streams.userId, user_id)
+            )
+        );
     console.log('Streams fetched successfully:', fetchedStreams);
     return fetchedStreams;
 }

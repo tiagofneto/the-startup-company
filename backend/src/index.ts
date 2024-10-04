@@ -3,7 +3,7 @@ import { deploy, getWallet } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { authenticateToken } from './middleware.js';
-import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler, createCompanyUserHandler, createStreamHandler } from './handlers/company.js';
+import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler, createCompanyUserHandler, createStreamHandler, getUserCompanyStreamsHandler } from './handlers/company.js';
 import { getProfile, getUserCompanies, getUserStreams, verifyKyc } from './handlers/user.js';
 
 const port = 3000;
@@ -50,10 +50,11 @@ app.get('/companies', getCompaniesHandler);
 app.get('/company-people', getPeopleHandler);
 app.post('/company-user', authenticateToken, createCompanyUserHandler);
 app.post('/stream', authenticateToken, createStreamHandler);
+app.get('/user-company-streams', authenticateToken, getUserCompanyStreamsHandler);
 
 // User routes
 app.get('/profile', authenticateToken, getProfile);
 app.get('/user-companies', authenticateToken, getUserCompanies);
 app.post('/verify-kyc', authenticateToken, verifyKyc);
-app.get('/stream', authenticateToken, getUserStreams);
+app.get('/user-streams', authenticateToken, getUserStreams);
 

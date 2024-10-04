@@ -89,7 +89,16 @@ export async function createStream(user_id: string, company_id: number, rate: nu
 }
 
 export async function getUserStreams(user_id: string) {
-  const response = await apiClient.get(`/stream?user_id=${user_id}`, {
+  const response = await apiClient.get(`/user-streams?user_id=${user_id}`, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.data;
+}
+
+export async function getUserCompanyStreams(company_id: number, user_id: string) {
+  const response = await apiClient.get(`/user-company-streams?company_id=${company_id}&user_id=${user_id}`, {
     headers: {
       Authorization: `Bearer ${getAccessToken()}`,
     },
