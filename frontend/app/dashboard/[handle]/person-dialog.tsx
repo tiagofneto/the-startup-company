@@ -31,14 +31,14 @@ export function PersonDialog({ person, companyId, children }: PersonDialogProps)
   const queryClient = useQueryClient()
 
   const streamsQuery = useQuery({
-    queryKey: ['streams', person.id],
+    queryKey: ['streams', companyId, person.id],
     queryFn: () => getUserCompanyStreams(companyId, person.id),
   })
 
   const addStreamMutation = useMutation({
     mutationFn: ({ personId, monthlyRate }: { personId: string, monthlyRate: number }) => createStream(personId, companyId, monthlyRate),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['streams', person.id] })
+      queryClient.invalidateQueries({ queryKey: ['streams', companyId, person.id] })
     }
   })
 
