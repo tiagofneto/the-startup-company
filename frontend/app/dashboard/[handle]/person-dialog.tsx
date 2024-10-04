@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label"
 import { computeAvatarFallback } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Workflow, PlusCircle } from 'lucide-react'
-import { BorderBeam } from '@/components/ui/border-beam'
 import { createStream, getUserCompanyStreams } from '@/services/api'
+import { StreamItem } from '@/components/stream-item';
 
 interface PersonDialogProps {
   person: {
@@ -87,13 +87,9 @@ export function PersonDialog({ person, companyId, children }: PersonDialogProps)
                   <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
                 </div>
               ) : streamsQuery.data && streamsQuery.data.length > 0 ? (
-                <ul className="space-y-2">
+                <ul className="space-y-1">
                   {streamsQuery.data.map((stream: any) => (
-                    <li key={stream.id} className="relative flex justify-between items-center p-2 bg-muted rounded-md">
-                      <span className="font-medium">${stream.rate.toFixed(2)}</span>
-                      <span className="text-sm text-muted-foreground">per month</span>
-                      <BorderBeam size={75} duration={5} colorFrom='#000' colorTo='#fff'/>
-                    </li>
+                    <StreamItem key={stream.id} rate={stream.rate} variant="compact" />
                   ))}
                 </ul>
               ) : (

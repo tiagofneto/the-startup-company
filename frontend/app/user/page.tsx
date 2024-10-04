@@ -12,7 +12,7 @@ import { getProfile, getUserCompanies, verifyKyc, getUserStreams } from '@/servi
 import Link from 'next/link'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { OpenPassportQRcode, OpenPassport1StepInputs, OpenPassportVerifierReport } from '@openpassport/sdk'
-import { BorderBeam } from '@/components/ui/border-beam'
+import { StreamItem } from '@/components/stream-item';
 
 import {
   Dialog,
@@ -191,30 +191,28 @@ export default function UserDashboard() {
                 <CardDescription>Visualize your income streams</CardDescription>
               </CardHeader>
               <CardContent>
-                {streamsQuery.isPending ? (
+                {streamsQuery.isPending || companiesQuery.isPending ? (
                   <div className="flex justify-center items-center h-48">
                     <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
                   </div>
                 ) : groupedStreams && Object.keys(groupedStreams).length > 0 ? (
                   <div className="space-y-4 h-48 overflow-y-auto pr-2">
                     {Object.entries(groupedStreams).map(([companyId, streams]: any) => {
-                      const company = companiesQuery.data?.find((c: any) => c.id === companyId)
+                      const company = companiesQuery.data!.find((c: any) => c.id == companyId)
                       return (
                         <div key={companyId} className="bg-muted rounded-lg p-3">
-                          <div className="flex items-center mb-2">
-                            <Avatar className="h-6 w-6 mr-2">
+                          <Link href={`/dashboard/${company.handle}`}>
+                            <div className="flex items-center mb-2">
+                              <Avatar className="h-6 w-6 mr-2">
                               <AvatarImage src={company?.image} alt={`${company?.name} logo`}/>
                               <AvatarFallback>{computeAvatarFallback(company?.name || "Company")}</AvatarFallback>
                             </Avatar>
-                            <h3 className="font-semibold text-sm">{company?.name}</h3>
-                          </div>
+                              <h3 className="font-semibold text-sm">{company?.name}</h3>
+                            </div>
+                          </Link>
                           <ul className="space-y-1">
                             {streams.map((stream: any) => (
-                              <li key={stream.id} className="relative flex justify-between items-center p-2 bg-background rounded-md">
-                                <span className="font-medium text-sm">${stream.rate.toFixed(2)}</span>
-                                <span className="text-xs text-muted-foreground">per month</span>
-                                <BorderBeam size={50} duration={5} colorFrom='#000' colorTo='#fff'/>
-                              </li>
+                              <StreamItem key={stream.id} rate={stream.rate} variant="default" />
                             ))}
                           </ul>
                         </div>

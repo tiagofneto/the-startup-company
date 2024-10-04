@@ -59,6 +59,7 @@ export async function fetchUserCompanies(user_id: string) {
     console.log('Fetching user companies from database:', user_id);
     const userEmail = await getUserEmail(user_id);
     const fetchedUserCompanies = await db.select({
+        id: companies.id,
         name: companies.name,
         handle: companies.handle
     }).
