@@ -33,6 +33,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
+import { PersonDialog } from "./person-dialog"
 
 export default function CompanyDashboard({params}: {params: {handle: string}}) {
   const [email, setEmail] = useState('')
@@ -266,17 +267,24 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {peopleQuery.data?.map((person: any, index: number) => (
-                      <div key={index} className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={person.picture} alt={person.email || "Person"} />
-                          <AvatarFallback>{computeAvatarFallback(person.email || "Person")}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{person.name || person.email}</p>
-                          <p className="text-sm text-muted-foreground">Director</p>
+                    {peopleQuery.data?.map((person: any) => (
+                      <PersonDialog key={person.id} person={person} companyId={companyQuery.data?.id}>
+                        <div className="flex items-center justify-between bg-background rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center space-x-4">
+                            <Avatar>
+                              <AvatarImage src={person.picture} alt={person.email || "Person"} />
+                              <AvatarFallback>{computeAvatarFallback(person.email || "Person")}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium">{person.name || person.email}</p>
+                              <p className="text-sm text-muted-foreground">Director</p>
+                            </div>
+                          </div>
+                          <span className={`px-3 py-1 ${person.kyc_verified ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}>
+                            {person.kyc_verified ? 'Verified' : 'Pending'}
+                          </span>
                         </div>
-                      </div>
+                      </PersonDialog>
                     ))}
                   </div>
                 )}

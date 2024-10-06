@@ -1,4 +1,4 @@
-FROM aztecprotocol/aztec-nargo:alphanet-x86_64
+FROM aztecprotocol/aztec-nargo:0.56.0
 
 WORKDIR /app
 

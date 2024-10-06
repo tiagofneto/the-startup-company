@@ -1,6 +1,6 @@
 {
-  "id": "d6ec3361-7dca-4740-90bb-6e86f54e9249",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b366050f-b886-45f2-b993-ac327f927d9e",
+  "prevId": "d6ec3361-7dca-4740-90bb-6e86f54e9249",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -123,15 +123,16 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "streams_user_id_user_profiles_user_id_fk": {
-          "name": "streams_user_id_user_profiles_user_id_fk",
+        "streams_user_id_users_id_fk": {
+          "name": "streams_user_id_users_id_fk",
           "tableFrom": "streams",
-          "tableTo": "user_profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
           "columnsTo": [
-            "user_id"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"

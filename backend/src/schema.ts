@@ -42,3 +42,16 @@ import {
   }, (t) => ({
     id: primaryKey({ columns: [t.email, t.companyId] }),
   }));
+
+  export const streams = pgTable('streams', {
+    id: serial('id').primaryKey(),
+    companyId: integer('company_id')
+      .notNull()
+      .references(() => companies.id),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    rate: integer('rate').notNull(),
+    startDate: timestamp('start_date', { withTimezone: true }).notNull().defaultNow(),
+    totalClaimed: integer('total_claimed').notNull().default(0),
+  });

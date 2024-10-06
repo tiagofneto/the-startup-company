@@ -6,8 +6,9 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@aztec/accounts": "^0.54.0",
-    "@aztec/aztec.js": "^0.54.0",
+    "@aztec/accounts": "0.56.0",
+    "@aztec/aztec.js": "0.56.0",
+    "@aztec/noir-contracts.js": "^0.56.0",
     "@openpassport/sdk": "0.1.4",
     "@types/cors": "^2.8.17",
     "cors": "^2.8.5",
@@ -32,6 +33,7 @@
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node-esm' src/index.ts",
     "dev:skip-init": "nodemon --watch 'src/**/*.ts' --exec 'ts-node-esm' src/index.ts --skip-init",
     "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate"
+    "migrate": "drizzle-kit migrate",
+    "script": "ts-node-esm --project tsconfig.json"
   }
 }

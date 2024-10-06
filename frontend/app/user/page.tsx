@@ -1,17 +1,18 @@
 'use client'
 
-import { ChevronRight, FileText, Shield, User } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { ChevronRight, Shield, User, Workflow } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
 import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils'
 import { User as SupabaseUser } from '@supabase/supabase-js'
-import { getProfile, getUserCompanies, verifyKyc } from '@/services/api'
+import { getProfile, getUserCompanies, verifyKyc, getUserStreams } from '@/services/api'
 import Link from 'next/link'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { OpenPassportQRcode, OpenPassport1StepInputs } from '@openpassport/sdk';
+import { OpenPassportQRcode, OpenPassport1StepInputs, OpenPassportVerifierReport } from '@openpassport/sdk'
+import { StreamItem } from '@/components/stream-item';
 
 import {
   Dialog,
@@ -22,11 +23,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-
 const supabase = createSupabaseClient()
 
 export default function UserDashboard() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
+
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -46,19 +48,10 @@ export default function UserDashboard() {
     queryFn: getUserCompanies
   })
 
-  const documentsQuery = useQuery({
-    queryKey: ['user_documents'],
-    queryFn: async () => {
-        return [
-            { name: 'Articles of Incorporation - TechCorp Inc.', id: 'doc1' },
-            { name: 'Operating Agreement - InnovateLLC', id: 'doc2' },
-            { name: 'Shareholder Agreement - FutureTech Solutions', id: 'doc3' },
-            { name: 'Business License - Quantum Dynamics', id: 'doc4' },
-            { name: 'Partnership Agreement - Nexus Innovations', id: 'doc5' },
-        ]}
+  const streamsQuery = useQuery({
+    queryKey: ['user_streams'],
+    queryFn: () => getUserStreams(user!.id)
   })
-
-  const queryClient = useQueryClient()
 
   const kycMutation = useMutation({
     mutationFn: verifyKyc,
@@ -67,17 +60,26 @@ export default function UserDashboard() {
     }
   })
 
-  const handleSuccessfulVerification = (proof: OpenPassport1StepInputs) => {
+  const handleSuccessfulVerification = (proof: OpenPassport1StepInputs, verificatonResult: OpenPassportVerifierReport) => {
     kycMutation.mutate(proof)
-  };
+  }
 
   if (!user) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
-    );
+    )
   }
+
+  // Group streams by company
+  const groupedStreams = streamsQuery.data?.reduce((acc: any, stream: any) => {
+    if (!acc[stream.companyId]) {
+      acc[stream.companyId] = []
+    }
+    acc[stream.companyId].push(stream)
+    return acc
+  }, {})
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
@@ -98,12 +100,9 @@ export default function UserDashboard() {
                   </div>
                 ) : (
                   <div className="h-full overflow-y-auto pr-2">
-                    {companiesQuery.data?.map((company: { name: string, handle: string, image: string }, index: any) => (
-                      <Link href={`/dashboard/${company.handle}`} passHref>
-                        <div
-                          key={index}
-                          className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150"
-                        >
+                    {companiesQuery.data?.map((company: { name: string, handle: string, image: string }, index: number) => (
+                      <Link key={index} href={`/dashboard/${company.handle}`} passHref>
+                        <div className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150">
                           <div className="flex items-center">
                             <Avatar className="h-10 w-10 mr-4">
                               <AvatarImage src={company.image} alt={`${company.name} logo`}/>
@@ -141,35 +140,43 @@ export default function UserDashboard() {
                   <>
                     <div className="flex items-center justify-between mb-4">
                       <span>Status:</span>
-                      <span className="px-3 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100 rounded-full text-sm font-medium">
+                      <span className={`px-3 py-1 ${profileQuery.data.kyc_verified ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}>
                         {profileQuery.data.kyc_verified ? 'Verified' : 'Pending'}
                       </span>
                     </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className="w-full">Complete KYC Verification</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>KYC Verification</DialogTitle>
-                          <DialogDescription>
-                            Use the OpenPassport app to complete your KYC verification.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <OpenPassportQRcode
-                          appName="The Startup Company"
-                          scope="@thestartupcompany"
-                          userId={user.id}
-                          requirements={[]}
-                          onSuccess={handleSuccessfulVerification}
-                          devMode={true}
-                          size={300}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-                      Unlock all features with KYC
-                    </p>
+                    {profileQuery.data.kyc_verified ? (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                        Your KYC verification is complete. All features are unlocked.
+                      </p>
+                    ) : (
+                      <>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button className="w-full">Complete KYC Verification</Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>KYC Verification</DialogTitle>
+                              <DialogDescription>
+                                Use the OpenPassport app to complete your KYC verification.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <OpenPassportQRcode
+                              appName="The Startup Company"
+                              scope="@thestartupcompany"
+                              userId={user.id}
+                              requirements={[]}
+                              onSuccess={handleSuccessfulVerification}
+                              devMode={true}
+                              size={300}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                          Unlock all features with KYC
+                        </p>
+                      </>
+                    )}
                   </>
                 )}
               </CardContent>
@@ -178,27 +185,42 @@ export default function UserDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <FileText className="mr-2" />
-                  Legal Documents
+                  <Workflow className="mr-2" />
+                  Your Streams
                 </CardTitle>
+                <CardDescription>Visualize your income streams</CardDescription>
               </CardHeader>
-              <CardContent className="p-0">
-                {documentsQuery.isPending ? (
+              <CardContent>
+                {streamsQuery.isPending || companiesQuery.isPending ? (
                   <div className="flex justify-center items-center h-48">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : groupedStreams && Object.keys(groupedStreams).length > 0 ? (
+                  <div className="space-y-4 h-48 overflow-y-auto pr-2">
+                    {Object.entries(groupedStreams).map(([companyId, streams]: any) => {
+                      const company = companiesQuery.data!.find((c: any) => c.id == companyId)
+                      return (
+                        <div key={companyId} className="bg-muted rounded-lg p-3">
+                          <Link href={`/dashboard/${company.handle}`}>
+                            <div className="flex items-center mb-2">
+                              <Avatar className="h-6 w-6 mr-2">
+                              <AvatarImage src={company?.image} alt={`${company?.name} logo`}/>
+                              <AvatarFallback>{computeAvatarFallback(company?.name || "Company")}</AvatarFallback>
+                            </Avatar>
+                              <h3 className="font-semibold text-sm">{company?.name}</h3>
+                            </div>
+                          </Link>
+                          <ul className="space-y-1">
+                            {streams.map((stream: any) => (
+                              <StreamItem key={stream.id} rate={stream.rate} variant="default" />
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    })}
                   </div>
                 ) : (
-                  <ul className="h-48 overflow-y-auto">
-                    {documentsQuery.data?.map((doc) => (
-                      <li 
-                        key={doc.id}
-                        className="p-4 border-b last:border-b-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center transition-colors duration-150"
-                      >
-                        <FileText className="mr-2 text-gray-400" size={16} />
-                        <span>{doc.name}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-sm text-muted-foreground">No active streams</p>
                 )}
               </CardContent>
             </Card>
@@ -224,7 +246,7 @@ export default function UserDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="flex items-center">
-                  <FileText className="mr-2 text-gray-400" size={16} />
+                  <Workflow className="mr-2 text-gray-400" size={16} />
                   Email Notifications
                 </span>
                 <Switch />

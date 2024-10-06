@@ -1,10 +1,10 @@
 import 'dotenv/config';
-import { deploy } from './aztec.js';
+import { deploy, getWallet } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { authenticateToken } from './middleware.js';
-import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler, createCompanyUserHandler } from './handlers/company.js';
-import { getProfile, getUserCompanies, verifyKyc } from './handlers/user.js';
+import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler, createCompanyUserHandler, createStreamHandler, getUserCompanyStreamsHandler } from './handlers/company.js';
+import { getProfile, getUserCompanies, getUserStreams, verifyKyc } from './handlers/user.js';
 
 const port = 3000;
 const skipInit = process.argv.includes('--skip-init');
@@ -21,8 +21,10 @@ async function initializeServer() {
 
     console.log("Initializing server");
     console.log("Deploying registry");
-    const { companyRegistryAddress } = await deploy();
-    console.log("Registry deployed at", companyRegistryAddress);
+    const wallet = await getWallet();
+    const addresses = await deploy(wallet);
+    console.log("Token deployed at", addresses.token);
+    console.log("Registry deployed at", addresses.companyRegistry);
 }
 
 initializeServer()
@@ -47,8 +49,12 @@ app.get('/companies', getCompaniesHandler);
 // TODO permissioned
 app.get('/company-people', getPeopleHandler);
 app.post('/company-user', authenticateToken, createCompanyUserHandler);
+app.post('/stream', authenticateToken, createStreamHandler);
+app.get('/user-company-streams', authenticateToken, getUserCompanyStreamsHandler);
+
 // User routes
 app.get('/profile', authenticateToken, getProfile);
 app.get('/user-companies', authenticateToken, getUserCompanies);
 app.post('/verify-kyc', authenticateToken, verifyKyc);
+app.get('/user-streams', authenticateToken, getUserStreams);
 

@@ -78,3 +78,30 @@ export async function createCompanyUser(email: string, company_id: number) {
   });
   return response.data;
 }
+
+export async function createStream(user_id: string, company_id: number, rate: number) {
+  const response = await apiClient.post('/stream', { user_id, company_id, rate }, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.data;
+}
+
+export async function getUserStreams(user_id: string) {
+  const response = await apiClient.get(`/user-streams?user_id=${user_id}`, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.data;
+}
+
+export async function getUserCompanyStreams(company_id: number, user_id: string) {
+  const response = await apiClient.get(`/user-company-streams?company_id=${company_id}&user_id=${user_id}`, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  });
+  return response.data;
+}
