@@ -54,7 +54,7 @@ services:
       ANVIL_PORT: ${ANVIL_PORT:-8545}
 
   aztec:
-    image: "aztecprotocol/aztec:0.56.0"
+    image: "aztecprotocol/aztec:alphanet-x86_64"
     restart: always
     ports:
       - "${PXE_PORT:-8080}:${PXE_PORT:-8080}"
@@ -81,6 +81,6 @@ services:
     depends_on:
       - ethereum
     command: "start --sandbox"
-
+    
 volumes:
   contracts_target:
