@@ -14,10 +14,11 @@ export const toString = (value: bigint) => {
 
 export function companyFromBigIntObject(rawCompany: any) {
     return {
-        name: toString(rawCompany['0']),
-        handle: toString(rawCompany['1']),
-        email: toString(rawCompany['2']),
-        director: toString(rawCompany['3']),
-        totalShares: Number(rawCompany['4'])
+        name: toString(rawCompany['name']['value']),
+        handle: toString(rawCompany['handle']['value']),
+        email: toString(rawCompany['email']['value']),
+        director: toString(rawCompany['director']['value']),
+        // TODO: check how to properly parse this
+        totalShares: Number(rawCompany['total_shares']['lo'])
     }
 }
