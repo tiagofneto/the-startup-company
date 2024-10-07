@@ -108,7 +108,7 @@ export async function setKycVerified(user_id: string, verified: boolean = true) 
     console.log('KYC verified set successfully');
 }
 
-export async function createStream(user_id: string, company_id: number, rate: number) {
+export async function uploadStream(user_id: string, company_id: number, rate: number) {
     console.log('Creating stream in database:', user_id, company_id, rate);
     await db.insert(streams).values({ userId: user_id, companyId: company_id, rate: rate });
     console.log('Stream created successfully');

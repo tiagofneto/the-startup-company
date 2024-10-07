@@ -19,10 +19,10 @@ if (args[0] === '--create') {
   const rate = args[args.indexOf('--rate') + 1];
   const target = args[args.indexOf('--target') + 1];
 
-  await createStream(wallet, companyRegistry, handle, Number(rate), AztecAddress.fromString(target));
+  await createStream(companyRegistry, handle, Number(rate), AztecAddress.fromString(target), wallet);
 } else if (args[0] === '--claim') {
   const id = args[1];
-  await claimStream(wallet, companyRegistry, Number(id));
+  await claimStream(companyRegistry, Number(id), wallet);
 } else {
   console.error('Error: --create flag must be provided');
   process.exit(1);

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { deploy, getWallet } from './aztec.js';
+import { deploy, getWallet, initWallet } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { authenticateToken } from './middleware.js';
@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 async function initializeServer() {
+    await initWallet();
     if (skipInit) {
         console.log("Skipping initialization");
         return;
@@ -21,8 +22,7 @@ async function initializeServer() {
 
     console.log("Initializing server");
     console.log("Deploying registry");
-    const wallet = await getWallet();
-    const addresses = await deploy(wallet);
+    const addresses = await deploy();
     console.log("Token deployed at", addresses.token);
     console.log("Registry deployed at", addresses.companyRegistry);
 }

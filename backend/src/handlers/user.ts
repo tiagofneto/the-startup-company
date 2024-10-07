@@ -3,7 +3,6 @@ import { AuthenticatedRequest } from '../middleware.js';
 import { createOrGetUser, fetchUserCompanies, fetchUserStreams, setKycVerified } from '../interactions.js';
 import { OpenPassport1StepInputs, OpenPassport1StepVerifier } from '@openpassport/sdk';
 
-
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const id = req.user.sub;

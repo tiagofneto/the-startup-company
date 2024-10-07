@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { createCompanyUser, createStream, createUserCompany, fetchCompany, fetchUserCompanyStreams, getCompanies, uploadCompany } from '../interactions.js';
-import { createCompany, getCompany } from '../aztec.js';
+import { createCompanyUser, uploadStream, createUserCompany, fetchCompany, fetchUserCompanyStreams, getCompanies, uploadCompany } from '../interactions.js';
+import { createCompany, getCompany, createStream } from '../aztec.js';
 import { fetchCompanyPeople } from '../interactions.js';
 
 export const getCompanyHandler = async (req: Request, res: Response) => {
@@ -13,11 +13,11 @@ export const getCompanyHandler = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Missing company handle' });
     }
 
-    //const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    //const { companyRegistry } = addresses;
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
 
-    //const company = await getCompany(companyRegistry, handle as string);
-    const company = await fetchCompany(handle as string);
+    const company = await getCompany(companyRegistry, handle as string);
+    //const company = await fetchCompany(handle as string);
     
     res.status(200).json(company);
   } catch (error) {
@@ -35,13 +35,13 @@ export const createCompanyHandler = async (req: AuthenticatedRequest, res: Respo
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    //const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    //const { companyRegistry } = addresses;
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
 
     const company = { name, handle, email, director, totalShares };
 
     // Onchain
-    //const tx = await createCompany(companyRegistry, company);
+    const tx = await createCompany(companyRegistry, company);
     // Offchain
     const company_id = await uploadCompany(company);
     await createUserCompany(user_id, company_id);
@@ -106,10 +106,13 @@ export const createStreamHandler = async (req: AuthenticatedRequest, res: Respon
     // TODO: check if user has permission to add streams
     //const user_id = req.user.sub;
 
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
     //Onchain
-    //await createStream(user_id, company_id);
+    //await createStream(companyRegistry, user_id, company_id, rate);
     // Offchain
-    await createStream(user_id, company_id, rate);
+    await uploadStream(user_id, company_id, rate);
     res.status(201).json({ message: 'Stream created successfully' });
   } catch (error) {
     console.error('Error creating stream:', error);
