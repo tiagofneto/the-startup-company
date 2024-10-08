@@ -2,6 +2,8 @@ import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware.js';
 import { OpenPassport1StepInputs, OpenPassport1StepVerifier } from '@openpassport/sdk';
 import { createOrGetUser, setKycVerified } from '../interactions/user.js';
+import { verifyUser } from '../aztec.js';
+import { readFileSync } from 'fs';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -21,6 +23,9 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
 
         console.log("Verifying KYC");
 
+        const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+        const { companyRegistry } = addresses;
+
         const verifierArgs = { scope: "@thestartupcompany", requirements: [], dev_mode: true }
         const openPassport1StepVerifier = new OpenPassport1StepVerifier(verifierArgs);
 
@@ -32,6 +37,7 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
             console.log("Passport proof is valid");
             // TODO: Store nullifier in database 
             //console.log("Nullifier: ", proof.getNullifier());
+            await verifyUser(companyRegistry, id);
             await setKycVerified(id);
             res.sendStatus(200);
         }

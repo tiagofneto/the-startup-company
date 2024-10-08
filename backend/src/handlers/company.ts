@@ -40,7 +40,7 @@ export const createCompanyHandler = async (req: AuthenticatedRequest, res: Respo
     const company = { name, handle, email, director, totalShares };
 
     // Onchain
-    const tx = await createCompany(companyRegistry, company);
+    const tx = await createCompany(companyRegistry, user_id, company);
     // Offchain
     const company_id = await uploadCompany(company);
     await createUserCompany(user_id, company_id);

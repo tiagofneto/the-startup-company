@@ -15,9 +15,14 @@ contract CompanyRegistry {
         companies: Map<str<31>, PublicMutable<Company, Context>, Context>,
         // Handle -> isTaken
         handles: Map<str<31>, PublicMutable<bool, Context>, Context>,
+        // Handle -> UserID -> Authorized
+        authorized: Map<str<31>, Map<str<31>, PublicMutable<bool, Context>, Context>, Context>,
 
         balances: Map<str<31>, PublicMutable<U128, Context>, Context>,
         token_address: PublicMutable<AztecAddress, Context>,
+
+        // UserID -> isVerified
+        user_verified: Map<str<31>, PublicMutable<bool, Context>, Context>,
 
         // StreamID -> Stream
         streams: Map<u64, PublicMutable<Stream, Context>, Context>,
@@ -28,6 +33,12 @@ contract CompanyRegistry {
     #[initializer]
     fn constructor(token_address: AztecAddress) {
         storage.token_address.write(token_address);
+    }
+
+    #[public]
+    fn verify_user(user_id: str<31>) {
+        // TODO verify proof and save nullifier
+        storage.user_verified.at(user_id).write(true);
     }
 
     #[public]
@@ -63,7 +74,7 @@ contract CompanyRegistry {
     }
 
     #[public]
-    fn create_company(name: str<31>, handle: str<31>, email: str<31>, director: str<31>, total_shares: Field) {
+    fn create_company(user_id: str<31>, name: str<31>, handle: str<31>, email: str<31>, director: str<31>, total_shares: Field) {
         assert(storage.handles.at(handle).read() == false, "Handle already taken");
 
         let company = Company {
@@ -76,12 +87,18 @@ contract CompanyRegistry {
 
         storage.companies.at(handle).write(company);
         storage.handles.at(handle).write(true);
+        storage.authorized.at(handle).at(user_id).write(true);
 
         Token::at(storage.token_address.read()).mint_public(
             context.this_address(),
             INITIAL_BALANCE.to_integer(),
         ).call(&mut context);
         storage.balances.at(handle).write(INITIAL_BALANCE);
+    }
+
+    #[public]
+    fn authorize_user(handle: str<31>, user_id: str<31>) {
+        storage.authorized.at(handle).at(user_id).write(true);
     }
 
     #[public]
@@ -127,6 +144,12 @@ contract CompanyRegistry {
         stream.total_claimed = stream.total_claimed + amount;
         storage.streams.at(id).write(stream);
 
+    }
+
+    #[public]
+    #[view]
+    fn is_user_verified(user_id: str<31>) -> bool {
+        storage.user_verified.at(user_id).read()
     }
 
     #[public]

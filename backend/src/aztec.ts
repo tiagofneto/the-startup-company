@@ -55,12 +55,12 @@ export async function deploy(wallet: AccountWalletWithSecretKey = globalWallet!)
   return addresses;
 }
 
-export async function createCompany(contractAddress: string, company: Company, wallet: AccountWalletWithSecretKey = globalWallet!) {
+export async function createCompany(contractAddress: string, user_id: string, company: Company, wallet: AccountWalletWithSecretKey = globalWallet!) {
   const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
 
   console.log(`Creating company:`, company);
 
-  const tx = await contract.methods.create_company(company.name, company.handle, company.email, company.director, company.totalShares).send().wait();
+  const tx = await contract.methods.create_company(user_id, company.name, company.handle, company.email, company.director, company.totalShares).send().wait();
 
   console.log(`Sent create company transaction 0x${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
@@ -149,4 +149,16 @@ export async function claimStream(contractAddress: string, id: number, wallet: A
 
   console.log(`Sent claim stream transaction 0x${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+}
+
+export async function verifyUser(contractAddress: string, user_id: string, wallet: AccountWalletWithSecretKey = globalWallet!) {
+  const contract = await Contract.at(AztecAddress.fromString(contractAddress), loadContractArtifact(CompanyRegistryJson as any), wallet);
+
+  console.log(`Verifying user ${user_id}`);
+  const tx = await contract.methods.verify_user(user_id).send().wait();
+
+  console.log(`Sent verify user transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+
+  return tx;
 }
