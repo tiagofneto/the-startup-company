@@ -21,24 +21,24 @@ interface PersonDialogProps {
     picture: string;
     kyc_verified: boolean;
   };
-  companyId: number;
+  handle: string;
   children: ReactNode;
 }
 
-export function PersonDialog({ person, companyId, children }: PersonDialogProps) {
+export function PersonDialog({ person, handle, children }: PersonDialogProps) {
   const [newStreamMonthlyRate, setNewStreamMonthlyRate] = useState('')
 
   const queryClient = useQueryClient()
 
   const streamsQuery = useQuery({
-    queryKey: ['streams', companyId, person.id],
-    queryFn: () => getUserCompanyStreams(companyId, person.id),
+    queryKey: ['streams', handle, person.id],
+    queryFn: () => getUserCompanyStreams(handle, person.id),
   })
 
   const addStreamMutation = useMutation({
-    mutationFn: ({ personId, monthlyRate }: { personId: string, monthlyRate: number }) => createStream(personId, companyId, monthlyRate),
+    mutationFn: ({ personId, monthlyRate }: { personId: string, monthlyRate: number }) => createStream(personId, handle, monthlyRate),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['streams', companyId, person.id] })
+      queryClient.invalidateQueries({ queryKey: ['streams', handle, person.id] })
     }
   })
 

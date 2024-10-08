@@ -101,7 +101,7 @@ export const createCompanyUserHandler = async (req: AuthenticatedRequest, res: R
 
 export const createStreamHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { user_id, company_id, rate } = req.body;
+    const { user_id, handle, rate } = req.body;
 
     // TODO: check if user has permission to add streams
     //const user_id = req.user.sub;
@@ -112,7 +112,7 @@ export const createStreamHandler = async (req: AuthenticatedRequest, res: Respon
     //Onchain
     //await createStream(companyRegistry, user_id, company_id, rate);
     // Offchain
-    await uploadStream(user_id, company_id, rate);
+    await uploadStream(user_id, handle, rate);
     res.status(201).json({ message: 'Stream created successfully' });
   } catch (error) {
     console.error('Error creating stream:', error);
@@ -125,8 +125,8 @@ export const getUserCompanyStreamsHandler = async (req: AuthenticatedRequest, re
     // TODO: check if user has permission to view streams
     //const user_id = req.user.sub;
 
-    const { company_id, user_id } = req.query;
-    const streams = await fetchUserCompanyStreams(parseInt(company_id as string), user_id as string);
+    const { handle, user_id } = req.query;
+    const streams = await fetchUserCompanyStreams(handle as string, user_id as string);
     res.status(200).json(streams);
   } catch (error) {
     console.error('Error fetching company streams:', error);

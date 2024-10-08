@@ -108,9 +108,11 @@ export async function setKycVerified(user_id: string, verified: boolean = true) 
     console.log('KYC verified set successfully');
 }
 
-export async function uploadStream(user_id: string, company_id: number, rate: number) {
-    console.log('Creating stream in database:', user_id, company_id, rate);
-    await db.insert(streams).values({ userId: user_id, companyId: company_id, rate: rate });
+export async function uploadStream(user_id: string, handle: string, rate: number) {
+    console.log('Creating stream in database:', user_id, handle, rate);
+    // TODO: try to pass company_id instead of handle
+    const company = await fetchCompany(handle);
+    await db.insert(streams).values({ userId: user_id, companyId: company.id, rate: rate });
     console.log('Stream created successfully');
 }
 
@@ -121,14 +123,18 @@ export async function fetchUserStreams(user_id: string) {
     return fetchedStreams;
 }
 
-export async function fetchUserCompanyStreams(company_id: number, user_id: string) {
-    console.log('Fetching streams from database for user:', user_id, 'and company:', company_id);
+export async function fetchUserCompanyStreams(handle: string, user_id: string) {
+    console.log('Fetching streams from database for user:', user_id, 'and company:', handle);
     const fetchedStreams = await db
-        .select()
+        .select({
+            id: streams.id,
+            rate: streams.rate,
+        })
         .from(streams)
+        .innerJoin(companies, eq(streams.companyId, companies.id))
         .where(
             and(
-                eq(streams.companyId, company_id),
+                eq(companies.handle, handle),
                 eq(streams.userId, user_id)
             )
         );
