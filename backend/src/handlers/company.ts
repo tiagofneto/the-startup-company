@@ -2,12 +2,19 @@ import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
 import { createCompany, getCompany } from '../aztec.js';
-import { createCompanyUser, createUserCompany, fetchCompanyPeople, fetchUserCompanies, getCompanies, uploadCompany } from '../interactions/company.js';
+import {
+  createCompanyUser,
+  createUserCompany,
+  fetchCompanyPeople,
+  fetchUserCompanies,
+  getCompanies,
+  uploadCompany
+} from '../interactions/company.js';
 
 export const getCompanyHandler = async (req: Request, res: Response) => {
   try {
     const { handle } = req.query;
-    
+
     if (!handle) {
       return res.status(400).json({ error: 'Missing company handle' });
     }
@@ -17,7 +24,7 @@ export const getCompanyHandler = async (req: Request, res: Response) => {
 
     const company = await getCompany(companyRegistry, handle as string);
     //const company = await fetchCompany(handle as string);
-    
+
     res.status(200).json(company);
   } catch (error) {
     console.error('Error fetching company:', error);
@@ -25,11 +32,14 @@ export const getCompanyHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const createCompanyHandler = async (req: AuthenticatedRequest, res: Response) => {
+export const createCompanyHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { name, handle, email, director, totalShares } = req.body;
     const user_id = req.user.sub;
-    
+
     if (!name || !handle || !email || !director || !totalShares) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -63,39 +73,49 @@ export const getCompaniesHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserCompanies = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const id = req.user.sub;
-        const companies = await fetchUserCompanies(id);
-        res.status(200).json(companies);
-    } catch (error) {
-        console.error('Error fetching user companies:', error);
-        res.status(500).json({ error: 'Failed to fetch user companies' });
-    }
-}
-
+export const getUserCompanies = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const id = req.user.sub;
+    const companies = await fetchUserCompanies(id);
+    res.status(200).json(companies);
+  } catch (error) {
+    console.error('Error fetching user companies:', error);
+    res.status(500).json({ error: 'Failed to fetch user companies' });
+  }
+};
 
 export const getPeopleHandler = async (req: Request, res: Response) => {
   try {
     const { handle } = req.query;
-    const people = (await fetchCompanyPeople(handle as string)).map((person) => {
-      const metadata = person.raw_user_meta_data as { full_name: string, picture: string };
-      return {
-        id: person.id,
-        email: person.email,
-        kyc_verified: person.kyc_verified,
-        name: metadata?.full_name,
-        picture: metadata?.picture
+    const people = (await fetchCompanyPeople(handle as string)).map(
+      (person) => {
+        const metadata = person.raw_user_meta_data as {
+          full_name: string;
+          picture: string;
+        };
+        return {
+          id: person.id,
+          email: person.email,
+          kyc_verified: person.kyc_verified,
+          name: metadata?.full_name,
+          picture: metadata?.picture
+        };
       }
-    });
+    );
     res.status(200).json(people);
   } catch (error) {
     console.error('Error fetching people:', error);
     res.status(500).json({ error: 'Failed to fetch people' });
   }
-}
+};
 
-export const createCompanyUserHandler = async (req: AuthenticatedRequest, res: Response) => {
+export const createCompanyUserHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { email, company_id } = req.body;
 
@@ -108,4 +128,4 @@ export const createCompanyUserHandler = async (req: AuthenticatedRequest, res: R
     console.error('Error creating user:', error);
     res.status(500).json({ error: 'Failed to create user' });
   }
-}
+};

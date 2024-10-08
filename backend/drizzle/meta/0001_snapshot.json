@@ -59,9 +59,7 @@
         "companies_handle_unique": {
           "name": "companies_handle_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "handle"
-          ]
+          "columns": ["handle"]
         }
       }
     },
@@ -114,12 +112,8 @@
           "name": "streams_company_id_companies_id_fk",
           "tableFrom": "streams",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -128,12 +122,8 @@
           "tableFrom": "streams",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -164,12 +154,8 @@
           "name": "user_companies_company_id_companies_id_fk",
           "tableFrom": "user_companies",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -177,10 +163,7 @@
       "compositePrimaryKeys": {
         "user_companies_email_company_id_pk": {
           "name": "user_companies_email_company_id_pk",
-          "columns": [
-            "email",
-            "company_id"
-          ]
+          "columns": ["email", "company_id"]
         }
       },
       "uniqueConstraints": {}
@@ -210,12 +193,8 @@
           "tableFrom": "user_profiles",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -253,9 +232,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     }

@@ -1,9 +1,16 @@
 import { Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { fetchUserCompanyStreams, fetchUserStreams, uploadStream } from '../interactions/stream.js';
+import {
+  fetchUserCompanyStreams,
+  fetchUserStreams,
+  uploadStream
+} from '../interactions/stream.js';
 
-export const createStreamHandler = async (req: AuthenticatedRequest, res: Response) => {
+export const createStreamHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { user_id, handle, rate } = req.body;
 
@@ -22,23 +29,32 @@ export const createStreamHandler = async (req: AuthenticatedRequest, res: Respon
     console.error('Error creating stream:', error);
     res.status(500).json({ error: 'Failed to create stream' });
   }
-}
+};
 
-export const getUserCompanyStreamsHandler = async (req: AuthenticatedRequest, res: Response) => {
+export const getUserCompanyStreamsHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     // TODO: check if user has permission to view streams
     //const user_id = req.user.sub;
 
     const { handle, user_id } = req.query;
-    const streams = await fetchUserCompanyStreams(handle as string, user_id as string);
+    const streams = await fetchUserCompanyStreams(
+      handle as string,
+      user_id as string
+    );
     res.status(200).json(streams);
   } catch (error) {
     console.error('Error fetching company streams:', error);
     res.status(500).json({ error: 'Failed to fetch company streams' });
   }
-}
+};
 
-export const getUserStreams = async (req: AuthenticatedRequest, res: Response) => {
+export const getUserStreams = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     // TODO: check if user has permission to view streams
     //const id = req.user.sub;
@@ -51,4 +67,4 @@ export const getUserStreams = async (req: AuthenticatedRequest, res: Response) =
     console.error('Error fetching user streams:', error);
     res.status(500).json({ error: 'Failed to fetch user streams' });
   }
-}
+};

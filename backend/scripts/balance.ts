@@ -11,7 +11,11 @@ const args = process.argv.slice(2);
 
 if (args[0] === '--token') {
   const address = args[1];
-  const balance = await getTokenBalance(token, AztecAddress.fromString(address), wallet);
+  const balance = await getTokenBalance(
+    token,
+    AztecAddress.fromString(address),
+    wallet
+  );
   console.log(`Token balance for ${address}: ${balance}`);
 } else if (args[0] === '--company') {
   const handle = args[1];

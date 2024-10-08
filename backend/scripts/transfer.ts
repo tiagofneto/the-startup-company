@@ -1,5 +1,9 @@
 import { AztecAddress } from '@aztec/aztec.js';
-import { getWallet, transferTokensToAddress, transferTokensToHandle } from '../src/aztec.js';
+import {
+  getWallet,
+  transferTokensToAddress,
+  transferTokensToHandle
+} from '../src/aztec.js';
 import { readFileSync } from 'fs';
 const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
 const { companyRegistry } = addresses;
@@ -14,10 +18,14 @@ if (args.includes('--handle')) {
   await transferTokensToHandle(companyRegistry, from, to, 1, wallet);
 } else if (args.includes('--address')) {
   const to = args[args.indexOf('--address') + 1];
-  await transferTokensToAddress(companyRegistry, from, AztecAddress.fromString(to), 1, wallet);
+  await transferTokensToAddress(
+    companyRegistry,
+    from,
+    AztecAddress.fromString(to),
+    1,
+    wallet
+  );
 } else {
   console.error('Error: Either --handle or --address flag must be provided');
   process.exit(1);
 }
-
-
