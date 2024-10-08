@@ -3,8 +3,9 @@ import { deploy, getWallet, initWallet } from './aztec.js';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { authenticateToken } from './middleware.js';
-import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler, createCompanyUserHandler, createStreamHandler, getUserCompanyStreamsHandler } from './handlers/company.js';
-import { getProfile, getUserCompanies, getUserStreams, verifyKyc } from './handlers/user.js';
+import { getCompanyHandler, createCompanyHandler, getCompaniesHandler, getPeopleHandler, createCompanyUserHandler, getUserCompanies } from './handlers/company.js';
+import { getProfile, verifyKyc } from './handlers/user.js';
+import { createStreamHandler, getUserCompanyStreamsHandler, getUserStreams } from './handlers/stream.js';
 
 const port = 3000;
 const skipInit = process.argv.includes('--skip-init');

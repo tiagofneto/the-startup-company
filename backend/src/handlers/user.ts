@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware.js';
-import { createOrGetUser, fetchUserCompanies, fetchUserStreams, setKycVerified } from '../interactions.js';
 import { OpenPassport1StepInputs, OpenPassport1StepVerifier } from '@openpassport/sdk';
+import { createOrGetUser, setKycVerified } from '../interactions/user.js';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -12,17 +12,6 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
     console.error('Error fetching profile:', error);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
-}
-
-export const getUserCompanies = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const id = req.user.sub;
-        const companies = await fetchUserCompanies(id);
-        res.status(200).json(companies);
-    } catch (error) {
-        console.error('Error fetching user companies:', error);
-        res.status(500).json({ error: 'Failed to fetch user companies' });
-    }
 }
 
 export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
@@ -50,19 +39,4 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
         console.error('Error verifying KYC:', error);
         res.status(500).json({ error: 'Failed to verify KYC' });
     }
-}
-
-export const getUserStreams = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    // TODO: check if user has permission to view streams
-    //const id = req.user.sub;
-
-    const user_id = req.query.user_id as string;
-
-    const streams = await fetchUserStreams(user_id);
-    res.status(200).json(streams);
-  } catch (error) {
-    console.error('Error fetching user streams:', error);
-    res.status(500).json({ error: 'Failed to fetch user streams' });
-  }
 }
