@@ -240,6 +240,7 @@ export async function getTokenBalance(
 
 export async function createStream(
   contractAddress: string,
+  user_id: string,
   handle: string,
   rate: number,
   targetAddress: AztecAddress,
@@ -255,7 +256,7 @@ export async function createStream(
     `Creating stream for company ${handle} to ${targetAddress} at rate ${rate}`
   );
   const tx = await contract.methods
-    .create_stream(handle, rate, targetAddress)
+    .create_stream(user_id, handle, rate, targetAddress)
     .send()
     .wait();
 

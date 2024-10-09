@@ -26,6 +26,7 @@ if (args[0] === '--create') {
   const target = args[args.indexOf('--target') + 1];
 
   await createStream(
+    'test id',
     companyRegistry,
     handle,
     Number(rate),

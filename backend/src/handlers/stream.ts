@@ -6,6 +6,7 @@ import {
   fetchUserStreams,
   uploadStream
 } from '../interactions/stream.js';
+import { createStream } from '../aztec.js';
 
 export const createStreamHandler = async (
   req: AuthenticatedRequest,
@@ -18,10 +19,11 @@ export const createStreamHandler = async (
     //const user_id = req.user.sub;
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
-    const { companyRegistry } = addresses;
+    const { companyRegistry, token } = addresses;
 
     //Onchain
-    //await createStream(companyRegistry, user_id, company_id, rate);
+    // TODO get user address
+    await createStream(companyRegistry, user_id, handle, rate, token);
     // Offchain
     await uploadStream(user_id, handle, rate);
     res.status(201).json({ message: 'Stream created successfully' });

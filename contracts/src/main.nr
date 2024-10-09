@@ -102,11 +102,15 @@ contract CompanyRegistry {
     }
 
     #[public]
-    fn create_stream(handle: str<31>, rate: Field, target_address: AztecAddress) {
+    fn create_stream(user_id: str<31>, handle: str<31>, rate: Field, target_address: AztecAddress) {
         let handle_exists = storage.handles.at(handle).read();
         assert(handle_exists, "Company handle does not exist");
 
+        let authorized = storage.authorized.at(handle).at(user_id).read();
+        assert(authorized, "User is not authorized");
+
         let stream = Stream {
+            user_id: FieldCompressedString::from_string(user_id),
             company_handle: FieldCompressedString::from_string(handle),
             total_claimed: U128::zero(),
             rate: U128::from_integer(rate),
