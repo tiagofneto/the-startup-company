@@ -5,14 +5,19 @@ import {
   OpenPassport1StepVerifier
 } from '@openpassport/sdk';
 import { createOrGetUser, setKycVerified } from '../interactions/user.js';
-import { verifyUser } from '../aztec.js';
+import { isUserVerified, verifyUser } from '../aztec.js';
 import { readFileSync } from 'fs';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const id = req.user.sub;
     const user = await createOrGetUser(id);
-    res.status(200).json(user);
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
+    const kyc = await isUserVerified(companyRegistry, id);
+    res.status(200).json({ user, kyc });
   } catch (error) {
     console.error('Error fetching profile:', error);
     res.status(500).json({ error: 'Failed to fetch profile' });

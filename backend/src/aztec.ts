@@ -302,3 +302,22 @@ export async function verifyUser(
 
   return tx;
 }
+
+export async function isUserVerified(
+  contractAddress: string,
+  user_id: string,
+  wallet: AccountWalletWithSecretKey = globalWallet!
+) {
+  const contract = await Contract.at(
+    AztecAddress.fromString(contractAddress),
+    loadContractArtifact(CompanyRegistryJson as any),
+    wallet
+  );
+
+  console.log(`Checking if user ${user_id} is verified`);
+  const isVerified = await contract.methods.is_user_verified(user_id).simulate();
+  console.log(`User ${user_id} is verified: ${isVerified}`);
+
+  return isVerified;
+}
+

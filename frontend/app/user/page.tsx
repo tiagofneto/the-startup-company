@@ -185,14 +185,14 @@ export default function UserDashboard() {
                     <div className="flex items-center justify-between mb-4">
                       <span>Status:</span>
                       <span
-                        className={`px-3 py-1 ${profileQuery.data.kyc_verified ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}
+                        className={`px-3 py-1 ${profileQuery.data.kyc ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}
                       >
-                        {profileQuery.data.kyc_verified
+                        {profileQuery.data.kyc
                           ? 'Verified'
                           : 'Pending'}
                       </span>
                     </div>
-                    {profileQuery.data.kyc_verified ? (
+                    {profileQuery.data.kyc ? (
                       <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                         Your KYC verification is complete. All features are
                         unlocked.
