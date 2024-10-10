@@ -38,6 +38,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { PersonDialog } from './person-dialog';
+import { SendMoneyDialog } from './transfer-dialog';
 
 export default function CompanyDashboard({
   params
@@ -282,10 +283,12 @@ export default function CompanyDashboard({
                   <p className="text-4xl font-bold">$1,234,567.89</p>
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="secondary" size="lg">
-                    <ArrowUpRight className="mr-2 h-4 w-4" />
-                    Send Money
-                  </Button>
+                  <SendMoneyDialog>
+                    <Button variant="secondary" size="lg">
+                      <ArrowUpRight className="mr-2 h-4 w-4" />
+                      Send Money
+                    </Button>
+                  </SendMoneyDialog>
                   <Button variant="secondary" size="lg">
                     <ArrowDownLeft className="mr-2 h-4 w-4" />
                     Receive Money
