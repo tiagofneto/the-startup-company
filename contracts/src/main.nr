@@ -97,8 +97,8 @@ contract CompanyRegistry {
     }
 
     #[public]
-    fn authorize_user(handle: str<31>, user_id: str<31>) {
-        storage.authorized.at(handle).at(user_id).write(true);
+    fn authorize_user(handle: str<31>, email: str<31>) {
+        storage.authorized.at(handle).at(email).write(true);
     }
 
     #[public]

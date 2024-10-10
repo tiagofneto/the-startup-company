@@ -322,3 +322,23 @@ export async function isUserVerified(
   return isVerified;
 }
 
+export async function authorizeUser(
+  contractAddress: string,
+  handle: string,
+  email: string,
+  wallet: AccountWalletWithSecretKey = globalWallet!
+) {
+  const contract = await Contract.at(
+    AztecAddress.fromString(contractAddress),
+    loadContractArtifact(CompanyRegistryJson as any),
+    wallet
+  );
+
+  console.log(`Authorizing user ${email} for company ${handle}`);
+  const tx = await contract.methods.authorize_user(handle, email).send().wait();
+
+  console.log(`Sent authorize user transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+
+  return tx;
+}

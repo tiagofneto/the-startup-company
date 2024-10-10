@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { createCompany, getCompany } from '../aztec.js';
+import { authorizeUser, createCompany, getCompany } from '../aztec.js';
 import {
   createCompanyUser,
   createUserCompany,
@@ -122,6 +122,10 @@ export const createCompanyUserHandler = async (
 
     // TODO: check if user has permission to add people
     const user_id = req.user.sub;
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+    await authorizeUser(companyRegistry, handle, email);
 
     const company_id = await getCompanyId(handle);
     await createCompanyUser(email, company_id);
