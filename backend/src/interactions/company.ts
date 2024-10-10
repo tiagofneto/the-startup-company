@@ -85,3 +85,15 @@ export async function createUserCompany(user_id: string, company_id: number) {
     .values({ email: userEmail, companyId: company_id });
   console.log('User company created successfully');
 }
+
+export async function getCompanyId(handle: string) {
+  console.log('Fetching company id from database:', handle);
+  const companyId = (
+    await db
+      .select({ id: companies.id })
+      .from(companies)
+      .where(eq(companies.handle, handle))
+  )[0].id;
+  console.log('Company id fetched successfully:', companyId);
+  return companyId;
+}

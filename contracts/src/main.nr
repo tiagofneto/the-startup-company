@@ -15,7 +15,7 @@ contract CompanyRegistry {
         companies: Map<str<31>, PublicMutable<Company, Context>, Context>,
         // Handle -> isTaken
         handles: Map<str<31>, PublicMutable<bool, Context>, Context>,
-        // Handle -> UserID -> Authorized
+        // Handle -> email -> Authorized
         authorized: Map<str<31>, Map<str<31>, PublicMutable<bool, Context>, Context>, Context>,
 
         balances: Map<str<31>, PublicMutable<U128, Context>, Context>,

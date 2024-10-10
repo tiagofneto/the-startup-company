@@ -8,6 +8,7 @@ import {
   fetchCompanyPeople,
   fetchUserCompanies,
   getCompanies,
+  getCompanyId,
   uploadCompany
 } from '../interactions/company.js';
 
@@ -117,11 +118,12 @@ export const createCompanyUserHandler = async (
   res: Response
 ) => {
   try {
-    const { email, company_id } = req.body;
+    const { email, handle } = req.body;
 
     // TODO: check if user has permission to add people
     const user_id = req.user.sub;
 
+    const company_id = await getCompanyId(handle);
     await createCompanyUser(email, company_id);
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {

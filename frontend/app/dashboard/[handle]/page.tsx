@@ -77,7 +77,7 @@ export default function CompanyDashboard({
 
   const addPersonMutation = useMutation({
     mutationFn: (email: string) =>
-      createCompanyUser(email, companyQuery.data?.id),
+      createCompanyUser(email, companyQuery.data?.handle),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['people', params.handle] });
     }
@@ -307,13 +307,9 @@ export default function CompanyDashboard({
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {peopleQuery.data?.map((person: any) => (
-                      <PersonDialog
-                        key={person.id}
-                        person={person}
-                        handle={companyQuery.data?.handle}
-                      >
-                        <div className="flex items-center justify-between bg-background rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                    {peopleQuery.data?.map((person: any) => {
+                      const PersonContent = (
+                        <div className={`flex items-center justify-between bg-background rounded-lg ${person.id ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''}`}>
                           <div className="flex items-center space-x-4">
                             <Avatar>
                               <AvatarImage
@@ -341,8 +337,18 @@ export default function CompanyDashboard({
                             {person.kyc_verified ? 'Verified' : 'Pending'}
                           </span>
                         </div>
-                      </PersonDialog>
-                    ))}
+                      );
+
+                      return person.id ? (
+                        <PersonDialog
+                          key={person.id}
+                          person={person}
+                          handle={companyQuery.data?.handle}
+                        >
+                          {PersonContent}
+                        </PersonDialog>
+                      ) : PersonContent;
+                    })}
                   </div>
                 )}
                 <Dialog>
