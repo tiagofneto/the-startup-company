@@ -54,7 +54,7 @@ services:
       ANVIL_PORT: ${ANVIL_PORT:-8545}
 
   aztec:
-    image: "aztecprotocol/aztec:0.56.0"
+    image: "aztecprotocol/aztec:0.57.0"
     restart: always
     ports:
       - "${PXE_PORT:-8080}:${PXE_PORT:-8080}"
