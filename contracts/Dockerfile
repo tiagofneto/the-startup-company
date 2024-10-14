@@ -1,4 +1,4 @@
-FROM aztecprotocol/aztec-nargo:0.57.0
+FROM aztecprotocol/aztec-nargo:0.56.0
 
 WORKDIR /app
 
