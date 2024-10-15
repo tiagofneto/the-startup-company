@@ -1,4 +1,5 @@
 import { Fr } from '@aztec/circuits.js';
+import nodemailer from 'nodemailer';
 
 export const toString = (value: bigint) => {
   const vals: number[] = Array.from(new Fr(value).toBuffer());
@@ -22,3 +23,12 @@ export function companyFromBigIntObject(rawCompany: any) {
     totalShares: Number(rawCompany['total_shares']['lo'])
   };
 }
+
+export const transport = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: process.env.NODEMAILER_USER,
+    pass: process.env.NODEMAILER_PASS
+  }
+});

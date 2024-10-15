@@ -11,6 +11,7 @@ import {
   getCompanyId,
   uploadCompany
 } from '../interactions/company.js';
+import { transport } from '../utils.js';
 
 export const getCompanyHandler = async (req: Request, res: Response) => {
   try {
@@ -136,6 +137,21 @@ export const createCompanyUserHandler = async (
 
     const company_id = await getCompanyId(handle);
     await createCompanyUser(email, company_id);
+
+    console.log('Sending email to', email);
+    try {
+      const info = await transport.sendMail({
+        from: 'demo@sark.company',
+        to: email,
+        subject: 'You have been invited to join an INC',
+        text: `You have been invited to join the INC @${handle}!`,
+        html: `<p>You have been invited to join the INC @${handle}!</p>`
+      });
+      console.log('Email sent', info);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     console.error('Error creating user:', error);
