@@ -74,12 +74,13 @@ contract CompanyRegistry {
     }
 
     #[public]
-    fn create_company(user_id: str<31>, name: str<31>, handle: str<31>, email: str<31>, director: str<31>, total_shares: Field) {
+    fn create_company(name: str<31>, handle: str<31>, description: str<31>, email: str<31>, director: str<31>, total_shares: Field) {
         assert(storage.handles.at(handle).read() == false, "Handle already taken");
 
         let company = Company {
             name: FieldCompressedString::from_string(name),
             handle: FieldCompressedString::from_string(handle),
+            description: FieldCompressedString::from_string(description),
             email: FieldCompressedString::from_string(email),
             director: FieldCompressedString::from_string(director),
             total_shares: U128::from_integer(total_shares)
@@ -87,7 +88,7 @@ contract CompanyRegistry {
 
         storage.companies.at(handle).write(company);
         storage.handles.at(handle).write(true);
-        storage.authorized.at(handle).at(user_id).write(true);
+        storage.authorized.at(handle).at(email).write(true);
 
         Token::at(storage.token_address.read()).mint_public(
             context.this_address(),

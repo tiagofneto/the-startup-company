@@ -8,7 +8,8 @@ import {
   uuid,
   boolean,
   primaryKey,
-  jsonb
+  jsonb,
+  text
 } from 'drizzle-orm/pg-core';
 
 const authSchema = pgSchema('auth');
@@ -23,6 +24,7 @@ export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   handle: varchar('handle', { length: 255 }).notNull().unique(),
+  description: text('description').notNull(),
   email: varchar('email', { length: 255 }).notNull(),
   director: varchar('director', { length: 255 }).notNull(),
   totalShares: integer('total_shares').notNull(),

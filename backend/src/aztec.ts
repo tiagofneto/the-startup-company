@@ -97,7 +97,6 @@ export async function deploy(
 
 export async function createCompany(
   contractAddress: string,
-  user_id: string,
   company: Company,
   wallet: AccountWalletWithSecretKey = globalWallet!
 ) {
@@ -111,9 +110,9 @@ export async function createCompany(
 
   const tx = await contract.methods
     .create_company(
-      user_id,
       company.name,
       company.handle,
+      company.description,
       company.email,
       company.director,
       company.totalShares

@@ -38,20 +38,27 @@ export const createCompanyHandler = async (
   res: Response
 ) => {
   try {
-    const { name, handle, email, director, totalShares } = req.body;
+    const { name, handle, description, totalShares } = req.body;
     const user_id = req.user.sub;
 
-    if (!name || !handle || !email || !director || !totalShares) {
+    if (!name || !handle || !description || !totalShares) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
-    const company = { name, handle, email, director, totalShares };
+    const company = {
+      name,
+      handle,
+      description,
+      email: req.user.email,
+      director: req.user.user_metadata?.full_name || '',
+      totalShares
+    };
 
     // Onchain
-    const tx = await createCompany(companyRegistry, user_id, company);
+    const tx = await createCompany(companyRegistry, company);
     // Offchain
     const company_id = await uploadCompany(company);
     await createUserCompany(user_id, company_id);

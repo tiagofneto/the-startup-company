@@ -14,8 +14,7 @@ import { useMutation } from '@tanstack/react-query';
 type FormData = {
   name: string;
   handle: string;
-  director: string;
-  email: string;
+  description: string;
   totalShares: string;
 };
 
@@ -46,18 +45,13 @@ const fields: Field[] = [
           : 'Company handle already exists'
   },
   {
-    name: 'director',
-    label: 'Director Name',
+    name: 'description',
+    label: 'Company Description',
     type: 'text',
     validate: async (value) =>
-      value.length < 2 ? 'Director name is required' : null
-  },
-  {
-    name: 'email',
-    label: 'Director Email',
-    type: 'email',
-    validate: async (value) =>
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? null : 'Invalid email address'
+      value.length < 10
+        ? 'Company description must be at least 10 characters'
+        : null
   },
   {
     name: 'totalShares',
@@ -74,8 +68,7 @@ export default function CompanyRegistration() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     handle: '',
-    director: '',
-    email: '',
+    description: '',
     totalShares: ''
   });
   const [currentField, setCurrentField] = useState(0);
