@@ -31,5 +31,5 @@ aztec start --sandbox
 4. Run the server:
 
 ```bash
-node src/index.mjs
+npm run dev
 ```
