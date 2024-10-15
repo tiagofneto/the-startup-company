@@ -1,17 +1,32 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ChevronRight, Shield, User, Workflow } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils'
-import { User as SupabaseUser } from '@supabase/supabase-js'
-import { getProfile, getUserCompanies, verifyKyc, getUserStreams } from '@/services/api'
-import Link from 'next/link'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { OpenPassportQRcode, OpenPassport1StepInputs, OpenPassportVerifierReport } from '@openpassport/sdk'
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { ChevronRight, Shield, User, Workflow } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import {
+  getProfile,
+  getUserCompanies,
+  verifyKyc,
+  getUserStreams
+} from '@/services/api';
+import Link from 'next/link';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import {
+  OpenPassportQRcode,
+  OpenPassport1StepInputs,
+  OpenPassportVerifierReport
+} from '@openpassport/sdk';
 import { StreamItem } from '@/components/stream-item';
 
 import {
@@ -20,72 +35,77 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  DialogTrigger
+} from '@/components/ui/dialog';
 
-const supabase = createSupabaseClient()
+const supabase = createSupabaseClient();
 
 export default function UserDashboard() {
-  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
-        setUser(user)
+        setUser(user);
       }
-    })
-  }, [])
+    });
+  }, []);
 
   const profileQuery = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile
-  })
+  });
 
   const companiesQuery = useQuery({
     queryKey: ['user_companies'],
     queryFn: getUserCompanies
-  })
+  });
 
   const streamsQuery = useQuery({
     queryKey: ['user_streams'],
     queryFn: () => getUserStreams(user!.id)
-  })
+  });
 
   const kycMutation = useMutation({
     mutationFn: verifyKyc,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     }
-  })
+  });
 
-  const handleSuccessfulVerification = (proof: OpenPassport1StepInputs, verificatonResult: OpenPassportVerifierReport) => {
-    kycMutation.mutate(proof)
-  }
+  const handleSuccessfulVerification = (
+    proof: OpenPassport1StepInputs,
+    verificatonResult: OpenPassportVerifierReport
+  ) => {
+    kycMutation.mutate(proof);
+  };
 
   if (!user) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   // Group streams by company
   const groupedStreams = streamsQuery.data?.reduce((acc: any, stream: any) => {
     if (!acc[stream.companyId]) {
-      acc[stream.companyId] = []
+      acc[stream.companyId] = [];
     }
-    acc[stream.companyId].push(stream)
-    return acc
-  }, {})
+    acc[stream.companyId].push(stream);
+    return acc;
+  }, {});
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-semibold mb-8 text-gray-800 dark:text-gray-100 pt-16">Welcome back, {user?.user_metadata.full_name.split(' ')[0]}</h1>
-        
+        <h1 className="text-3xl font-semibold mb-8 text-gray-800 dark:text-gray-100 pt-16">
+          Welcome back, {user?.user_metadata.full_name.split(' ')[0]}
+        </h1>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <Card className="h-full flex flex-col">
@@ -100,23 +120,47 @@ export default function UserDashboard() {
                   </div>
                 ) : (
                   <div className="h-full overflow-y-auto pr-2">
-                    {companiesQuery.data?.map((company: { name: string, handle: string, image: string }, index: number) => (
-                      <Link key={index} href={`/dashboard/${company.handle}`} passHref>
-                        <div className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150">
-                          <div className="flex items-center">
-                            <Avatar className="h-10 w-10 mr-4">
-                              <AvatarImage src={company.image} alt={`${company.name} logo`}/>
-                              <AvatarFallback>{computeAvatarFallback(company.name || "Company")}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <h3 className="font-semibold">{company.name}</h3>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">@{company.handle}</p>
+                    {companiesQuery.data?.map(
+                      (
+                        company: {
+                          name: string;
+                          handle: string;
+                          image: string;
+                        },
+                        index: number
+                      ) => (
+                        <Link
+                          key={index}
+                          href={`/dashboard/${company.handle}`}
+                          passHref
+                        >
+                          <div className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150">
+                            <div className="flex items-center">
+                              <Avatar className="h-10 w-10 mr-4">
+                                <AvatarImage
+                                  src={company.image}
+                                  alt={`${company.name} logo`}
+                                />
+                                <AvatarFallback>
+                                  {computeAvatarFallback(
+                                    company.name || 'Company'
+                                  )}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <h3 className="font-semibold">
+                                  {company.name}
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  @{company.handle}
+                                </p>
+                              </div>
                             </div>
+                            <ChevronRight className="text-gray-400" />
                           </div>
-                          <ChevronRight className="text-gray-400" />
-                        </div>
-                      </Link>
-                    ))}
+                        </Link>
+                      )
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -140,25 +184,33 @@ export default function UserDashboard() {
                   <>
                     <div className="flex items-center justify-between mb-4">
                       <span>Status:</span>
-                      <span className={`px-3 py-1 ${profileQuery.data.kyc_verified ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}>
-                        {profileQuery.data.kyc_verified ? 'Verified' : 'Pending'}
+                      <span
+                        className={`px-3 py-1 ${profileQuery.data.kyc ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}
+                      >
+                        {profileQuery.data.kyc
+                          ? 'Verified'
+                          : 'Pending'}
                       </span>
                     </div>
-                    {profileQuery.data.kyc_verified ? (
+                    {profileQuery.data.kyc ? (
                       <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                        Your KYC verification is complete. All features are unlocked.
+                        Your KYC verification is complete. All features are
+                        unlocked.
                       </p>
                     ) : (
                       <>
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button className="w-full">Complete KYC Verification</Button>
+                            <Button className="w-full">
+                              Complete KYC Verification
+                            </Button>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
                               <DialogTitle>KYC Verification</DialogTitle>
                               <DialogDescription>
-                                Use the OpenPassport app to complete your KYC verification.
+                                Use the OpenPassport app to complete your KYC
+                                verification.
                               </DialogDescription>
                             </DialogHeader>
                             <OpenPassportQRcode
@@ -197,30 +249,52 @@ export default function UserDashboard() {
                   </div>
                 ) : groupedStreams && Object.keys(groupedStreams).length > 0 ? (
                   <div className="space-y-4 h-48 overflow-y-auto pr-2">
-                    {Object.entries(groupedStreams).map(([companyId, streams]: any) => {
-                      const company = companiesQuery.data!.find((c: any) => c.id == companyId)
-                      return (
-                        <div key={companyId} className="bg-muted rounded-lg p-3">
-                          <Link href={`/dashboard/${company.handle}`}>
-                            <div className="flex items-center mb-2">
-                              <Avatar className="h-6 w-6 mr-2">
-                              <AvatarImage src={company?.image} alt={`${company?.name} logo`}/>
-                              <AvatarFallback>{computeAvatarFallback(company?.name || "Company")}</AvatarFallback>
-                            </Avatar>
-                              <h3 className="font-semibold text-sm">{company?.name}</h3>
-                            </div>
-                          </Link>
-                          <ul className="space-y-1">
-                            {streams.map((stream: any) => (
-                              <StreamItem key={stream.id} rate={stream.rate} variant="default" />
-                            ))}
-                          </ul>
-                        </div>
-                      )
-                    })}
+                    {Object.entries(groupedStreams).map(
+                      ([companyId, streams]: any) => {
+                        const company = companiesQuery.data!.find(
+                          (c: any) => c.id == companyId
+                        );
+                        return (
+                          <div
+                            key={companyId}
+                            className="bg-muted rounded-lg p-3"
+                          >
+                            <Link href={`/dashboard/${company.handle}`}>
+                              <div className="flex items-center mb-2">
+                                <Avatar className="h-6 w-6 mr-2">
+                                  <AvatarImage
+                                    src={company?.image}
+                                    alt={`${company?.name} logo`}
+                                  />
+                                  <AvatarFallback>
+                                    {computeAvatarFallback(
+                                      company?.name || 'Company'
+                                    )}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <h3 className="font-semibold text-sm">
+                                  {company?.name}
+                                </h3>
+                              </div>
+                            </Link>
+                            <ul className="space-y-1">
+                              {streams.map((stream: any) => (
+                                <StreamItem
+                                  key={stream.id}
+                                  rate={stream.rate}
+                                  variant="default"
+                                />
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      }
+                    )}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">No active streams</p>
+                  <p className="text-sm text-muted-foreground">
+                    No active streams
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -233,7 +307,9 @@ export default function UserDashboard() {
               <User className="mr-2" />
               Account Overview
             </CardTitle>
-            <CardDescription>Manage your account settings and preferences</CardDescription>
+            <CardDescription>
+              Manage your account settings and preferences
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -257,5 +333,5 @@ export default function UserDashboard() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -1,69 +1,62 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware.js';
-import { createOrGetUser, fetchUserCompanies, fetchUserStreams, setKycVerified } from '../interactions.js';
-import { OpenPassport1StepInputs, OpenPassport1StepVerifier } from '@openpassport/sdk';
-
+import {
+  OpenPassport1StepInputs,
+  OpenPassport1StepVerifier
+} from '@openpassport/sdk';
+import { createOrGetUser, setKycVerified } from '../interactions/user.js';
+import { isUserVerified, verifyUser } from '../aztec.js';
+import { readFileSync } from 'fs';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const id = req.user.sub;
     const user = await createOrGetUser(id);
-    res.status(200).json(user);
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
+    const kyc = await isUserVerified(companyRegistry, id);
+    res.status(200).json({ user, kyc });
   } catch (error) {
     console.error('Error fetching profile:', error);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
-}
-
-export const getUserCompanies = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const id = req.user.sub;
-        const companies = await fetchUserCompanies(id);
-        res.status(200).json(companies);
-    } catch (error) {
-        console.error('Error fetching user companies:', error);
-        res.status(500).json({ error: 'Failed to fetch user companies' });
-    }
-}
+};
 
 export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const id = req.user.sub;
-        const proof = req.body.proof as OpenPassport1StepInputs;
-
-        console.log("Verifying KYC");
-
-        const verifierArgs = { scope: "@thestartupcompany", requirements: [], dev_mode: true }
-        const openPassport1StepVerifier = new OpenPassport1StepVerifier(verifierArgs);
-
-        const isValid = (await openPassport1StepVerifier.verify(proof)).valid;
-        if (!isValid) {
-            console.log("Passport proof is invalid");
-            res.status(400).json({ error: 'Invalid proof' });
-        } else {
-            console.log("Passport proof is valid");
-            // TODO: Store nullifier in database 
-            //console.log("Nullifier: ", proof.getNullifier());
-            await setKycVerified(id);
-            res.sendStatus(200);
-        }
-    } catch (error) {
-        console.error('Error verifying KYC:', error);
-        res.status(500).json({ error: 'Failed to verify KYC' });
-    }
-}
-
-export const getUserStreams = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    // TODO: check if user has permission to view streams
-    //const id = req.user.sub;
+    const id = req.user.sub;
+    const proof = req.body.proof as OpenPassport1StepInputs;
 
-    const user_id = req.query.user_id as string;
+    console.log('Verifying KYC');
 
-    const streams = await fetchUserStreams(user_id);
-    res.status(200).json(streams);
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
+    const verifierArgs = {
+      scope: '@thestartupcompany',
+      requirements: [],
+      dev_mode: true
+    };
+    const openPassport1StepVerifier = new OpenPassport1StepVerifier(
+      verifierArgs
+    );
+
+    const isValid = (await openPassport1StepVerifier.verify(proof)).valid;
+    if (!isValid) {
+      console.log('Passport proof is invalid');
+      res.status(400).json({ error: 'Invalid proof' });
+    } else {
+      console.log('Passport proof is valid');
+      // TODO: Store nullifier in database
+      //console.log("Nullifier: ", proof.getNullifier());
+      await verifyUser(companyRegistry, id);
+      await setKycVerified(id);
+      res.sendStatus(200);
+    }
   } catch (error) {
-    console.error('Error fetching user streams:', error);
-    res.status(500).json({ error: 'Failed to fetch user streams' });
+    console.error('Error verifying KYC:', error);
+    res.status(500).json({ error: 'Failed to verify KYC' });
   }
-}
+};

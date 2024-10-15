@@ -4,6 +4,7 @@ use dep::aztec::prelude::AztecAddress;
 
 #[derive(Serialize, Deserialize)]
 pub struct Stream {
+    user_id: FieldCompressedString,
     company_handle: FieldCompressedString,
     total_claimed: U128,
     // Tokens per second

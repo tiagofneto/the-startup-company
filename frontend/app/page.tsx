@@ -1,9 +1,13 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { LockKeyhole } from "lucide-react"
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { LockKeyhole } from 'lucide-react';
 
-export default function Home({searchParams}: {searchParams: {requiresAuth: string}}) {
+export default function Home({
+  searchParams
+}: {
+  searchParams: { requiresAuth: string };
+}) {
   return (
     <section className="w-full min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-secondary/20 dark:from-background dark:to-secondary/10">
       <div className="container px-4 md:px-6 py-10 md:py-14">
@@ -13,7 +17,8 @@ export default function Home({searchParams}: {searchParams: {requiresAuth: strin
               Welcome to the Isle of Sark Register of Companies
             </h1>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl lg:text-2xl">
-              Sark is pioneering a new way to register digital companies fit for the 21st century.
+              Sark is pioneering a new way to register digital companies fit for
+              the 21st century.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -38,5 +43,5 @@ export default function Home({searchParams}: {searchParams: {requiresAuth: strin
         </div>
       )}
     </section>
-  )
+  );
 }

@@ -12,10 +12,14 @@ if (!handle) {
   process.exit(1);
 }
 
-await createCompany(wallet, companyRegistry, {
-  name: 'test',
-  handle,
-  email: 'test@test.com',
-  director: 'test',
-  totalShares: 100,
-});
+await createCompany(
+  companyRegistry,
+  {
+    name: 'test',
+    handle,
+    email: 'test@test.com',
+    director: 'test',
+    totalShares: 100
+  },
+  wallet
+);

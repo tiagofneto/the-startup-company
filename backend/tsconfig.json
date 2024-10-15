@@ -13,7 +13,7 @@
     "resolveJsonModule": true,
     "removeComments": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "."
   },
   "include": ["src/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

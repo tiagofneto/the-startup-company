@@ -1,25 +1,29 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { 
-  Inbox, 
-  FileText, 
-  PieChart, 
-  DollarSign, 
-  Users, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import {
+  Inbox,
+  FileText,
+  PieChart,
+  DollarSign,
+  Users,
   Settings,
   BarChart3,
   AlertCircle,
   TrendingUp,
   ArrowUpRight,
   ArrowDownLeft,
-  Plus,
-} from 'lucide-react'
-import { computeAvatarFallback } from "@/lib/utils"
-import { createCompanyUser, getCompany, getCompanyPeople } from "@/services/api"
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+  Plus
+} from 'lucide-react';
+import { computeAvatarFallback } from '@/lib/utils';
+import {
+  createCompanyUser,
+  getCompany,
+  getCompanyPeople
+} from '@/services/api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
   DialogClose,
@@ -28,57 +32,70 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { useState } from "react"
-import { PersonDialog } from "./person-dialog"
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { PersonDialog } from './person-dialog';
+import { SendMoneyDialog } from './transfer-dialog';
 
-export default function CompanyDashboard({params}: {params: {handle: string}}) {
-  const [email, setEmail] = useState('')
+export default function CompanyDashboard({
+  params
+}: {
+  params: { handle: string };
+}) {
+  const [email, setEmail] = useState('');
 
   const missingActions = [
-    { id: 1, action: "Complete KYC verification", priority: "high" },
-    { id: 2, action: "Set up cap table", priority: "medium" },
-    { id: 3, action: "Add company logo", priority: "low" },
-  ]
+    { id: 1, action: 'Complete KYC verification', priority: 'high' },
+    { id: 2, action: 'Set up cap table', priority: 'medium' },
+    { id: 3, action: 'Add company logo', priority: 'low' }
+  ];
   const capTable = [
-    { name: "John Doe", shares: 1000000, percentage: 50, isDirector: true },
-    { name: "Jane Smith", shares: 500000, percentage: 25, isDirector: true },
-    { name: "Acme Ventures", shares: 300000, percentage: 15, isDirector: false },
-    { name: "Employee Pool", shares: 200000, percentage: 10, isDirector: false },
-  ]
+    { name: 'John Doe', shares: 1000000, percentage: 50, isDirector: true },
+    { name: 'Jane Smith', shares: 500000, percentage: 25, isDirector: true },
+    {
+      name: 'Acme Ventures',
+      shares: 300000,
+      percentage: 15,
+      isDirector: false
+    },
+    { name: 'Employee Pool', shares: 200000, percentage: 10, isDirector: false }
+  ];
 
   const companyQuery = useQuery({
     queryKey: ['company', params.handle],
     queryFn: () => getCompany(params.handle)
-  })
+  });
 
   const peopleQuery = useQuery({
     queryKey: ['people', params.handle],
     queryFn: () => getCompanyPeople(params.handle)
-  })
+  });
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const addPersonMutation = useMutation({
-    mutationFn: (email: string) => createCompanyUser(email, companyQuery.data?.id),
+    mutationFn: (email: string) =>
+      createCompanyUser(email, companyQuery.data?.handle),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['people', params.handle] })
+      queryClient.invalidateQueries({ queryKey: ['people', params.handle] });
     }
-  })
+  });
 
   const addPerson = () => {
     const emailToAdd = email;
-    setEmail('')
-    addPersonMutation.mutate(emailToAdd)
-  }
+    setEmail('');
+    addPersonMutation.mutate(emailToAdd);
+  };
 
   if (companyQuery.isPending) {
-    return <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
-    </div>
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
@@ -86,12 +103,21 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
       <header className="flex items-center justify-between mb-8 pt-16">
         <div className="flex items-center space-x-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={companyQuery.data?.logo} alt={companyQuery.data?.name || "Company"} />
-            <AvatarFallback>{computeAvatarFallback(companyQuery.data?.name || "Company")}</AvatarFallback>
+            <AvatarImage
+              src={companyQuery.data?.logo}
+              alt={companyQuery.data?.name || 'Company'}
+            />
+            <AvatarFallback>
+              {computeAvatarFallback(companyQuery.data?.name || 'Company')}
+            </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{companyQuery.data?.name}</h1>
-            <p className="text-xl text-muted-foreground">{companyQuery.data?.handle}</p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {companyQuery.data?.name}
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              {companyQuery.data?.handle}
+            </p>
           </div>
         </div>
         <Button variant="outline">Edit Profile</Button>
@@ -101,7 +127,9 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
         <aside className="lg:w-1/4 space-y-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Quick Actions
+              </CardTitle>
               <Settings className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="space-y-2">
@@ -134,7 +162,9 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Company Stats</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Company Stats
+              </CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="space-y-2">
@@ -166,21 +196,27 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                 <li className="flex justify-between items-center">
                   <div>
                     <p className="font-medium">New team member added</p>
-                    <p className="text-sm text-muted-foreground">John Doe joined as Developer</p>
+                    <p className="text-sm text-muted-foreground">
+                      John Doe joined as Developer
+                    </p>
                   </div>
                   <span className="text-sm text-muted-foreground">2h ago</span>
                 </li>
                 <li className="flex justify-between items-center">
                   <div>
                     <p className="font-medium">Invoice paid</p>
-                    <p className="text-sm text-muted-foreground">$5,000 received from Client X</p>
+                    <p className="text-sm text-muted-foreground">
+                      $5,000 received from Client X
+                    </p>
                   </div>
                   <span className="text-sm text-muted-foreground">1d ago</span>
                 </li>
                 <li className="flex justify-between items-center">
                   <div>
                     <p className="font-medium">New project started</p>
-                    <p className="text-sm text-muted-foreground">Project Y kicked off</p>
+                    <p className="text-sm text-muted-foreground">
+                      Project Y kicked off
+                    </p>
                   </div>
                   <span className="text-sm text-muted-foreground">3d ago</span>
                 </li>
@@ -201,7 +237,9 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                   </div>
                   <div>
                     <p className="font-medium">Board Meeting</p>
-                    <p className="text-sm text-muted-foreground">Annual strategy review</p>
+                    <p className="text-sm text-muted-foreground">
+                      Annual strategy review
+                    </p>
                   </div>
                 </li>
                 <li className="flex items-center space-x-4">
@@ -211,7 +249,9 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                   </div>
                   <div>
                     <p className="font-medium">Team Offsite</p>
-                    <p className="text-sm text-muted-foreground">Quarterly team building event</p>
+                    <p className="text-sm text-muted-foreground">
+                      Quarterly team building event
+                    </p>
                   </div>
                 </li>
                 <li className="flex items-center space-x-4">
@@ -221,7 +261,9 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                   </div>
                   <div>
                     <p className="font-medium">Product Launch</p>
-                    <p className="text-sm text-muted-foreground">Release of new feature set</p>
+                    <p className="text-sm text-muted-foreground">
+                      Release of new feature set
+                    </p>
                   </div>
                 </li>
               </ul>
@@ -241,10 +283,12 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                   <p className="text-4xl font-bold">$1,234,567.89</p>
                 </div>
                 <div className="flex space-x-2">
-                  <Button variant="secondary" size="lg">
-                    <ArrowUpRight className="mr-2 h-4 w-4" />
-                    Send Money
-                  </Button>
+                  <SendMoneyDialog>
+                    <Button variant="secondary" size="lg">
+                      <ArrowUpRight className="mr-2 h-4 w-4" />
+                      Send Money
+                    </Button>
+                  </SendMoneyDialog>
                   <Button variant="secondary" size="lg">
                     <ArrowDownLeft className="mr-2 h-4 w-4" />
                     Receive Money
@@ -255,7 +299,6 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
-
             <Card>
               <CardHeader>
                 <CardTitle>People</CardTitle>
@@ -267,25 +310,58 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {peopleQuery.data?.map((person: any) => (
-                      <PersonDialog key={person.id} person={person} companyId={companyQuery.data?.id}>
-                        <div className="flex items-center justify-between bg-background rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                    {peopleQuery.data?.map((person: any) => {
+                      const PersonContent = (
+                        <div className={`flex items-center justify-between bg-background rounded-lg ${person.id ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''}`}>
                           <div className="flex items-center space-x-4">
                             <Avatar>
-                              <AvatarImage src={person.picture} alt={person.email || "Person"} />
-                              <AvatarFallback>{computeAvatarFallback(person.email || "Person")}</AvatarFallback>
+                              <AvatarImage
+                                src={person.picture}
+                                alt={person.email || 'Person'}
+                              />
+                              <AvatarFallback>
+                                {computeAvatarFallback(
+                                  person.email || 'Person'
+                                )}
+                              </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-medium">{person.name || person.email}</p>
-                              <p className="text-sm text-muted-foreground">Director</p>
+                              <p className="font-medium">
+                                {person.name || person.email}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                Director
+                              </p>
                             </div>
                           </div>
-                          <span className={`px-3 py-1 ${person.kyc_verified ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}>
-                            {person.kyc_verified ? 'Verified' : 'Pending'}
+                          <span
+                            className={`px-3 py-1 ${
+                              !person.id
+                                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
+                                : person.kyc_verified
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'
+                            } rounded-full text-sm font-medium`}
+                          >
+                            {!person.id
+                              ? 'Not Registered'
+                              : person.kyc_verified
+                              ? 'Verified'
+                              : 'Pending Verification'}
                           </span>
                         </div>
-                      </PersonDialog>
-                    ))}
+                      );
+
+                      return person.id ? (
+                        <PersonDialog
+                          key={person.id}
+                          person={person}
+                          handle={companyQuery.data?.handle}
+                        >
+                          {PersonContent}
+                        </PersonDialog>
+                      ) : PersonContent;
+                    })}
                   </div>
                 )}
                 <Dialog>
@@ -314,8 +390,12 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                     </div>
                     <DialogFooter className="sm:justify-start">
                       <DialogClose asChild>
-                        <Button type="button" variant="secondary" onClick={addPerson}>
-                          <Plus className="mr-2 h-4 w-4" /> Add 
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={addPerson}
+                        >
+                          <Plus className="mr-2 h-4 w-4" /> Add
                         </Button>
                       </DialogClose>
                     </DialogFooter>
@@ -331,12 +411,20 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
               <CardContent>
                 <div className="space-y-4">
                   {missingActions.map((action) => (
-                    <div key={action.id} className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                    <div
+                      key={action.id}
+                      className="flex items-center justify-between p-4 bg-muted rounded-lg"
+                    >
                       <div className="flex items-center space-x-4">
-                        <AlertCircle className={`h-6 w-6 ${
-                          action.priority === 'high' ? 'text-red-500' :
-                          action.priority === 'medium' ? 'text-yellow-500' : 'text-blue-500'
-                        }`} />
+                        <AlertCircle
+                          className={`h-6 w-6 ${
+                            action.priority === 'high'
+                              ? 'text-red-500'
+                              : action.priority === 'medium'
+                                ? 'text-yellow-500'
+                                : 'text-blue-500'
+                          }`}
+                        />
                         <span>{action.action}</span>
                       </div>
                       <Button size="sm">Complete</Button>
@@ -366,9 +454,15 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
                     {capTable.map((shareholder, index) => (
                       <tr key={index} className="border-b last:border-b-0">
                         <td className="py-2">{shareholder.name}</td>
-                        <td className="text-right py-2">{shareholder.shares.toLocaleString()}</td>
-                        <td className="text-right py-2">{shareholder.percentage}%</td>
-                        <td className="text-center py-2">{shareholder.isDirector ? "Yes" : "No"}</td>
+                        <td className="text-right py-2">
+                          {shareholder.shares.toLocaleString()}
+                        </td>
+                        <td className="text-right py-2">
+                          {shareholder.percentage}%
+                        </td>
+                        <td className="text-center py-2">
+                          {shareholder.isDirector ? 'Yes' : 'No'}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -376,9 +470,8 @@ export default function CompanyDashboard({params}: {params: {handle: string}}) {
               </div>
             </CardContent>
           </Card>
-
         </main>
       </div>
     </div>
-  )
+  );
 }
