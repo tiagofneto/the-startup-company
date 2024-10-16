@@ -15,7 +15,8 @@ import {
   TrendingUp,
   ArrowUpRight,
   ArrowDownLeft,
-  Plus
+  Plus,
+  SettingsIcon
 } from 'lucide-react';
 import { computeAvatarFallback } from '@/lib/utils';
 import {
@@ -456,14 +457,23 @@ export default function CompanyDashboard({
               <>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Cap Table</CardTitle>
+                  { sharesQuery.data?.total_shares > 0 &&
                   <FundDialog handle={companyQuery.data?.handle} totalShares={totalShares}>
                     <Button>Fund the Company</Button>
                   </FundDialog>
+                  }
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
+                  {
+                    sharesQuery.isPending ? (
+                      <div className="flex justify-center items-center h-32">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                  ) : (
+                    sharesQuery.data?.total_shares > 0 ?
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
                         <tr className="border-b">
                           <th className="text-left py-2">Shareholder</th>
                           <th className="text-right py-2">Shares</th>
@@ -483,8 +493,15 @@ export default function CompanyDashboard({
                           </tr>
                         ))}
                       </tbody>
-                    </table>
-                  </div>
+                      </table>
+                    </div>
+                    :
+                    <div className="flex justify-center items-center">
+                      <Button size="lg" className="w-full">
+                        <SettingsIcon className="mr-2 h-4 w-4" /> Setup Cap Table
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </>
             );
