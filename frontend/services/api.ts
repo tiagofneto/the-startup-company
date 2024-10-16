@@ -121,3 +121,12 @@ export async function getUserCompanyStreams(handle: string, user_id: string) {
   );
   return response.data;
 }
+
+export async function getCompanyBalance(handle: string) {
+  const response = await apiClient.get(`/company-balance?handle=${handle}`, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`
+    }
+  });
+  return response.data;
+}

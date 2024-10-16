@@ -9,7 +9,8 @@ import {
   getCompaniesHandler,
   getPeopleHandler,
   createCompanyUserHandler,
-  getUserCompanies
+  getUserCompanies,
+  getCompanyBalanceHandler
 } from './handlers/company.js';
 import { getProfile, verifyKyc } from './handlers/user.js';
 import {
@@ -67,6 +68,7 @@ app.get(
   authenticateToken,
   getUserCompanyStreamsHandler
 );
+app.get('/company-balance', getCompanyBalanceHandler);
 
 // User routes
 app.get('/profile', authenticateToken, getProfile);

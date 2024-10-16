@@ -21,6 +21,7 @@ import { computeAvatarFallback } from '@/lib/utils';
 import {
   createCompanyUser,
   getCompany,
+  getCompanyBalance,
   getCompanyPeople
 } from '@/services/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -57,6 +58,11 @@ export default function CompanyDashboard({
   const companyQuery = useQuery({
     queryKey: ['company', params.handle],
     queryFn: () => getCompany(params.handle)
+  });
+
+  const balanceQuery = useQuery({
+    queryKey: ['balance', params.handle],
+    queryFn: () => getCompanyBalance(params.handle)
   });
 
   const peopleQuery = useQuery({
@@ -282,7 +288,13 @@ export default function CompanyDashboard({
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
                 <div className="text-center md:text-left">
                   <p className="text-lg font-medium">Current Balance</p>
-                  <p className="text-4xl font-bold">$1,234,567.89</p>
+                  {balanceQuery.isPending ? (
+                    <div className="h-10 flex items-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-foreground"></div>
+                    </div>
+                  ) : (
+                    <p className="text-4xl font-bold">${balanceQuery.data?.balance}</p>
+                  )}
                 </div>
                 <div className="flex space-x-2">
                   <SendMoneyDialog>
