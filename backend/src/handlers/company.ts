@@ -6,9 +6,11 @@ import {
   createCompanyUser,
   createUserCompany,
   fetchCompanyPeople,
+  fetchShareholders,
   fetchUserCompanies,
   getCompanies,
   getCompanyId,
+  updateShareholders,
   uploadCompany
 } from '../interactions/company.js';
 import { transport } from '../utils.js';
@@ -179,10 +181,14 @@ export const fundCompanyHandler = async (req: AuthenticatedRequest, res: Respons
     const { handle, amount } = req.body;
 
     const user_id = req.user.sub;
-
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
+
+    const companyId = await getCompanyId(handle);
+
     await fundCompany(companyRegistry, handle, user_id, amount);
+
+    await updateShareholders(companyId, user_id, amount);
 
     res.status(200).json({ message: 'Company funded successfully' });
   } catch (error) {
@@ -190,3 +196,24 @@ export const fundCompanyHandler = async (req: AuthenticatedRequest, res: Respons
     res.status(500).json({ error: 'Failed to fund company' });
   }
 };
+
+export const getShareholdersHandler = async (req: Request, res: Response) => {
+  try {
+    const { handle } = req.query;
+    const companyId = await getCompanyId(handle as string);
+    const shareholders = (await fetchShareholders(companyId)).map((shareholder) => {
+      const metadata = shareholder.raw_user_meta_data as {
+        full_name: string;
+      };
+      return {
+        shares: shareholder.shares,
+        name: metadata?.full_name
+      };
+    });
+    res.status(200).json(shareholders);
+  } catch (error) {
+    console.error('Error fetching shareholders:', error);
+    res.status(500).json({ error: 'Failed to fetch shareholders' });
+  }
+};
+

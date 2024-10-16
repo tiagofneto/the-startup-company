@@ -22,7 +22,8 @@ import {
   createCompanyUser,
   getCompany,
   getCompanyBalance,
-  getCompanyPeople
+  getCompanyPeople,
+  getShareholders
 } from '@/services/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -70,6 +71,11 @@ export default function CompanyDashboard({
     queryFn: () => getCompanyPeople(params.handle)
   });
 
+  const shareholdersQuery = useQuery({
+    queryKey: ['shareholders', params.handle],
+    queryFn: () => getShareholders(params.handle)
+  });
+
   const queryClient = useQueryClient();
 
   const addPersonMutation = useMutation({
@@ -85,18 +91,6 @@ export default function CompanyDashboard({
     setEmail('');
     addPersonMutation.mutate(emailToAdd);
   };
-
-  const capTable = companyQuery.data?.capTable || [
-    {
-      name: 'John Doe',
-      shares: 1000000
-    },
-    {
-      name: 'Jane Smith',
-      shares: 500000,
-      percentage: 25
-    }
-  ];
 
   if (companyQuery.isPending) {
     return (
@@ -451,7 +445,7 @@ export default function CompanyDashboard({
 
         <Card>
           {(() => {
-            const totalShares = capTable.reduce((sum: number, shareholder: any) => sum + shareholder.shares, 0);
+            const totalShares = shareholdersQuery.data?.reduce((sum: number, shareholder: any) => sum + shareholder.shares, 0);
             return (
               <>
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -471,7 +465,7 @@ export default function CompanyDashboard({
                         </tr>
                       </thead>
                       <tbody>
-                        {capTable.map((shareholder: any, index: number) => (
+                        {shareholdersQuery.data?.map((shareholder: any, index: number) => (
                           <tr key={index} className="border-b last:border-b-0">
                             <td className="py-2">{shareholder.name}</td>
                             <td className="text-right py-2">

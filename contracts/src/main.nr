@@ -7,7 +7,7 @@ contract CompanyRegistry {
     use dep::token::Token;
     use crate::types::{Company, Stream};
 
-    global INITIAL_BALANCE: U128 = U128::from_field(100);
+    global INITIAL_BALANCE: U128 = U128::from_field(0);
 
     #[storage]
     struct Storage<Context> {

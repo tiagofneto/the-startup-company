@@ -1,5 +1,5 @@
 import { Company } from '../types.js';
-import { companies, userCompanies, userProfiles, users } from '../schema.js';
+import { companies, shareholders, userCompanies, userProfiles, users } from '../schema.js';
 import { eq } from 'drizzle-orm';
 import { getUserEmail } from './user.js';
 import { db } from './db.js';
@@ -96,4 +96,22 @@ export async function getCompanyId(handle: string) {
   )[0].id;
   console.log('Company id fetched successfully:', companyId);
   return companyId;
+}
+
+export async function updateShareholders(companyId: number, userId: string, shares: number) {
+  console.log('Updating shareholders in database:', companyId, userId, shares);
+  await db.insert(shareholders).values({ companyId: companyId, userId: userId, shares: shares });
+  console.log('Shareholders updated successfully');
+}
+
+export async function fetchShareholders(companyId: number) {
+  console.log('Fetching shareholders from database:', companyId);
+  const fetchedShareholders = await db.select({
+    raw_user_meta_data: users.raw_user_meta_data,
+    shares: shareholders.shares
+  }).from(shareholders)
+  .leftJoin(users, eq(shareholders.userId, users.id))
+  .where(eq(shareholders.companyId, companyId));
+  console.log('Shareholders fetched successfully:', fetchedShareholders);
+  return fetchedShareholders;
 }

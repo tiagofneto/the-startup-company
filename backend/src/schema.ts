@@ -66,3 +66,17 @@ export const streams = pgTable('streams', {
     .defaultNow(),
   totalClaimed: integer('total_claimed').notNull().default(0)
 });
+
+export const shareholders = pgTable('shareholders', {
+  companyId: integer('company_id')
+    .notNull()
+    .references(() => companies.id),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id),
+  shares: integer('shares').notNull()
+  },
+  (t) => ({
+    id: primaryKey({ columns: [t.companyId, t.userId] })
+  })
+);

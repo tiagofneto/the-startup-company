@@ -15,6 +15,7 @@ export function FundDialog({ children, handle, totalShares }: { children: ReactN
     mutationFn: (amount: number) => fundCompany(handle, amount),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['balance', handle] });
+      queryClient.invalidateQueries({ queryKey: ['shareholders', handle] });
     }
   });
 

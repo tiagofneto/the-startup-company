@@ -143,3 +143,8 @@ export async function fundCompany(handle: string, amount: number) {
   );
   return response.data;
 }
+
+export async function getShareholders(handle: string) {
+  const response = await apiClient.get(`/shareholders?handle=${handle}`);
+  return response.data;
+}
