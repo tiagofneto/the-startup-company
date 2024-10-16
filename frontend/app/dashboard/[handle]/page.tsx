@@ -23,7 +23,8 @@ import {
   getCompany,
   getCompanyBalance,
   getCompanyPeople,
-  getShareholders
+  getShareholders,
+  getShares
 } from '@/services/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -84,6 +85,11 @@ export default function CompanyDashboard({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['people', params.handle] });
     }
+  });
+
+  const sharesQuery = useQuery({
+    queryKey: ['shares', params.handle],
+    queryFn: () => getShares(params.handle)
   });
 
   const addPerson = () => {

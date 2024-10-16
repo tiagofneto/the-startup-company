@@ -32,7 +32,9 @@ contract CompanyRegistry {
         // Handle -> UserID -> Shares
         shares: Map<str<31>, Map<str<31>, PublicMutable<U128, Context>, Context>, Context>,
         // Handle -> TotalShares
-        // total_shares: Map<str<31>, PublicMutable<U128, Context>, Context>,
+        total_shares: Map<str<31>, PublicMutable<U128, Context>, Context>,
+        // Handle -> MintedShares
+        minted_shares: Map<str<31>, PublicMutable<U128, Context>, Context>,
     }
 
     #[public]
@@ -161,15 +163,35 @@ contract CompanyRegistry {
     fn fund_company(handle: str<31>, user_id: str<31>, amount: Field) {
         // assert authorized
         //assert(storage.authorized.at(handle).at(user_id).read(), "User is not authorized");
-        
+
+        let total_shares = storage.total_shares.at(handle).read();
+        let minted_shares = storage.minted_shares.at(handle).read();
+
+        let shares_int = U128::from_integer(amount);
+        assert(minted_shares + shares_int <= total_shares, "Exceeds total shares");
+
         let balance = storage.balances.at(handle).read();
         let shares = storage.shares.at(handle).at(user_id).read();
         Token::at(storage.token_address.read()).mint_public(
             context.this_address(),
             amount,
         ).call(&mut context);
-        storage.balances.at(handle).write(balance + U128::from_integer(amount));
-        storage.shares.at(handle).at(user_id).write(shares + U128::from_integer(amount));
+        storage.balances.at(handle).write(balance + shares_int);
+        storage.shares.at(handle).at(user_id).write(shares + shares_int);
+        storage.minted_shares.at(handle).write(minted_shares + shares_int);
+    }
+
+    #[public]
+    fn issue_shares(handle: str<31>, shares: Field) {
+        let total_shares = storage.total_shares.at(handle).read();
+        storage.total_shares.at(handle).write(total_shares + U128::from_integer(shares));
+    }
+
+    #[public]
+    fn get_shares(handle: str<31>) -> (Field, Field) {
+        let minted_shares = storage.minted_shares.at(handle).read().to_integer();
+        let total_shares = storage.total_shares.at(handle).read().to_integer();
+        (minted_shares, total_shares)
     }
 
     #[public]

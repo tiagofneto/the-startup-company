@@ -148,3 +148,8 @@ export async function getShareholders(handle: string) {
   const response = await apiClient.get(`/shareholders?handle=${handle}`);
   return response.data;
 }
+
+export async function getShares(handle: string) {
+  const response = await apiClient.get(`/shares?handle=${handle}`);
+  return response.data;
+}

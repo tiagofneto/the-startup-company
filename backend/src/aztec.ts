@@ -363,3 +363,21 @@ export async function fundCompany(
 
   return tx;
 }
+
+export async function getShares(
+  contractAddress: string,
+  handle: string,
+  wallet: AccountWalletWithSecretKey = globalWallet!
+) {
+  const contract = await Contract.at(
+    AztecAddress.fromString(contractAddress),
+    loadContractArtifact(CompanyRegistryJson as any),
+    wallet
+  );
+
+  console.log(`Getting shares for company ${handle}`);
+  const shares = await contract.methods.get_shares(handle).simulate();
+  console.log(`Shares for company ${handle}: ${shares}`);
+
+  return shares;
+}
