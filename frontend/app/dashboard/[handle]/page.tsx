@@ -39,6 +39,7 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { PersonDialog } from './person-dialog';
 import { SendMoneyDialog } from './transfer-dialog';
+import { FundDialog } from './fund-dialog';
 
 export default function CompanyDashboard({
   params
@@ -51,17 +52,6 @@ export default function CompanyDashboard({
     { id: 1, action: 'Complete KYC verification', priority: 'high' },
     { id: 2, action: 'Set up cap table', priority: 'medium' },
     { id: 3, action: 'Add company logo', priority: 'low' }
-  ];
-  const capTable = [
-    { name: 'John Doe', shares: 1000000, percentage: 50, isDirector: true },
-    { name: 'Jane Smith', shares: 500000, percentage: 25, isDirector: true },
-    {
-      name: 'Acme Ventures',
-      shares: 300000,
-      percentage: 15,
-      isDirector: false
-    },
-    { name: 'Employee Pool', shares: 200000, percentage: 10, isDirector: false }
   ];
 
   const companyQuery = useQuery({
@@ -89,6 +79,18 @@ export default function CompanyDashboard({
     setEmail('');
     addPersonMutation.mutate(emailToAdd);
   };
+
+  const capTable = companyQuery.data?.capTable || [
+    {
+      name: 'John Doe',
+      shares: 1000000
+    },
+    {
+      name: 'Jane Smith',
+      shares: 500000,
+      percentage: 25
+    }
+  ];
 
   if (companyQuery.isPending) {
     return (
@@ -405,71 +407,73 @@ export default function CompanyDashboard({
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Missing Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {missingActions.map((action) => (
-                    <div
-                      key={action.id}
-                      className="flex items-center justify-between p-4 bg-muted rounded-lg"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <AlertCircle
-                          className={`h-6 w-6 ${
-                            action.priority === 'high'
-                              ? 'text-red-500'
-                              : action.priority === 'medium'
-                                ? 'text-yellow-500'
-                                : 'text-blue-500'
-                          }`}
-                        />
-                        <span>{action.action}</span>
-                      </div>
-                      <Button size="sm">Complete</Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
             <CardHeader>
-              <CardTitle>Cap Table</CardTitle>
+              <CardTitle>Missing Actions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2">Shareholder</th>
-                      <th className="text-right py-2">Ordinary Shares</th>
-                      <th className="text-right py-2">Percentage</th>
-                      <th className="text-center py-2">Director</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {capTable.map((shareholder, index) => (
+              <div className="space-y-4">
+                {missingActions.map((action) => (
+                  <div
+                    key={action.id}
+                    className="flex items-center justify-between p-4 bg-muted rounded-lg"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <AlertCircle
+                        className={`h-6 w-6 ${
+                          action.priority === 'high'
+                            ? 'text-red-500'
+                            : action.priority === 'medium'
+                              ? 'text-yellow-500'
+                              : 'text-blue-500'
+                        }`}
+                      />
+                      <span>{action.action}</span>
+                    </div>
+                    <Button size="sm">Complete</Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Cap Table</CardTitle>
+            <FundDialog>
+              <Button>Fund the Company</Button>
+            </FundDialog>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Shareholder</th>
+                    <th className="text-right py-2">Shares</th>
+                    <th className="text-right py-2">Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const totalShares = capTable.reduce((sum: number, shareholder: any) => sum + shareholder.shares, 0);
+                    return capTable.map((shareholder: any, index: number) => (
                       <tr key={index} className="border-b last:border-b-0">
                         <td className="py-2">{shareholder.name}</td>
                         <td className="text-right py-2">
                           {shareholder.shares.toLocaleString()}
                         </td>
                         <td className="text-right py-2">
-                          {shareholder.percentage}%
-                        </td>
-                        <td className="text-center py-2">
-                          {shareholder.isDirector ? 'Yes' : 'No'}
+                          {((shareholder.shares / totalShares) * 100).toFixed(2)}%
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+                    ));
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
         </main>
       </div>
     </div>
