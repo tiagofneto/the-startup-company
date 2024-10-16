@@ -341,3 +341,25 @@ export async function authorizeUser(
 
   return tx;
 }
+
+export async function fundCompany(
+  contractAddress: string,
+  handle: string,
+  user_id: string,
+  amount: number,
+  wallet: AccountWalletWithSecretKey = globalWallet!
+) {
+  const contract = await Contract.at(
+    AztecAddress.fromString(contractAddress),
+    loadContractArtifact(CompanyRegistryJson as any),
+    wallet
+  );
+
+  console.log(`Funding company ${handle} with ${amount} tokens for user ${user_id}`);
+  const tx = await contract.methods.fund_company(handle, user_id, amount).send().wait();
+
+  console.log(`Sent fund company transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+
+  return tx;
+}

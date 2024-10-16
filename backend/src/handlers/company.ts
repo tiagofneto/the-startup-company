@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { authorizeUser, createCompany, getCompany, getCompanyBalance } from '../aztec.js';
+import { authorizeUser, createCompany, fundCompany, getCompany, getCompanyBalance } from '../aztec.js';
 import {
   createCompanyUser,
   createUserCompany,
@@ -171,5 +171,22 @@ export const getCompanyBalanceHandler = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching company balance:', error);
     res.status(500).json({ error: 'Failed to fetch company balance' });
+  }
+};
+
+export const fundCompanyHandler = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { handle, amount } = req.body;
+
+    const user_id = req.user.sub;
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+    await fundCompany(companyRegistry, handle, user_id, amount);
+
+    res.status(200).json({ message: 'Company funded successfully' });
+  } catch (error) {
+    console.error('Error funding company:', error);
+    res.status(500).json({ error: 'Failed to fund company' });
   }
 };

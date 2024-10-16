@@ -130,3 +130,16 @@ export async function getCompanyBalance(handle: string) {
   });
   return response.data;
 }
+
+export async function fundCompany(handle: string, amount: number) {
+  const response = await apiClient.post(
+    '/fund-company',
+    { handle, amount },
+    {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }
+  );
+  return response.data;
+}

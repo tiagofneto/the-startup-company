@@ -456,7 +456,7 @@ export default function CompanyDashboard({
               <>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Cap Table</CardTitle>
-                  <FundDialog totalShares={totalShares}>
+                  <FundDialog handle={companyQuery.data?.handle} totalShares={totalShares}>
                     <Button>Fund the Company</Button>
                   </FundDialog>
                 </CardHeader>

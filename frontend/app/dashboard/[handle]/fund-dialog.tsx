@@ -3,17 +3,19 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { fundCompany } from '@/services/api';
 
-async function fundCompany(amount: number) {
-  console.log('Funding company', amount);
-}
-
-export function FundDialog({ children, totalShares }: { children: ReactNode; totalShares?: number }) {
+export function FundDialog({ children, handle, totalShares }: { children: ReactNode; handle: string; totalShares?: number }) {
   const [fundingAmount, setFundingAmount] = useState('');
 
+  const queryClient = useQueryClient();
+
   const fundCompanyMutation = useMutation({
-    mutationFn: (amount: number) => fundCompany(amount),
+    mutationFn: (amount: number) => fundCompany(handle, amount),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['balance', handle] });
+    }
   });
 
   const handleFundCompany = () => {

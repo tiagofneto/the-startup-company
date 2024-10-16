@@ -18,6 +18,7 @@ contract CompanyRegistry {
         // Handle -> email -> Authorized
         authorized: Map<str<31>, Map<str<31>, PublicMutable<bool, Context>, Context>, Context>,
 
+        // Handle -> Balance
         balances: Map<str<31>, PublicMutable<U128, Context>, Context>,
         token_address: PublicMutable<AztecAddress, Context>,
 
@@ -27,6 +28,11 @@ contract CompanyRegistry {
         // StreamID -> Stream
         streams: Map<u64, PublicMutable<Stream, Context>, Context>,
         stream_counter: PublicMutable<u64, Context>,
+
+        // Handle -> UserID -> Shares
+        shares: Map<str<31>, Map<str<31>, PublicMutable<U128, Context>, Context>, Context>,
+        // Handle -> TotalShares
+        // total_shares: Map<str<31>, PublicMutable<U128, Context>, Context>,
     }
 
     #[public]
@@ -152,6 +158,21 @@ contract CompanyRegistry {
     }
 
     #[public]
+    fn fund_company(handle: str<31>, user_id: str<31>, amount: Field) {
+        // assert authorized
+        //assert(storage.authorized.at(handle).at(user_id).read(), "User is not authorized");
+        
+        let balance = storage.balances.at(handle).read();
+        let shares = storage.shares.at(handle).at(user_id).read();
+        Token::at(storage.token_address.read()).mint_public(
+            context.this_address(),
+            amount,
+        ).call(&mut context);
+        storage.balances.at(handle).write(balance + U128::from_integer(amount));
+        storage.shares.at(handle).at(user_id).write(shares + U128::from_integer(amount));
+    }
+
+    #[public]
     #[view]
     fn is_user_verified(user_id: str<31>) -> bool {
         storage.user_verified.at(user_id).read()
@@ -174,5 +195,4 @@ contract CompanyRegistry {
     fn get_balance(handle: str<31>) -> Field {
         storage.balances.at(handle).read().to_integer()
     }
-
 }
