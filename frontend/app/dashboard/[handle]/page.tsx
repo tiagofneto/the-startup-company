@@ -438,41 +438,45 @@ export default function CompanyDashboard({
         </div>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Cap Table</CardTitle>
-            <FundDialog>
-              <Button>Fund the Company</Button>
-            </FundDialog>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Shareholder</th>
-                    <th className="text-right py-2">Shares</th>
-                    <th className="text-right py-2">Percentage</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(() => {
-                    const totalShares = capTable.reduce((sum: number, shareholder: any) => sum + shareholder.shares, 0);
-                    return capTable.map((shareholder: any, index: number) => (
-                      <tr key={index} className="border-b last:border-b-0">
-                        <td className="py-2">{shareholder.name}</td>
-                        <td className="text-right py-2">
-                          {shareholder.shares.toLocaleString()}
-                        </td>
-                        <td className="text-right py-2">
-                          {((shareholder.shares / totalShares) * 100).toFixed(2)}%
-                        </td>
-                      </tr>
-                    ));
-                  })()}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
+          {(() => {
+            const totalShares = capTable.reduce((sum: number, shareholder: any) => sum + shareholder.shares, 0);
+            return (
+              <>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Cap Table</CardTitle>
+                  <FundDialog totalShares={totalShares}>
+                    <Button>Fund the Company</Button>
+                  </FundDialog>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Shareholder</th>
+                          <th className="text-right py-2">Shares</th>
+                          <th className="text-right py-2">Percentage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {capTable.map((shareholder: any, index: number) => (
+                          <tr key={index} className="border-b last:border-b-0">
+                            <td className="py-2">{shareholder.name}</td>
+                            <td className="text-right py-2">
+                              {shareholder.shares.toLocaleString()}
+                            </td>
+                            <td className="text-right py-2">
+                              {((shareholder.shares / totalShares) * 100).toFixed(2)}%
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </>
+            );
+          })()}
         </Card>
         </main>
       </div>

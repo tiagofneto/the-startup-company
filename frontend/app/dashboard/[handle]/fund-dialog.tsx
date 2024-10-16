@@ -9,7 +9,7 @@ async function fundCompany(amount: number) {
   console.log('Funding company', amount);
 }
 
-export function FundDialog({ children }: { children: ReactNode }) {
+export function FundDialog({ children, totalShares }: { children: ReactNode; totalShares?: number }) {
   const [fundingAmount, setFundingAmount] = useState('');
 
   const fundCompanyMutation = useMutation({
@@ -24,10 +24,19 @@ export function FundDialog({ children }: { children: ReactNode }) {
     }
   };
 
+  const setPresetAmount = (amount: number) => {
+    setFundingAmount(amount.toString());
+  };
+
+  const setPercentageAmount = (percentage: number) => {
+    const amount = Math.round((percentage / 100) * (totalShares! / (1 - percentage / 100)));
+    setFundingAmount(amount.toString());
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Fund the Company</DialogTitle>
           <DialogDescription>
@@ -37,8 +46,8 @@ export function FundDialog({ children }: { children: ReactNode }) {
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="shares" className="text-right">
-            Shares
-          </Label>
+              Shares
+            </Label>
             <Input
               id="shares"
               type="number"
@@ -47,6 +56,18 @@ export function FundDialog({ children }: { children: ReactNode }) {
               onChange={(e) => setFundingAmount(e.target.value)}
             />
           </div>
+          <div className="grid grid-cols-3 gap-2">
+            <Button variant="outline" onClick={() => setPresetAmount(1000)}>1,000</Button>
+            <Button variant="outline" onClick={() => setPresetAmount(10000)}>10,000</Button>
+            <Button variant="outline" onClick={() => setPresetAmount(1000000)}>1,000,000</Button>
+          </div>
+          {totalShares && (
+            <div className="grid grid-cols-3 gap-2">
+              <Button variant="secondary" onClick={() => setPercentageAmount(10)}>10%</Button>
+              <Button variant="secondary" onClick={() => setPercentageAmount(25)}>25%</Button>
+              <Button variant="secondary" onClick={() => setPercentageAmount(50)}>50%</Button>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button onClick={handleFundCompany}>Buy Shares</Button>
