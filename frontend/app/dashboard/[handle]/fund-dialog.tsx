@@ -32,7 +32,7 @@ export function FundDialog({ children, handle, totalShares }: { children: ReactN
   };
 
   const setPercentageAmount = (percentage: number) => {
-    const amount = Math.round((percentage / 100) * (totalShares! / (1 - percentage / 100)));
+    const amount = Math.round((percentage / 100) * totalShares!);
     setFundingAmount(amount.toString());
   };
 

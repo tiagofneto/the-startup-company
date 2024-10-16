@@ -13,7 +13,8 @@ import {
   getCompanyBalanceHandler,
   fundCompanyHandler,
   getShareholdersHandler,
-  getSharesHandler
+  getSharesHandler,
+  issueSharesHandler
 } from './handlers/company.js';
 import { getProfile, verifyKyc } from './handlers/user.js';
 import {
@@ -75,6 +76,7 @@ app.get('/company-balance', getCompanyBalanceHandler);
 app.post('/fund-company', authenticateToken, fundCompanyHandler);
 app.get('/shareholders', getShareholdersHandler);
 app.get('/shares', getSharesHandler);
+app.post('/issue-shares', authenticateToken, issueSharesHandler);
 
 // User routes
 app.get('/profile', authenticateToken, getProfile);

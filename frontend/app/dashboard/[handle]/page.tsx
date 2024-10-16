@@ -25,7 +25,8 @@ import {
   getCompanyBalance,
   getCompanyPeople,
   getShareholders,
-  getShares
+  getShares,
+  issueShares
 } from '@/services/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -51,6 +52,7 @@ export default function CompanyDashboard({
   params: { handle: string };
 }) {
   const [email, setEmail] = useState('');
+  const [totalSharesInput, setTotalSharesInput] = useState('');
 
   const missingActions = [
     { id: 1, action: 'Complete KYC verification', priority: 'high' },
@@ -92,11 +94,25 @@ export default function CompanyDashboard({
     queryKey: ['shares', params.handle],
     queryFn: () => getShares(params.handle)
   });
+  
+  const issueSharesMutation = useMutation({
+    mutationFn: (shares: number) => issueShares(params.handle, shares),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shares', params.handle] });
+    }
+  });
 
   const addPerson = () => {
     const emailToAdd = email;
     setEmail('');
     addPersonMutation.mutate(emailToAdd);
+  };
+
+  const handleSetupCapTable = () => {
+    const shares = parseInt(totalSharesInput, 10);
+    if (!isNaN(shares) && shares > 0) {
+      issueSharesMutation.mutate(shares);
+    }
   };
 
   if (companyQuery.isPending) {
@@ -452,7 +468,7 @@ export default function CompanyDashboard({
 
         <Card>
           {(() => {
-            const totalShares = shareholdersQuery.data?.reduce((sum: number, shareholder: any) => sum + shareholder.shares, 0);
+            const totalShares = sharesQuery.data?.total_shares;
             return (
               <>
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -496,11 +512,24 @@ export default function CompanyDashboard({
                       </table>
                     </div>
                     :
-                    <div className="flex justify-center items-center">
-                      <Button size="lg" className="w-full">
+                    <div className="space-y-4 max-w-md">
+                      <div className="flex space-x-2">
+                      <Input
+                        id="totalShares"
+                        type="number"
+                        placeholder="Enter total shares"
+                        value={totalSharesInput}
+                        onChange={(e) => setTotalSharesInput(e.target.value)}
+                        className="w-48"
+                      />
+                      <Button 
+                        onClick={handleSetupCapTable} 
+                        disabled={totalSharesInput === '' || isNaN(parseInt(totalSharesInput, 10)) || parseInt(totalSharesInput, 10) <= 0}
+                      >
                         <SettingsIcon className="mr-2 h-4 w-4" /> Setup Cap Table
                       </Button>
                     </div>
+                  </div>
                   )}
                 </CardContent>
               </>

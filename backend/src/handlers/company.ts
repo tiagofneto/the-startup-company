@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { authorizeUser, createCompany, fundCompany, getCompany, getCompanyBalance, getShares } from '../aztec.js';
+import { authorizeUser, createCompany, fundCompany, getCompany, getCompanyBalance, getShares, issueShares } from '../aztec.js';
 import {
   createCompanyUser,
   createUserCompany,
@@ -233,5 +233,20 @@ export const getSharesHandler = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching shares:', error);
     res.status(500).json({ error: 'Failed to fetch shares' });
+  }
+};
+
+export const issueSharesHandler = async (req: Request, res: Response) => {
+  try {
+    const { handle, shares } = req.body;
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
+    await issueShares(companyRegistry, handle, shares);
+    res.status(200).json({ message: 'Shares issued successfully' });
+  } catch (error) {
+    console.error('Error issuing shares:', error);
+    res.status(500).json({ error: 'Failed to issue shares' });
   }
 };

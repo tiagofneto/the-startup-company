@@ -153,3 +153,16 @@ export async function getShares(handle: string) {
   const response = await apiClient.get(`/shares?handle=${handle}`);
   return response.data;
 }
+
+export async function issueShares(handle: string, shares: number) {
+  const response = await apiClient.post(
+    '/issue-shares',
+    { handle, shares },
+    {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }
+  );
+  return response.data;
+}
