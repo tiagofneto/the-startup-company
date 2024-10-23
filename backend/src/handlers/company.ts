@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { authorizeUser, createCompany, fundCompany, getCompany, getCompanyBalance, getShares, issueShares } from '../aztec.js';
+import { authorizeUser, createCompany, fundCompany, getCompany, getCompanyBalance, getShares, issueShares, transferTokensToAddress, transferTokensToHandle } from '../aztec.js';
 import {
   createCompanyUser,
   createUserCompany,
@@ -247,5 +247,25 @@ export const issueSharesHandler = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error issuing shares:', error);
     res.status(500).json({ error: 'Failed to issue shares' });
+  }
+};
+
+export const transferTokensHandler = async (req: Request, res: Response) => {
+  try {
+    const { from, to, amount, isAddress } = req.body;
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
+    if (isAddress) {
+      await transferTokensToAddress(companyRegistry, from, to, amount);
+    } else {
+      await transferTokensToHandle(companyRegistry, from, to, amount);
+    }
+
+    res.status(200).json({ message: 'Tokens transferred successfully' });
+  } catch (error) {
+    console.error('Error transferring tokens:', error);
+    res.status(500).json({ error: 'Failed to transfer tokens' });
   }
 };

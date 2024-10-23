@@ -166,3 +166,16 @@ export async function issueShares(handle: string, shares: number) {
   );
   return response.data;
 }
+
+export async function transferTokens(from: string, to: string, amount: number, isAddress: boolean) {
+  const response = await apiClient.post(
+    '/transfer-tokens',
+    { from, to, amount, isAddress },
+    {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }
+  );
+  return response.data;
+}

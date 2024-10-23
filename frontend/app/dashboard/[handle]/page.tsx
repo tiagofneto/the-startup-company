@@ -314,7 +314,7 @@ export default function CompanyDashboard({
                   )}
                 </div>
                 <div className="flex space-x-2">
-                  <SendMoneyDialog>
+                  <SendMoneyDialog handle={companyQuery.data?.handle}>
                     <Button variant="secondary" size="lg">
                       <ArrowUpRight className="mr-2 h-4 w-4" />
                       Send Money

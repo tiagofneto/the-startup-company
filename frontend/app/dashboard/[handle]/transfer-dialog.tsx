@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -15,21 +15,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { transferTokens } from '@/services/api';
 
-const sendMoney = async (recipient: string, amount: number, isAztecAddress: boolean) => {
-  // TODO
-  console.log(`Sending ${amount} to ${recipient} (${isAztecAddress ? 'Aztec address' : 'Company handle'})`);
+const sendMoney = async (handle: string, recipient: string, amount: number, isAztecAddress: boolean) => {
+  await transferTokens(handle, recipient, amount, isAztecAddress);
 };
 
-export function SendMoneyDialog({ children }: { children: ReactNode }) {
+export function SendMoneyDialog({ handle, children }: { handle: string; children: ReactNode }) {
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [activeTab, setActiveTab] = useState('company');
 
+  const queryClient = useQueryClient();
+
   const sendMoneyMutation = useMutation({
-    mutationFn: () => sendMoney(recipient, parseFloat(amount), activeTab === 'aztec'),
+    mutationFn: () => sendMoney(handle, recipient, parseFloat(amount), activeTab === 'aztec'),
     onSuccess: () => {
-      console.log('Money sent successfully');
+      queryClient.invalidateQueries({ queryKey: ['balance', handle] });
+      if (activeTab === 'company') {
+        queryClient.invalidateQueries({ queryKey: ['balance', recipient] });
+      }
     },
   });
 
