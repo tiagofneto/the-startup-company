@@ -4,5 +4,4 @@ export interface Company {
   description: string;
   email: string;
   director: string;
-  totalShares: number;
 }

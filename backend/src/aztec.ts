@@ -115,7 +115,6 @@ export async function createCompany(
       company.description,
       company.email,
       company.director,
-      company.totalShares
     )
     .send()
     .wait();

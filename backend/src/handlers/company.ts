@@ -41,10 +41,10 @@ export const createCompanyHandler = async (
   res: Response
 ) => {
   try {
-    const { name, handle, description, totalShares } = req.body;
+    const { name, handle, description } = req.body;
     const user_id = req.user.sub;
 
-    if (!name || !handle || !description || !totalShares) {
+    if (!name || !handle || !description) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -56,8 +56,7 @@ export const createCompanyHandler = async (
       handle,
       description,
       email: req.user.email,
-      director: req.user.user_metadata?.full_name || '',
-      totalShares
+      director: req.user.user_metadata?.full_name || ''
     };
 
     // Onchain

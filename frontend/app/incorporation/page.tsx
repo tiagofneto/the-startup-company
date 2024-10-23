@@ -15,7 +15,6 @@ type FormData = {
   name: string;
   handle: string;
   description: string;
-  totalShares: string;
 };
 
 type Field = {
@@ -52,15 +51,6 @@ const fields: Field[] = [
       value.length < 10
         ? 'Company description must be at least 10 characters'
         : null
-  },
-  {
-    name: 'totalShares',
-    label: 'Total Number of Shares',
-    type: 'number',
-    validate: async (value) =>
-      isNaN(Number(value)) || Number(value) <= 0
-        ? 'Must be a positive number'
-        : null
   }
 ];
 
@@ -69,7 +59,6 @@ export default function CompanyRegistration() {
     name: '',
     handle: '',
     description: '',
-    totalShares: ''
   });
   const [currentField, setCurrentField] = useState(0);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(

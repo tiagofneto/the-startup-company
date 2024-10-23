@@ -82,7 +82,7 @@ contract CompanyRegistry {
     }
 
     #[public]
-    fn create_company(name: str<31>, handle: str<31>, description: str<31>, email: str<31>, director: str<31>, total_shares: Field) {
+    fn create_company(name: str<31>, handle: str<31>, description: str<31>, email: str<31>, director: str<31>) {
         assert(storage.handles.at(handle).read() == false, "Handle already taken");
 
         let company = Company {
@@ -91,7 +91,6 @@ contract CompanyRegistry {
             description: FieldCompressedString::from_string(description),
             email: FieldCompressedString::from_string(email),
             director: FieldCompressedString::from_string(director),
-            total_shares: U128::from_integer(total_shares)
         };
 
         storage.companies.at(handle).write(company);

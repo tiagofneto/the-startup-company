@@ -19,8 +19,7 @@ export function companyFromBigIntObject(rawCompany: any) {
     handle: toString(rawCompany['handle']['value']),
     email: toString(rawCompany['email']['value']),
     director: toString(rawCompany['director']['value']),
-    // TODO: check how to properly parse this
-    totalShares: Number(rawCompany['total_shares']['lo'])
+    description: toString(rawCompany['description']['value'])
   };
 }
 

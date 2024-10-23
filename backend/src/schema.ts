@@ -27,7 +27,6 @@ export const companies = pgTable('companies', {
   description: text('description').notNull(),
   email: varchar('email', { length: 255 }).notNull(),
   director: varchar('director', { length: 255 }).notNull(),
-  totalShares: integer('total_shares').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()
 });
 

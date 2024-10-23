@@ -1,5 +1,5 @@
 {
-  "id": "afa7357c-9fe9-4ec7-b896-14cbbf589d8e",
+  "id": "d2c06624-e787-45a6-ba45-d4ecc930122b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -44,12 +44,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "total_shares": {
-          "name": "total_shares",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -70,6 +64,70 @@
           ]
         }
       }
+    },
+    "public.shareholders": {
+      "name": "shareholders",
+      "schema": "",
+      "columns": {
+        "company_id": {
+          "name": "company_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shares": {
+          "name": "shares",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shareholders_company_id_companies_id_fk": {
+          "name": "shareholders_company_id_companies_id_fk",
+          "tableFrom": "shareholders",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "shareholders_user_id_users_id_fk": {
+          "name": "shareholders_user_id_users_id_fk",
+          "tableFrom": "shareholders",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "shareholders_company_id_user_id_pk": {
+          "name": "shareholders_company_id_user_id_pk",
+          "columns": [
+            "company_id",
+            "user_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
     },
     "public.streams": {
       "name": "streams",

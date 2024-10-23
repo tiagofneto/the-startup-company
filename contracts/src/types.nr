@@ -20,5 +20,4 @@ pub struct Company {
     description: FieldCompressedString,
     email: FieldCompressedString,
     director: FieldCompressedString,
-    total_shares: U128
 }
