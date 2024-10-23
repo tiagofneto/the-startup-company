@@ -121,3 +121,61 @@ export async function getUserCompanyStreams(handle: string, user_id: string) {
   );
   return response.data;
 }
+
+export async function getCompanyBalance(handle: string) {
+  const response = await apiClient.get(`/company-balance?handle=${handle}`, {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`
+    }
+  });
+  return response.data;
+}
+
+export async function fundCompany(handle: string, amount: number) {
+  const response = await apiClient.post(
+    '/fund-company',
+    { handle, amount },
+    {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }
+  );
+  return response.data;
+}
+
+export async function getShareholders(handle: string) {
+  const response = await apiClient.get(`/shareholders?handle=${handle}`);
+  return response.data;
+}
+
+export async function getShares(handle: string) {
+  const response = await apiClient.get(`/shares?handle=${handle}`);
+  return response.data;
+}
+
+export async function issueShares(handle: string, shares: number) {
+  const response = await apiClient.post(
+    '/issue-shares',
+    { handle, shares },
+    {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }
+  );
+  return response.data;
+}
+
+export async function transferTokens(from: string, to: string, amount: number, isAddress: boolean) {
+  const response = await apiClient.post(
+    '/transfer-tokens',
+    { from, to, amount, isAddress },
+    {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    }
+  );
+  return response.data;
+}

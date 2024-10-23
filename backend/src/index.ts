@@ -9,7 +9,13 @@ import {
   getCompaniesHandler,
   getPeopleHandler,
   createCompanyUserHandler,
-  getUserCompanies
+  getUserCompanies,
+  getCompanyBalanceHandler,
+  fundCompanyHandler,
+  getShareholdersHandler,
+  getSharesHandler,
+  issueSharesHandler,
+  transferTokensHandler
 } from './handlers/company.js';
 import { getProfile, verifyKyc } from './handlers/user.js';
 import {
@@ -67,6 +73,12 @@ app.get(
   authenticateToken,
   getUserCompanyStreamsHandler
 );
+app.get('/company-balance', getCompanyBalanceHandler);
+app.post('/fund-company', authenticateToken, fundCompanyHandler);
+app.get('/shareholders', getShareholdersHandler);
+app.get('/shares', getSharesHandler);
+app.post('/issue-shares', authenticateToken, issueSharesHandler);
+app.post('/transfer-tokens', authenticateToken, transferTokensHandler);
 
 // User routes
 app.get('/profile', authenticateToken, getProfile);

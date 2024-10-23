@@ -7,7 +7,7 @@ contract CompanyRegistry {
     use dep::token::Token;
     use crate::types::{Company, Stream};
 
-    global INITIAL_BALANCE: U128 = U128::from_field(100);
+    global INITIAL_BALANCE: U128 = U128::from_field(0);
 
     #[storage]
     struct Storage<Context> {
@@ -18,6 +18,7 @@ contract CompanyRegistry {
         // Handle -> email -> Authorized
         authorized: Map<str<31>, Map<str<31>, PublicMutable<bool, Context>, Context>, Context>,
 
+        // Handle -> Balance
         balances: Map<str<31>, PublicMutable<U128, Context>, Context>,
         token_address: PublicMutable<AztecAddress, Context>,
 
@@ -27,6 +28,13 @@ contract CompanyRegistry {
         // StreamID -> Stream
         streams: Map<u64, PublicMutable<Stream, Context>, Context>,
         stream_counter: PublicMutable<u64, Context>,
+
+        // Handle -> UserID -> Shares
+        shares: Map<str<31>, Map<str<31>, PublicMutable<U128, Context>, Context>, Context>,
+        // Handle -> TotalShares
+        total_shares: Map<str<31>, PublicMutable<U128, Context>, Context>,
+        // Handle -> MintedShares
+        minted_shares: Map<str<31>, PublicMutable<U128, Context>, Context>,
     }
 
     #[public]
@@ -74,20 +82,20 @@ contract CompanyRegistry {
     }
 
     #[public]
-    fn create_company(user_id: str<31>, name: str<31>, handle: str<31>, email: str<31>, director: str<31>, total_shares: Field) {
+    fn create_company(name: str<31>, handle: str<31>, description: str<31>, email: str<31>, director: str<31>) {
         assert(storage.handles.at(handle).read() == false, "Handle already taken");
 
         let company = Company {
             name: FieldCompressedString::from_string(name),
             handle: FieldCompressedString::from_string(handle),
+            description: FieldCompressedString::from_string(description),
             email: FieldCompressedString::from_string(email),
             director: FieldCompressedString::from_string(director),
-            total_shares: U128::from_integer(total_shares)
         };
 
         storage.companies.at(handle).write(company);
         storage.handles.at(handle).write(true);
-        storage.authorized.at(handle).at(user_id).write(true);
+        storage.authorized.at(handle).at(email).write(true);
 
         Token::at(storage.token_address.read()).mint_public(
             context.this_address(),
@@ -151,6 +159,41 @@ contract CompanyRegistry {
     }
 
     #[public]
+    fn fund_company(handle: str<31>, user_id: str<31>, amount: Field) {
+        // assert authorized
+        //assert(storage.authorized.at(handle).at(user_id).read(), "User is not authorized");
+
+        let total_shares = storage.total_shares.at(handle).read();
+        let minted_shares = storage.minted_shares.at(handle).read();
+
+        let shares_int = U128::from_integer(amount);
+        assert(minted_shares + shares_int <= total_shares, "Exceeds total shares");
+
+        let balance = storage.balances.at(handle).read();
+        let shares = storage.shares.at(handle).at(user_id).read();
+        Token::at(storage.token_address.read()).mint_public(
+            context.this_address(),
+            amount,
+        ).call(&mut context);
+        storage.balances.at(handle).write(balance + shares_int);
+        storage.shares.at(handle).at(user_id).write(shares + shares_int);
+        storage.minted_shares.at(handle).write(minted_shares + shares_int);
+    }
+
+    #[public]
+    fn issue_shares(handle: str<31>, shares: Field) {
+        let total_shares = storage.total_shares.at(handle).read();
+        storage.total_shares.at(handle).write(total_shares + U128::from_integer(shares));
+    }
+
+    #[public]
+    fn get_shares(handle: str<31>) -> (Field, Field) {
+        let minted_shares = storage.minted_shares.at(handle).read().to_integer();
+        let total_shares = storage.total_shares.at(handle).read().to_integer();
+        (minted_shares, total_shares)
+    }
+
+    #[public]
     #[view]
     fn is_user_verified(user_id: str<31>) -> bool {
         storage.user_verified.at(user_id).read()
@@ -173,5 +216,4 @@ contract CompanyRegistry {
     fn get_balance(handle: str<31>) -> Field {
         storage.balances.at(handle).read().to_integer()
     }
-
 }

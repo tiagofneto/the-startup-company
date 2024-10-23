@@ -8,7 +8,8 @@ import {
   uuid,
   boolean,
   primaryKey,
-  jsonb
+  jsonb,
+  text
 } from 'drizzle-orm/pg-core';
 
 const authSchema = pgSchema('auth');
@@ -23,9 +24,9 @@ export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   handle: varchar('handle', { length: 255 }).notNull().unique(),
+  description: text('description').notNull(),
   email: varchar('email', { length: 255 }).notNull(),
   director: varchar('director', { length: 255 }).notNull(),
-  totalShares: integer('total_shares').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()
 });
 
@@ -64,3 +65,17 @@ export const streams = pgTable('streams', {
     .defaultNow(),
   totalClaimed: integer('total_claimed').notNull().default(0)
 });
+
+export const shareholders = pgTable('shareholders', {
+  companyId: integer('company_id')
+    .notNull()
+    .references(() => companies.id),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id),
+  shares: integer('shares').notNull()
+  },
+  (t) => ({
+    id: primaryKey({ columns: [t.companyId, t.userId] })
+  })
+);

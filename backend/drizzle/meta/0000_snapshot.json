@@ -1,5 +1,5 @@
 {
-  "id": "d6ec3361-7dca-4740-90bb-6e86f54e9249",
+  "id": "d2c06624-e787-45a6-ba45-d4ecc930122b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -26,6 +26,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "email": {
           "name": "email",
           "type": "varchar(255)",
@@ -35,12 +41,6 @@
         "director": {
           "name": "director",
           "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "total_shares": {
-          "name": "total_shares",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -59,9 +59,75 @@
         "companies_handle_unique": {
           "name": "companies_handle_unique",
           "nullsNotDistinct": false,
-          "columns": ["handle"]
+          "columns": [
+            "handle"
+          ]
         }
       }
+    },
+    "public.shareholders": {
+      "name": "shareholders",
+      "schema": "",
+      "columns": {
+        "company_id": {
+          "name": "company_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shares": {
+          "name": "shares",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shareholders_company_id_companies_id_fk": {
+          "name": "shareholders_company_id_companies_id_fk",
+          "tableFrom": "shareholders",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "shareholders_user_id_users_id_fk": {
+          "name": "shareholders_user_id_users_id_fk",
+          "tableFrom": "shareholders",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "shareholders_company_id_user_id_pk": {
+          "name": "shareholders_company_id_user_id_pk",
+          "columns": [
+            "company_id",
+            "user_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
     },
     "public.streams": {
       "name": "streams",
@@ -112,17 +178,26 @@
           "name": "streams_company_id_companies_id_fk",
           "tableFrom": "streams",
           "tableTo": "companies",
-          "columnsFrom": ["company_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "streams_user_id_user_profiles_user_id_fk": {
-          "name": "streams_user_id_user_profiles_user_id_fk",
+        "streams_user_id_users_id_fk": {
+          "name": "streams_user_id_users_id_fk",
           "tableFrom": "streams",
-          "tableTo": "user_profiles",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["user_id"],
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -153,8 +228,12 @@
           "name": "user_companies_company_id_companies_id_fk",
           "tableFrom": "user_companies",
           "tableTo": "companies",
-          "columnsFrom": ["company_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -162,7 +241,10 @@
       "compositePrimaryKeys": {
         "user_companies_email_company_id_pk": {
           "name": "user_companies_email_company_id_pk",
-          "columns": ["email", "company_id"]
+          "columns": [
+            "email",
+            "company_id"
+          ]
         }
       },
       "uniqueConstraints": {}
@@ -192,8 +274,12 @@
           "tableFrom": "user_profiles",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -231,7 +317,9 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       }
     }

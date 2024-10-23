@@ -97,7 +97,6 @@ export async function deploy(
 
 export async function createCompany(
   contractAddress: string,
-  user_id: string,
   company: Company,
   wallet: AccountWalletWithSecretKey = globalWallet!
 ) {
@@ -111,12 +110,11 @@ export async function createCompany(
 
   const tx = await contract.methods
     .create_company(
-      user_id,
       company.name,
       company.handle,
+      company.description,
       company.email,
       company.director,
-      company.totalShares
     )
     .send()
     .wait();
@@ -338,6 +336,67 @@ export async function authorizeUser(
   const tx = await contract.methods.authorize_user(handle, email).send().wait();
 
   console.log(`Sent authorize user transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+
+  return tx;
+}
+
+export async function fundCompany(
+  contractAddress: string,
+  handle: string,
+  user_id: string,
+  amount: number,
+  wallet: AccountWalletWithSecretKey = globalWallet!
+) {
+  const contract = await Contract.at(
+    AztecAddress.fromString(contractAddress),
+    loadContractArtifact(CompanyRegistryJson as any),
+    wallet
+  );
+
+  console.log(`Funding company ${handle} with ${amount} tokens for user ${user_id}`);
+  const tx = await contract.methods.fund_company(handle, user_id, amount).send().wait();
+
+  console.log(`Sent fund company transaction 0x${tx.txHash}`);
+  console.log(`Transaction has been mined on block ${tx.blockNumber}`);
+
+  return tx;
+}
+
+export async function getShares(
+  contractAddress: string,
+  handle: string,
+  wallet: AccountWalletWithSecretKey = globalWallet!
+) {
+  const contract = await Contract.at(
+    AztecAddress.fromString(contractAddress),
+    loadContractArtifact(CompanyRegistryJson as any),
+    wallet
+  );
+
+  console.log(`Getting shares for company ${handle}`);
+  const shares = await contract.methods.get_shares(handle).simulate();
+  console.log(`Shares for company ${handle}: ${shares}`);
+
+  return shares;
+}
+
+export async function issueShares(
+  contractAddress: string,
+  handle: string,
+  shares: number,
+  wallet: AccountWalletWithSecretKey = globalWallet!
+) {
+  const contract = await Contract.at(
+    AztecAddress.fromString(contractAddress),
+    loadContractArtifact(CompanyRegistryJson as any),
+    wallet
+  );
+
+  console.log(`Issuing ${shares} shares for company ${handle}`);
+  const tx = await contract.methods.issue_shares(handle, shares).send().wait();
+
+  console.log(`Sent issue shares transaction 0x${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);
 
   return tx;

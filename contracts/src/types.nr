@@ -17,7 +17,7 @@ pub struct Stream {
 pub struct Company {
     name: FieldCompressedString,
     handle: FieldCompressedString,
+    description: FieldCompressedString,
     email: FieldCompressedString,
     director: FieldCompressedString,
-    total_shares: U128
 }

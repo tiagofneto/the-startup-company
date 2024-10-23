@@ -15,13 +15,18 @@ import {
   TrendingUp,
   ArrowUpRight,
   ArrowDownLeft,
-  Plus
+  Plus,
+  SettingsIcon
 } from 'lucide-react';
 import { computeAvatarFallback } from '@/lib/utils';
 import {
   createCompanyUser,
   getCompany,
-  getCompanyPeople
+  getCompanyBalance,
+  getCompanyPeople,
+  getShareholders,
+  getShares,
+  issueShares
 } from '@/services/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -39,6 +44,7 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { PersonDialog } from './person-dialog';
 import { SendMoneyDialog } from './transfer-dialog';
+import { FundDialog } from './fund-dialog';
 
 export default function CompanyDashboard({
   params
@@ -46,22 +52,12 @@ export default function CompanyDashboard({
   params: { handle: string };
 }) {
   const [email, setEmail] = useState('');
+  const [totalSharesInput, setTotalSharesInput] = useState('');
 
   const missingActions = [
     { id: 1, action: 'Complete KYC verification', priority: 'high' },
     { id: 2, action: 'Set up cap table', priority: 'medium' },
     { id: 3, action: 'Add company logo', priority: 'low' }
-  ];
-  const capTable = [
-    { name: 'John Doe', shares: 1000000, percentage: 50, isDirector: true },
-    { name: 'Jane Smith', shares: 500000, percentage: 25, isDirector: true },
-    {
-      name: 'Acme Ventures',
-      shares: 300000,
-      percentage: 15,
-      isDirector: false
-    },
-    { name: 'Employee Pool', shares: 200000, percentage: 10, isDirector: false }
   ];
 
   const companyQuery = useQuery({
@@ -69,9 +65,19 @@ export default function CompanyDashboard({
     queryFn: () => getCompany(params.handle)
   });
 
+  const balanceQuery = useQuery({
+    queryKey: ['balance', params.handle],
+    queryFn: () => getCompanyBalance(params.handle)
+  });
+
   const peopleQuery = useQuery({
     queryKey: ['people', params.handle],
     queryFn: () => getCompanyPeople(params.handle)
+  });
+
+  const shareholdersQuery = useQuery({
+    queryKey: ['shareholders', params.handle],
+    queryFn: () => getShareholders(params.handle)
   });
 
   const queryClient = useQueryClient();
@@ -84,10 +90,29 @@ export default function CompanyDashboard({
     }
   });
 
+  const sharesQuery = useQuery({
+    queryKey: ['shares', params.handle],
+    queryFn: () => getShares(params.handle)
+  });
+  
+  const issueSharesMutation = useMutation({
+    mutationFn: (shares: number) => issueShares(params.handle, shares),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shares', params.handle] });
+    }
+  });
+
   const addPerson = () => {
     const emailToAdd = email;
     setEmail('');
     addPersonMutation.mutate(emailToAdd);
+  };
+
+  const handleSetupCapTable = () => {
+    const shares = parseInt(totalSharesInput, 10);
+    if (!isNaN(shares) && shares > 0) {
+      issueSharesMutation.mutate(shares);
+    }
   };
 
   if (companyQuery.isPending) {
@@ -280,10 +305,16 @@ export default function CompanyDashboard({
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
                 <div className="text-center md:text-left">
                   <p className="text-lg font-medium">Current Balance</p>
-                  <p className="text-4xl font-bold">$1,234,567.89</p>
+                  {balanceQuery.isPending ? (
+                    <div className="h-10 flex items-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-foreground"></div>
+                    </div>
+                  ) : (
+                    <p className="text-4xl font-bold">${balanceQuery.data?.balance}</p>
+                  )}
                 </div>
                 <div className="flex space-x-2">
-                  <SendMoneyDialog>
+                  <SendMoneyDialog handle={companyQuery.data?.handle}>
                     <Button variant="secondary" size="lg">
                       <ArrowUpRight className="mr-2 h-4 w-4" />
                       Send Money
@@ -405,71 +436,106 @@ export default function CompanyDashboard({
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Missing Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {missingActions.map((action) => (
-                    <div
-                      key={action.id}
-                      className="flex items-center justify-between p-4 bg-muted rounded-lg"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <AlertCircle
-                          className={`h-6 w-6 ${
-                            action.priority === 'high'
-                              ? 'text-red-500'
-                              : action.priority === 'medium'
-                                ? 'text-yellow-500'
-                                : 'text-blue-500'
-                          }`}
-                        />
-                        <span>{action.action}</span>
-                      </div>
-                      <Button size="sm">Complete</Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
             <CardHeader>
-              <CardTitle>Cap Table</CardTitle>
+              <CardTitle>Missing Actions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2">Shareholder</th>
-                      <th className="text-right py-2">Ordinary Shares</th>
-                      <th className="text-right py-2">Percentage</th>
-                      <th className="text-center py-2">Director</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {capTable.map((shareholder, index) => (
-                      <tr key={index} className="border-b last:border-b-0">
-                        <td className="py-2">{shareholder.name}</td>
-                        <td className="text-right py-2">
-                          {shareholder.shares.toLocaleString()}
-                        </td>
-                        <td className="text-right py-2">
-                          {shareholder.percentage}%
-                        </td>
-                        <td className="text-center py-2">
-                          {shareholder.isDirector ? 'Yes' : 'No'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-4">
+                {missingActions.map((action) => (
+                  <div
+                    key={action.id}
+                    className="flex items-center justify-between p-4 bg-muted rounded-lg"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <AlertCircle
+                        className={`h-6 w-6 ${
+                          action.priority === 'high'
+                            ? 'text-red-500'
+                            : action.priority === 'medium'
+                              ? 'text-yellow-500'
+                              : 'text-blue-500'
+                        }`}
+                      />
+                      <span>{action.action}</span>
+                    </div>
+                    <Button size="sm">Complete</Button>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        <Card>
+          {(() => {
+            const totalShares = sharesQuery.data?.total_shares;
+            return (
+              <>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Cap Table</CardTitle>
+                  { sharesQuery.data?.total_shares > 0 &&
+                  <FundDialog handle={companyQuery.data?.handle} totalShares={totalShares}>
+                    <Button>Fund the Company</Button>
+                  </FundDialog>
+                  }
+                </CardHeader>
+                <CardContent>
+                  {
+                    sharesQuery.isPending ? (
+                      <div className="flex justify-center items-center h-32">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                  ) : (
+                    sharesQuery.data?.total_shares > 0 ?
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Shareholder</th>
+                          <th className="text-right py-2">Shares</th>
+                          <th className="text-right py-2">Percentage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {shareholdersQuery.data?.map((shareholder: any, index: number) => (
+                          <tr key={index} className="border-b last:border-b-0">
+                            <td className="py-2">{shareholder.name}</td>
+                            <td className="text-right py-2">
+                              {shareholder.shares.toLocaleString()}
+                            </td>
+                            <td className="text-right py-2">
+                              {((shareholder.shares / totalShares) * 100).toFixed(2)}%
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      </table>
+                    </div>
+                    :
+                    <div className="space-y-4 max-w-md">
+                      <div className="flex space-x-2">
+                      <Input
+                        id="totalShares"
+                        type="number"
+                        placeholder="Enter total shares"
+                        value={totalSharesInput}
+                        onChange={(e) => setTotalSharesInput(e.target.value)}
+                        className="w-48"
+                      />
+                      <Button 
+                        onClick={handleSetupCapTable} 
+                        disabled={totalSharesInput === '' || isNaN(parseInt(totalSharesInput, 10)) || parseInt(totalSharesInput, 10) <= 0}
+                      >
+                        <SettingsIcon className="mr-2 h-4 w-4" /> Setup Cap Table
+                      </Button>
+                    </div>
+                  </div>
+                  )}
+                </CardContent>
+              </>
+            );
+          })()}
+        </Card>
         </main>
       </div>
     </div>

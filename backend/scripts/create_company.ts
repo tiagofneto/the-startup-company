@@ -19,7 +19,8 @@ await createCompany(
     handle,
     email: 'test@test.com',
     director: 'test',
-    totalShares: 100
+    totalShares: 100,
+    description: 'test'
   },
   wallet
 );
