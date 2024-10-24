@@ -52,7 +52,7 @@ export default function CompanyDashboard({
   params: { handle: string };
 }) {
   const [email, setEmail] = useState('');
-  const [totalSharesInput, setTotalSharesInput] = useState('');
+  const [totalFunding, setTotalFunding] = useState('');
 
   const missingActions = [
     { id: 1, action: 'Complete KYC verification', priority: 'high' },
@@ -109,7 +109,7 @@ export default function CompanyDashboard({
   };
 
   const handleSetupCapTable = () => {
-    const shares = parseInt(totalSharesInput, 10);
+    const shares = parseInt(totalFunding, 10);
     if (!isNaN(shares) && shares > 0) {
       issueSharesMutation.mutate(shares);
     }
@@ -474,7 +474,7 @@ export default function CompanyDashboard({
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Cap Table</CardTitle>
                   { sharesQuery.data?.total_shares > 0 &&
-                  <FundDialog handle={companyQuery.data?.handle} totalShares={totalShares}>
+                  <FundDialog handle={companyQuery.data?.handle} totalShares={totalShares} mintedShares={sharesQuery.data?.minted_shares}>
                     <Button>Fund the Company</Button>
                   </FundDialog>
                   }
@@ -515,16 +515,16 @@ export default function CompanyDashboard({
                     <div className="space-y-4 max-w-md">
                       <div className="flex space-x-2">
                       <Input
-                        id="totalShares"
+                        id="totalFunding"
                         type="number"
-                        placeholder="Enter total shares"
-                        value={totalSharesInput}
-                        onChange={(e) => setTotalSharesInput(e.target.value)}
-                        className="w-48"
+                        placeholder="Enter total funding amount"
+                        value={totalFunding}
+                        onChange={(e) => setTotalFunding(e.target.value)}
+                        className="w-60"
                       />
                       <Button 
                         onClick={handleSetupCapTable} 
-                        disabled={totalSharesInput === '' || isNaN(parseInt(totalSharesInput, 10)) || parseInt(totalSharesInput, 10) <= 0}
+                        disabled={totalFunding === '' || isNaN(parseInt(totalFunding, 10)) || parseInt(totalFunding, 10) <= 0}
                       >
                         <SettingsIcon className="mr-2 h-4 w-4" /> Setup Cap Table
                       </Button>
