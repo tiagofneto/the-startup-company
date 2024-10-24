@@ -8,7 +8,7 @@
   "dependencies": {
     "@aztec/accounts": "0.56.0",
     "@aztec/aztec.js": "0.56.0",
-    "@aztec/noir-contracts.js": "^0.56.0",
+    "@aztec/noir-contracts.js": "0.56.0",
     "@openpassport/sdk": "0.1.4",
     "@types/cors": "^2.8.17",
     "cors": "^2.8.5",
