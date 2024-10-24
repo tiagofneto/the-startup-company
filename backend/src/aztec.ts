@@ -23,7 +23,7 @@ let globalWallet: AccountWalletWithSecretKey | null = null;
 
 const CompanyRegistryJson = JSON.parse(
   readFileSync(
-    join(__dirname, '../../contracts/contracts-CompanyRegistry.json'),
+    join(__dirname, '../../contracts/target/contracts-CompanyRegistry.json'),
     'utf-8'
   )
 );

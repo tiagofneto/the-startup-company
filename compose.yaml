@@ -16,7 +16,7 @@ services:
       aztec:
         condition: service_healthy
     volumes:
-      - contracts_target:/app/contracts
+      - contracts_target:/app/contracts/target
     environment:
       PXE_URL: http://aztec:${PXE_PORT:-8080}
     healthcheck:
