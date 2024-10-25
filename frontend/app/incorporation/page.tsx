@@ -5,11 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronUpIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/solid';
 import { createCompany, getCompany } from '@/services/api';
 import debounce from 'lodash/debounce';
 import { useMutation } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 type FormData = {
   name: string;
@@ -127,11 +130,18 @@ export default function CompanyRegistration() {
         <div className="text-center">
           <CheckCircleIcon className="mx-auto h-16 w-16 text-green-500" />
           <h2 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
-            Registration Successful!
+            Registration submitted!
           </h2>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
-            Your company has been successfully registered.
+            Your startup registration has been submitted to the Company House.
+            <br className="hidden sm:inline" />
+            To get it registered, proceed to confirm your identity.
           </p>
+          <Button variant="default" className="mt-6">
+            <Link href="/user" passHref className="flex items-center">
+              Go to Profile <ChevronRightIcon className="ml-2 w-5 h-5" />
+            </Link>
+          </Button>
         </div>
       </div>
     );
