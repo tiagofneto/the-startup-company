@@ -24,6 +24,7 @@ import {
   getCompany,
   getCompanyBalance,
   getCompanyPeople,
+  getKycStatus,
   getShareholders,
   getShares,
   issueShares
@@ -45,6 +46,7 @@ import { useState } from 'react';
 import { PersonDialog } from './person-dialog';
 import { SendMoneyDialog } from './transfer-dialog';
 import { FundDialog } from './fund-dialog';
+import ConditionalTooltipWrapper from '@/components/conditional-tooltip';
 
 export default function CompanyDashboard({
   params
@@ -102,6 +104,11 @@ export default function CompanyDashboard({
     }
   });
 
+  const kycStatusQuery = useQuery({
+    queryKey: ['kyc-status'],
+    queryFn: () => getKycStatus()
+  });
+
   const addPerson = () => {
     const emailToAdd = email;
     setEmail('');
@@ -115,7 +122,7 @@ export default function CompanyDashboard({
     }
   };
 
-  if (companyQuery.isPending) {
+  if (companyQuery.isPending || kycStatusQuery.isPending) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
@@ -314,16 +321,20 @@ export default function CompanyDashboard({
                   )}
                 </div>
                 <div className="flex space-x-2">
-                  <SendMoneyDialog handle={companyQuery.data?.handle}>
-                    <Button variant="secondary" size="lg">
-                      <ArrowUpRight className="mr-2 h-4 w-4" />
-                      Send Money
-                    </Button>
-                  </SendMoneyDialog>
+                    <SendMoneyDialog handle={companyQuery.data?.handle}>
+                      <ConditionalTooltipWrapper isDisabled={!kycStatusQuery.data} tooltipContent="You must complete KYC verification to send money">
+                        <Button variant="secondary" size="lg">
+                          <ArrowUpRight className="mr-2 h-4 w-4" />
+                          Send Money
+                        </Button>
+                      </ConditionalTooltipWrapper>
+                    </SendMoneyDialog>
+                  <ConditionalTooltipWrapper isDisabled={!kycStatusQuery.data} tooltipContent="You must complete KYC verification to receive money">
                   <Button variant="secondary" size="lg">
-                    <ArrowDownLeft className="mr-2 h-4 w-4" />
-                    Receive Money
-                  </Button>
+                      <ArrowDownLeft className="mr-2 h-4 w-4" />
+                      Receive Money
+                    </Button>
+                  </ConditionalTooltipWrapper>
                 </div>
               </div>
             </CardContent>
@@ -475,7 +486,9 @@ export default function CompanyDashboard({
                   <CardTitle>Cap Table</CardTitle>
                   { sharesQuery.data?.total_shares > 0 &&
                   <FundDialog handle={companyQuery.data?.handle} totalShares={totalShares} mintedShares={sharesQuery.data?.minted_shares}>
-                    <Button>Fund the Company</Button>
+                    <ConditionalTooltipWrapper isDisabled={!kycStatusQuery.data} tooltipContent="You must complete KYC verification to fund the company">
+                      <Button>Fund the Company</Button>
+                    </ConditionalTooltipWrapper>
                   </FundDialog>
                   }
                 </CardHeader>
@@ -522,12 +535,16 @@ export default function CompanyDashboard({
                         onChange={(e) => setTotalFunding(e.target.value)}
                         className="w-60"
                       />
-                      <Button 
-                        onClick={handleSetupCapTable} 
-                        disabled={totalFunding === '' || isNaN(parseInt(totalFunding, 10)) || parseInt(totalFunding, 10) <= 0}
-                      >
-                        <SettingsIcon className="mr-2 h-4 w-4" /> Setup Cap Table
-                      </Button>
+                      <ConditionalTooltipWrapper 
+                        isDisabled={!kycStatusQuery.data}
+                        tooltipContent="You must complete KYC verification to setup the cap table">
+                        <Button 
+                          onClick={handleSetupCapTable} 
+                          disabled={totalFunding === '' || isNaN(parseInt(totalFunding, 10)) || parseInt(totalFunding, 10) <= 0}
+                        >
+                          <SettingsIcon className="mr-2 h-4 w-4" /> Setup Cap Table
+                        </Button>
+                      </ConditionalTooltipWrapper>
                     </div>
                   </div>
                   )}

@@ -179,3 +179,12 @@ export async function transferTokens(from: string, to: string, amount: number, i
   );
   return response.data;
 }
+
+export async function getKycStatus() {
+  const response = await apiClient.get('/kyc-status', {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`
+    }
+  });
+  return response.data;
+}
