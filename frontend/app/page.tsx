@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { LockKeyhole } from 'lucide-react';
+import { FadeText } from '@/components/ui/fade-text';
 
 export default function Home({
   searchParams
@@ -13,15 +14,21 @@ export default function Home({
       <div className="container px-4 md:px-6 py-10 md:py-14">
         <div className="flex flex-col items-center space-y-8 text-center">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none">
-              Welcome to the Isle of Sark Register of Companies
-            </h1>
-            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl lg:text-2xl">
-              Sark is pioneering a new way to register digital companies fit for
-              the 21st century.
-            </p>
+            <FadeText
+              className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none"
+              direction="up"
+              text="Welcome to the Isle of Sark Register of Companies"
+            />
+            <FadeText
+              className="mx-auto max-w-[700px] text-muted-foreground md:text-xl lg:text-2xl"
+              direction="up"
+              text="Sark is pioneering a new way to register digital companies fit for the 21st century."
+              framerProps={{
+                show: { transition: { delay: 0.6 } },
+              }}
+            />
           </div>
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-up animate-delay-[1200ms] animate-once">
             <Button asChild size="lg" className="text-lg">
               <Link href="/incorporation">Register Company</Link>
             </Button>
