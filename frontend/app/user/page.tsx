@@ -176,7 +176,7 @@ export default function UserDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {profileQuery.isPending ? (
+                {profileQuery.isPending || kycMutation.isPending ? (
                   <div className="flex justify-center items-center h-24">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                   </div>
@@ -209,8 +209,13 @@ export default function UserDashboard() {
                             <DialogHeader>
                               <DialogTitle>KYC Verification</DialogTitle>
                               <DialogDescription>
-                                Use the OpenPassport app to complete your KYC
-                                verification.
+                                Scan the QR code using the OpenPassport app.
+                                If you have not used OpenPassport before, <a
+                                  href="https://openpassport.app"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                >download the app</a> to verify your identity
                               </DialogDescription>
                             </DialogHeader>
                             <OpenPassportQRcode
