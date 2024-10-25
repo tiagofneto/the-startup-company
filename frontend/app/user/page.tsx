@@ -201,9 +201,15 @@ export default function UserDashboard() {
                       <>
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button className="w-full">
-                              Complete KYC Verification
-                            </Button>
+                            <div className="relative w-full">
+                              <Button className="w-full">
+                                Complete KYC Verification
+                              </Button>
+                              <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+                              </span>
+                            </div>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
