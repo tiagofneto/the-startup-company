@@ -1,6 +1,6 @@
 import { Company } from '../types.js';
 import { companies, shareholders, userCompanies, userProfiles, users } from '../schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { getUserEmail } from './user.js';
 import { db } from './db.js';
 
@@ -29,7 +29,7 @@ export async function fetchCompany(handle: string) {
 
 export async function getCompanies() {
   console.log('Fetching companies from database');
-  const companyList = (await db.select().from(companies)) as Company[];
+  const companyList = (await db.select().from(companies).orderBy(desc(companies.createdAt))) as Company[];
   return companyList;
 }
 

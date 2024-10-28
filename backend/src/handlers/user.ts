@@ -60,3 +60,18 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).json({ error: 'Failed to verify KYC' });
   }
 };
+
+export const getKycStatus = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const id = req.user.sub;
+
+    const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
+    const { companyRegistry } = addresses;
+
+    const kyc = await isUserVerified(companyRegistry, id);
+    res.status(200).json(kyc);
+  } catch (error) {
+    console.error('Error fetching KYC status:', error);
+    res.status(500).json({ error: 'Failed to fetch KYC status' });
+  }
+};

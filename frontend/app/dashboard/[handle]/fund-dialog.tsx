@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { fundCompany } from '@/services/api';
 
-export function FundDialog({ children, handle, totalShares }: { children: ReactNode; handle: string; totalShares?: number }) {
+export function FundDialog({ children, handle, totalShares, mintedShares }: { children: ReactNode; handle: string; totalShares?: number; mintedShares?: number }) {
   const [fundingAmount, setFundingAmount] = useState('');
 
   const queryClient = useQueryClient();
@@ -43,21 +43,30 @@ export function FundDialog({ children, handle, totalShares }: { children: ReactN
         <DialogHeader>
           <DialogTitle>Fund the Company</DialogTitle>
           <DialogDescription>
-            Enter the amount of shares you want to buy. 1 share = $1
+            Specify the funding amount you wish to contribute to the company. $1 = 1 share.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="shares" className="text-right">
-              Shares
+            <Label htmlFor="amount" className="text-right">
+              Amount
             </Label>
-            <Input
-              id="shares"
-              type="number"
-              className="col-span-3"
-              value={fundingAmount}
-              onChange={(e) => setFundingAmount(e.target.value)}
-            />
+            <div className="flex col-span-3">
+              <Input
+                id="amount"
+                type="number"
+                className="col-span-3"
+                value={fundingAmount}
+                onChange={(e) => setFundingAmount(e.target.value)}
+              />
+              <Button 
+                variant="outline" 
+                className="ml-2"
+                onClick={() => setPresetAmount(totalShares! - mintedShares!)}
+              >
+                Remaining
+              </Button>
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <Button variant="outline" onClick={() => setPresetAmount(1000)}>1,000</Button>

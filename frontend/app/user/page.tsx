@@ -176,7 +176,7 @@ export default function UserDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {profileQuery.isPending ? (
+                {profileQuery.isPending || kycMutation.isPending ? (
                   <div className="flex justify-center items-center h-24">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                   </div>
@@ -201,16 +201,27 @@ export default function UserDashboard() {
                       <>
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button className="w-full">
-                              Complete KYC Verification
-                            </Button>
+                            <div className="relative w-full">
+                              <Button className="w-full">
+                                Complete KYC Verification
+                              </Button>
+                              <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+                              </span>
+                            </div>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
                               <DialogTitle>KYC Verification</DialogTitle>
                               <DialogDescription>
-                                Use the OpenPassport app to complete your KYC
-                                verification.
+                                Scan the QR code using the OpenPassport app.
+                                If you have not used OpenPassport before, <a
+                                  href="https://openpassport.app"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                >download the app</a> to verify your identity
                               </DialogDescription>
                             </DialogHeader>
                             <OpenPassportQRcode
