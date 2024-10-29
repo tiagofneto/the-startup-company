@@ -321,16 +321,16 @@ export default function CompanyDashboard({
                   )}
                 </div>
                 <div className="flex space-x-2">
-                    <SendMoneyDialog handle={companyQuery.data?.handle}>
                       <ConditionalTooltipWrapper isDisabled={!kycStatusQuery.data} tooltipContent="You must complete KYC verification to send money">
-                        <Button variant="secondary" size="lg">
-                          <ArrowUpRight className="mr-2 h-4 w-4" />
+                        <SendMoneyDialog handle={companyQuery.data?.handle}>
+                          <Button variant="secondary" size="lg">
+                            <ArrowUpRight className="mr-2 h-4 w-4" />
                           Send Money
                         </Button>
-                      </ConditionalTooltipWrapper>
-                    </SendMoneyDialog>
-                  <ConditionalTooltipWrapper isDisabled={!kycStatusQuery.data} tooltipContent="You must complete KYC verification to receive money">
-                  <Button variant="secondary" size="lg">
+                      </SendMoneyDialog>
+                    </ConditionalTooltipWrapper>
+                    <ConditionalTooltipWrapper isDisabled={!kycStatusQuery.data} tooltipContent="You must complete KYC verification to receive money">
+                      <Button variant="secondary" size="lg">
                       <ArrowDownLeft className="mr-2 h-4 w-4" />
                       Receive Money
                     </Button>
