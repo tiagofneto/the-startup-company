@@ -15,12 +15,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { transferTokens } from '@/services/api';
+import { createStream, transferTokens } from '@/services/api';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const sendMoney = async (handle: string, recipient: string, amount: number, isAztecAddress: boolean, paymentType: 'Wire' | 'Stream') => {
-  await transferTokens(handle, recipient, amount, isAztecAddress, paymentType);
+  if (paymentType === 'Wire') { 
+    await transferTokens(handle, recipient, amount, isAztecAddress);
+  } else {
+    await createStream(recipient, handle, amount);
+  }
 };
 
 const StepCounter = ({ currentStep }: { currentStep: number }) => {
