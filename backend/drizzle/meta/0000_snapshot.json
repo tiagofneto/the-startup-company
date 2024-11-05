@@ -1,5 +1,5 @@
 {
-  "id": "d2c06624-e787-45a6-ba45-d4ecc930122b",
+  "id": "1283ce5f-6a8e-4167-91f8-4e94fa653164",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -59,9 +59,7 @@
         "companies_handle_unique": {
           "name": "companies_handle_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "handle"
-          ]
+          "columns": ["handle"]
         }
       }
     },
@@ -75,9 +73,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -86,6 +84,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "funded": {
+          "name": "funded",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -94,37 +99,16 @@
           "name": "shareholders_company_id_companies_id_fk",
           "tableFrom": "shareholders",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "shareholders_user_id_users_id_fk": {
-          "name": "shareholders_user_id_users_id_fk",
-          "tableFrom": "shareholders",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "shareholders_company_id_user_id_pk": {
-          "name": "shareholders_company_id_user_id_pk",
-          "columns": [
-            "company_id",
-            "user_id"
-          ]
+        "shareholders_company_id_email_pk": {
+          "name": "shareholders_company_id_email_pk",
+          "columns": ["company_id", "email"]
         }
       },
       "uniqueConstraints": {}
@@ -178,12 +162,8 @@
           "name": "streams_company_id_companies_id_fk",
           "tableFrom": "streams",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -192,12 +172,8 @@
           "tableFrom": "streams",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -228,12 +204,8 @@
           "name": "user_companies_company_id_companies_id_fk",
           "tableFrom": "user_companies",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -241,10 +213,7 @@
       "compositePrimaryKeys": {
         "user_companies_email_company_id_pk": {
           "name": "user_companies_email_company_id_pk",
-          "columns": [
-            "email",
-            "company_id"
-          ]
+          "columns": ["email", "company_id"]
         }
       },
       "uniqueConstraints": {}
@@ -274,12 +243,8 @@
           "tableFrom": "user_profiles",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -317,9 +282,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     }

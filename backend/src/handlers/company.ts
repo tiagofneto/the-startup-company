@@ -1,7 +1,17 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { authorizeUser, createCompany, fundCompany, getCompany, getCompanyBalance, getShares, issueShares, transferTokensToAddress, transferTokensToHandle } from '../aztec.js';
+import {
+  authorizeUser,
+  createCompany,
+  fundCompany,
+  getCompany,
+  getCompanyBalance,
+  getShares,
+  issueShares,
+  transferTokensToAddress,
+  transferTokensToHandle
+} from '../aztec.js';
 import {
   createCompanyUser,
   createUserCompany,
@@ -10,10 +20,12 @@ import {
   fetchUserCompanies,
   getCompanies,
   getCompanyId,
+  updateShareholderFunded,
   updateShareholders,
   uploadCompany
 } from '../interactions/company.js';
 import { transport } from '../utils.js';
+import { getUserEmail } from '../interactions/user.js';
 
 export const getCompanyHandler = async (req: Request, res: Response) => {
   try {
@@ -175,11 +187,15 @@ export const getCompanyBalanceHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const fundCompanyHandler = async (req: AuthenticatedRequest, res: Response) => {
+export const fundCompanyHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { handle, amount } = req.body;
 
     const user_id = req.user.sub;
+    const email = await getUserEmail(user_id);
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
@@ -187,7 +203,7 @@ export const fundCompanyHandler = async (req: AuthenticatedRequest, res: Respons
 
     await fundCompany(companyRegistry, handle, user_id, amount);
 
-    await updateShareholders(companyId, user_id, amount);
+    await updateShareholderFunded(companyId, email);
 
     res.status(200).json({ message: 'Company funded successfully' });
   } catch (error) {
@@ -200,15 +216,15 @@ export const getShareholdersHandler = async (req: Request, res: Response) => {
   try {
     const { handle } = req.query;
     const companyId = await getCompanyId(handle as string);
-    const shareholders = (await fetchShareholders(companyId)).map((shareholder) => {
-      const metadata = shareholder.raw_user_meta_data as {
-        full_name: string;
-      };
-      return {
-        shares: shareholder.shares,
-        name: metadata?.full_name
-      };
-    });
+    const shareholders = (await fetchShareholders(companyId)).map(
+      (shareholder) => {
+        return {
+          shares: shareholder.shares,
+          funded: shareholder.funded,
+          email: shareholder.email
+        };
+      }
+    );
     res.status(200).json(shareholders);
   } catch (error) {
     console.error('Error fetching shareholders:', error);
@@ -237,12 +253,22 @@ export const getSharesHandler = async (req: Request, res: Response) => {
 
 export const issueSharesHandler = async (req: Request, res: Response) => {
   try {
-    const { handle, shares } = req.body;
+    const { handle, shares, splits } = req.body;
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
+    const companyId = await getCompanyId(handle);
+
     await issueShares(companyRegistry, handle, shares);
+
+    // TODO all in one query
+    for (const split of splits) {
+      const user_shares = Math.floor((shares * split.equity) / 100);
+      console.log('Updating shareholder:', split.email, user_shares);
+      await updateShareholders(companyId, split.email, user_shares);
+    }
+
     res.status(200).json({ message: 'Shares issued successfully' });
   } catch (error) {
     console.error('Error issuing shares:', error);

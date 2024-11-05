@@ -61,10 +61,12 @@ export default function CompanyRegistration() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     handle: '',
-    description: '',
+    description: ''
   });
   const [currentField, setCurrentField] = useState(0);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
+    {}
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isWelcomePage, setIsWelcomePage] = useState(true);
 
@@ -166,15 +168,16 @@ export default function CompanyRegistration() {
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 space-y-4">
                 <span className="block">
-                  TSC is the fastest way to start your company 100% online.
-                  We help you incorporate, open a bank account and charge your first customers.
+                  TSC is the fastest way to start your company 100% online. We
+                  help you incorporate, open a bank account and charge your
+                  first customers.
                 </span>
                 <span className="block">
-                  Tell us about your startup and cofounders, and TSC will form your startup in Sark (UK), get your tax number and file all the required paperwork.
+                  Tell us about your startup and cofounders, and TSC will form
+                  your startup in Sark (UK), get your tax number and file all
+                  the required paperwork.
                 </span>
-                <span className="block">
-                  Get up and running in 5 minutes.
-                </span>
+                <span className="block">Get up and running in 5 minutes.</span>
               </p>
               <Button onClick={handleStartRegistration} size="lg">
                 Start Registration
@@ -214,7 +217,10 @@ export default function CompanyRegistration() {
                                   animate={{
                                     width: index <= currentField ? '100%' : '0%'
                                   }}
-                                  transition={{ duration: 0.5, ease: 'easeInOut' }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: 'easeInOut'
+                                  }}
                                 />
                               </div>
                             </div>
@@ -280,7 +286,9 @@ export default function CompanyRegistration() {
                         </button>
                         <button
                           onClick={nextField}
-                          disabled={currentField === fields.length - 1 && isPending}
+                          disabled={
+                            currentField === fields.length - 1 && isPending
+                          }
                           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition duration-150 ease-in-out"
                         >
                           {currentField === fields.length - 1 ? (
@@ -322,7 +330,9 @@ export default function CompanyRegistration() {
                                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                     {key
                                       .replace(/([A-Z])/g, ' $1')
-                                      .replace(/^./, (str) => str.toUpperCase())}
+                                      .replace(/^./, (str) =>
+                                        str.toUpperCase()
+                                      )}
                                   </p>
                                   <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-white">
                                     {key === 'handle' ? `@${value}` : value}

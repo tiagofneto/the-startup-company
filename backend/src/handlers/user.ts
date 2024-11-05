@@ -61,7 +61,10 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const getKycStatus = async (req: AuthenticatedRequest, res: Response) => {
+export const getKycStatus = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const id = req.user.sub;
 

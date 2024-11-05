@@ -66,16 +66,17 @@ export const streams = pgTable('streams', {
   totalClaimed: integer('total_claimed').notNull().default(0)
 });
 
-export const shareholders = pgTable('shareholders', {
-  companyId: integer('company_id')
-    .notNull()
-    .references(() => companies.id),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id),
-  shares: integer('shares').notNull()
+export const shareholders = pgTable(
+  'shareholders',
+  {
+    companyId: integer('company_id')
+      .notNull()
+      .references(() => companies.id),
+    email: varchar('email', { length: 255 }).notNull(),
+    shares: integer('shares').notNull(),
+    funded: boolean('funded').notNull().default(false)
   },
   (t) => ({
-    id: primaryKey({ columns: [t.companyId, t.userId] })
+    id: primaryKey({ columns: [t.companyId, t.email] })
   })
 );

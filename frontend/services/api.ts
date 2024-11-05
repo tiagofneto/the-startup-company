@@ -154,10 +154,10 @@ export async function getShares(handle: string) {
   return response.data;
 }
 
-export async function issueShares(handle: string, shares: number) {
+export async function issueShares(handle: string, shares: number, splits: any) {
   const response = await apiClient.post(
     '/issue-shares',
-    { handle, shares },
+    { handle, shares, splits },
     {
       headers: {
         Authorization: `Bearer ${getAccessToken()}`
@@ -167,7 +167,12 @@ export async function issueShares(handle: string, shares: number) {
   return response.data;
 }
 
-export async function transferTokens(from: string, to: string, amount: number, isAddress: boolean) {
+export async function transferTokens(
+  from: string,
+  to: string,
+  amount: number,
+  isAddress: boolean
+) {
   const response = await apiClient.post(
     '/transfer-tokens',
     { from, to, amount, isAddress },

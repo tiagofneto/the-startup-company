@@ -114,7 +114,7 @@ export async function createCompany(
       company.handle,
       company.description,
       company.email,
-      company.director,
+      company.director
     )
     .send()
     .wait();
@@ -314,7 +314,9 @@ export async function isUserVerified(
   );
 
   console.log(`Checking if user ${user_id} is verified`);
-  const isVerified = await contract.methods.is_user_verified(user_id).simulate();
+  const isVerified = await contract.methods
+    .is_user_verified(user_id)
+    .simulate();
   console.log(`User ${user_id} is verified: ${isVerified}`);
 
   return isVerified;
@@ -354,8 +356,13 @@ export async function fundCompany(
     wallet
   );
 
-  console.log(`Funding company ${handle} with ${amount} tokens for user ${user_id}`);
-  const tx = await contract.methods.fund_company(handle, user_id, amount).send().wait();
+  console.log(
+    `Funding company ${handle} with ${amount} tokens for user ${user_id}`
+  );
+  const tx = await contract.methods
+    .fund_company(handle, user_id, amount)
+    .send()
+    .wait();
 
   console.log(`Sent fund company transaction 0x${tx.txHash}`);
   console.log(`Transaction has been mined on block ${tx.blockNumber}`);

@@ -24,7 +24,7 @@ export default function Home({
               direction="up"
               text="Sark is pioneering a new way to register digital companies fit for the 21st century."
               framerProps={{
-                show: { transition: { delay: 0.6 } },
+                show: { transition: { delay: 0.6 } }
               }}
             />
           </div>

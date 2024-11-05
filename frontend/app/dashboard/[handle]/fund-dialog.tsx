@@ -1,90 +1,140 @@
-import { ReactNode, useState } from 'react';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+'use client';
+
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { fundCompany } from '@/services/api';
+import { Progress } from '@/components/ui/progress';
+import { BaseStepDialog, Step } from '@/components/base-step-dialog';
+import { Separator } from '@/components/ui/separator';
+import { issueShares } from '@/services/api';
 
-export function FundDialog({ children, handle, totalShares, mintedShares }: { children: ReactNode; handle: string; totalShares?: number; mintedShares?: number }) {
-  const [fundingAmount, setFundingAmount] = useState('');
+interface Cofounder {
+  email: string;
+  equity: number;
+}
+
+interface FundDialogProps {
+  handle: string;
+  companyName: string;
+  cofounders: string[];
+  currentCofounder: string;
+  children: React.ReactNode;
+}
+
+export function FundDialog({
+  handle,
+  companyName,
+  cofounders,
+  children
+}: FundDialogProps) {
+  const [totalCapital, setTotalCapital] = useState('200');
+  const [equitySplit, setEquitySplit] = useState<Cofounder[]>(
+    cofounders.map((email) => ({ email, equity: 100 / cofounders.length }))
+  );
 
   const queryClient = useQueryClient();
 
-  const fundCompanyMutation = useMutation({
-    mutationFn: (amount: number) => fundCompany(handle, amount),
+  const fundMutation = useMutation({
+    mutationFn: () =>
+      issueShares(handle, parseFloat(totalCapital), equitySplit),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['balance', handle] });
-      queryClient.invalidateQueries({ queryKey: ['shareholders', handle] });
     }
   });
 
-  const handleFundCompany = () => {
-    const amount = parseInt(fundingAmount);
-    if (!isNaN(amount) && amount > 0) {
-      fundCompanyMutation.mutate(amount);
-      setFundingAmount('');
+  const steps: Step[] = [
+    {
+      title: 'Introduction',
+      description: 'Learn about funding your company.',
+      component: () => (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            You are about to purchase your shares of {companyName}. The capital
+            you use to buy your shares will fund {companyName}'s bank account.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: 'Equity Split',
+      description: 'Review or adjust the equity split.',
+      component: () => (
+        <div className="space-y-4">
+          {equitySplit.map((cofounder, index) => (
+            <div key={cofounder.email} className="space-y-1">
+              <div className="flex justify-between items-center">
+                <Label className="text-sm">{cofounder.email}</Label>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    value={cofounder.equity}
+                    onChange={(e) => {
+                      const newEquitySplit = [...equitySplit];
+                      newEquitySplit[index].equity = Number(e.target.value);
+                      setEquitySplit(newEquitySplit);
+                    }}
+                    className="w-20 h-8 text-sm pr-6"
+                  />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                    %
+                  </span>
+                </div>
+              </div>
+              <Progress value={cofounder.equity} className="h-1" />
+            </div>
+          ))}
+        </div>
+      )
+    },
+    {
+      title: 'Total Capital',
+      description: 'Set the total capital contribution.',
+      component: () => (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="total-capital" className="text-sm">
+              Total Capital ($)
+            </Label>
+            <Input
+              id="total-capital"
+              type="number"
+              value={totalCapital}
+              onChange={(e) => setTotalCapital(e.target.value)}
+              className="text-sm"
+            />
+          </div>
+          <Separator className="my-2" />
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold">Individual Contributions:</h3>
+            {equitySplit.map((cofounder) => (
+              <div
+                key={cofounder.email}
+                className="flex justify-between items-center text-sm"
+              >
+                <span>{cofounder.email}</span>
+                <span className="font-medium">
+                  $
+                  {(
+                    parseFloat(totalCapital) *
+                    (cofounder.equity / 100)
+                  ).toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
     }
-  };
-
-  const setPresetAmount = (amount: number) => {
-    setFundingAmount(amount.toString());
-  };
-
-  const setPercentageAmount = (percentage: number) => {
-    const amount = Math.round((percentage / 100) * totalShares!);
-    setFundingAmount(amount.toString());
-  };
+  ];
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Fund the Company</DialogTitle>
-          <DialogDescription>
-            Specify the funding amount you wish to contribute to the company. $1 = 1 share.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="amount" className="text-right">
-              Amount
-            </Label>
-            <div className="flex col-span-3">
-              <Input
-                id="amount"
-                type="number"
-                className="col-span-3"
-                value={fundingAmount}
-                onChange={(e) => setFundingAmount(e.target.value)}
-              />
-              <Button 
-                variant="outline" 
-                className="ml-2"
-                onClick={() => setPresetAmount(totalShares! - mintedShares!)}
-              >
-                Remaining
-              </Button>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <Button variant="outline" onClick={() => setPresetAmount(1000)}>1,000</Button>
-            <Button variant="outline" onClick={() => setPresetAmount(10000)}>10,000</Button>
-            <Button variant="outline" onClick={() => setPresetAmount(1000000)}>1,000,000</Button>
-          </div>
-          {totalShares && (
-            <div className="grid grid-cols-3 gap-2">
-              <Button variant="secondary" onClick={() => setPercentageAmount(10)}>10%</Button>
-              <Button variant="secondary" onClick={() => setPercentageAmount(25)}>25%</Button>
-              <Button variant="secondary" onClick={() => setPercentageAmount(50)}>50%</Button>
-            </div>
-          )}
-        </div>
-        <DialogFooter>
-          <Button onClick={handleFundCompany}>Buy Shares</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <BaseStepDialog
+      title="Fund Company"
+      steps={steps}
+      onComplete={() => fundMutation.mutate()}
+    >
+      {children}
+    </BaseStepDialog>
   );
 }
