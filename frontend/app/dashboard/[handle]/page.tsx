@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   Inbox,
   FileText,
@@ -16,11 +17,11 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Plus,
-  SettingsIcon
 } from 'lucide-react';
-import { computeAvatarFallback } from '@/lib/utils';
+import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils';
 import {
   createCompanyUser,
+  fundCompany,
   getCompany,
   getCompanyBalance,
   getCompanyPeople,
@@ -41,11 +42,14 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PersonDialog } from './person-dialog';
 import { SendMoneyDialog } from './transfer-dialog';
 import ConditionalTooltipWrapper from '@/components/conditional-tooltip';
 import { FundDialog } from './fund-dialog';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+
+const supabase = createSupabaseClient();
 
 export default function CompanyDashboard({
   params
@@ -53,6 +57,15 @@ export default function CompanyDashboard({
   params: { handle: string };
 }) {
   const [email, setEmail] = useState('');
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setUser(user);
+      }
+    });
+  }, []);
 
   const missingActions = [
     { id: 1, action: 'Complete KYC verification', priority: 'high' },
@@ -100,13 +113,21 @@ export default function CompanyDashboard({
     queryFn: () => getKycStatus()
   });
 
+  const fundCompanyMutation = useMutation({
+    mutationFn: (amount: number) => fundCompany(params.handle, amount),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['balance', params.handle] });
+      queryClient.invalidateQueries({ queryKey: ['shareholders', params.handle] });
+    }
+  });
+
   const addPerson = () => {
     const emailToAdd = email;
     setEmail('');
     addPersonMutation.mutate(emailToAdd);
   };
 
-  if (companyQuery.isPending || kycStatusQuery.isPending) {
+  if (companyQuery.isPending || kycStatusQuery.isPending || !user) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
@@ -476,37 +497,63 @@ export default function CompanyDashboard({
                 <Button>Fund the Company</Button>
               </FundDialog>
             ) : (
-              <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-2">Shareholder</th>
-                          <th className="text-right py-2">Shares</th>
-                          <th className="text-right py-2">Percentage</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(() => {
-                          const totalShares = shareholdersQuery.data?.reduce(
-                            (sum: number, shareholder: any) => sum + shareholder.shares,
-                            0
-                          );
-                          
-                          return shareholdersQuery.data?.map((shareholder: any, index: number) => (
-                            <tr key={index} className="border-b last:border-b-0">
-                              <td className="py-2">{shareholder.email}</td>
-                              <td className="text-right py-2">
-                                {shareholder.shares.toLocaleString()}
-                              </td>
-                              <td className="text-right py-2">
-                                {((shareholder.shares / totalShares) * 100).toFixed(2)}%
-                              </td>
-                            </tr>
-                          ));
-                        })()}
-                      </tbody>
-                      </table>
-                    </div>
+              <div className="container mx-auto p-4">
+                {(() => {
+                  const totalShares = shareholdersQuery.data?.reduce(
+                    (sum: number, shareholder: any) => sum + shareholder.shares,
+                    0
+                  ) || 0;
+
+                  return (
+                    <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-left font-bold">Shareholder</TableHead>
+            <TableHead className="text-right font-bold">Shares</TableHead>
+            <TableHead className="text-right font-bold">Percentage</TableHead>
+            <TableHead className="text-right font-bold">Status</TableHead>
+            <TableHead className="text-right font-bold">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {shareholdersQuery.data?.map((shareholder: any) => (
+            <TableRow 
+              key={shareholder.id}
+              className={!shareholder.funded && shareholder.email !== user?.email ? 'opacity-50' : ''}
+            >
+              <TableCell className="font-medium">{shareholder.email}</TableCell>
+              <TableCell className="text-right">{shareholder.shares.toLocaleString()}</TableCell>
+              <TableCell className="text-right">
+                {((shareholder.shares / totalShares) * 100).toFixed(2)}%
+              </TableCell>
+              <TableCell className="text-right">
+                <span 
+                  className={`px-2 py-1 rounded-full text-xs font-semibold
+                    ${shareholder.funded 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' 
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
+                    }`}
+                >
+                  {shareholder.funded ? 'Funded' : 'Unfunded'}
+                </span>
+              </TableCell>
+              <TableCell className="text-right">
+                {!shareholder.funded && shareholder.email === user?.email && (
+                  <Button 
+                    size="sm" 
+                    onClick={() => fundCompanyMutation.mutate(shareholder.shares)}
+                  >
+                    Fund
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+                  );
+                })()}
+              </div>
             )}
             </CardContent>
           </Card>

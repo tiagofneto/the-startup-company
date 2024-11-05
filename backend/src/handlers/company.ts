@@ -15,6 +15,7 @@ import {
   uploadCompany
 } from '../interactions/company.js';
 import { transport } from '../utils.js';
+import { getUserEmail } from '../interactions/user.js';
 
 export const getCompanyHandler = async (req: Request, res: Response) => {
   try {
@@ -178,9 +179,10 @@ export const getCompanyBalanceHandler = async (req: Request, res: Response) => {
 
 export const fundCompanyHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { handle, amount, email } = req.body;
+    const { handle, amount } = req.body;
 
     const user_id = req.user.sub;
+    const email = await getUserEmail(user_id);
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
@@ -204,6 +206,7 @@ export const getShareholdersHandler = async (req: Request, res: Response) => {
     const shareholders = (await fetchShareholders(companyId)).map((shareholder) => {
       return {
         shares: shareholder.shares,
+        funded: shareholder.funded,
         email: shareholder.email
       };
     });

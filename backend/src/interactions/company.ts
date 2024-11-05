@@ -108,7 +108,8 @@ export async function fetchShareholders(companyId: number) {
   console.log('Fetching shareholders from database:', companyId);
   const fetchedShareholders = await db.select({
     email: shareholders.email,
-    shares: shareholders.shares
+    shares: shareholders.shares,
+    funded: shareholders.funded
   }).from(shareholders)
   .where(eq(shareholders.companyId, companyId));
   console.log('Shareholders fetched successfully:', fetchedShareholders);
