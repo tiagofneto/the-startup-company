@@ -45,8 +45,8 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { PersonDialog } from './person-dialog';
 import { SendMoneyDialog } from './transfer-dialog';
-import { FundDialog } from './fund-dialog';
 import ConditionalTooltipWrapper from '@/components/conditional-tooltip';
+import { FundDialog } from './fund-dialog';
 
 export default function CompanyDashboard({
   params
@@ -478,83 +478,22 @@ export default function CompanyDashboard({
         </div>
 
         <Card>
-          {(() => {
-            const totalShares = sharesQuery.data?.total_shares;
-            return (
-              <>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle>Cap Table</CardTitle>
-                  { sharesQuery.data?.total_shares > 0 &&
-                  <FundDialog handle={companyQuery.data?.handle} totalShares={totalShares} mintedShares={sharesQuery.data?.minted_shares}>
-                    <ConditionalTooltipWrapper isDisabled={!kycStatusQuery.data} tooltipContent="You must complete KYC verification to fund the company">
-                      <Button>Fund the Company</Button>
-                    </ConditionalTooltipWrapper>
-                  </FundDialog>
-                  }
-                </CardHeader>
-                <CardContent>
-                  {
-                    sharesQuery.isPending ? (
-                      <div className="flex justify-center items-center h-32">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                      </div>
-                  ) : (
-                    sharesQuery.data?.total_shares > 0 ?
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-2">Shareholder</th>
-                          <th className="text-right py-2">Shares</th>
-                          <th className="text-right py-2">Percentage</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {shareholdersQuery.data?.map((shareholder: any, index: number) => (
-                          <tr key={index} className="border-b last:border-b-0">
-                            <td className="py-2">{shareholder.name}</td>
-                            <td className="text-right py-2">
-                              {shareholder.shares.toLocaleString()}
-                            </td>
-                            <td className="text-right py-2">
-                              {((shareholder.shares / totalShares) * 100).toFixed(2)}%
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      </table>
-                    </div>
-                    :
-                    <div className="space-y-4 max-w-md">
-                      <div className="flex space-x-2">
-                      <Input
-                        id="totalFunding"
-                        type="number"
-                        placeholder="Enter total funding amount"
-                        value={totalFunding}
-                        onChange={(e) => setTotalFunding(e.target.value)}
-                        className="w-60"
-                      />
-                      <ConditionalTooltipWrapper 
-                        isDisabled={!kycStatusQuery.data}
-                        tooltipContent="You must complete KYC verification to setup the cap table">
-                        <Button 
-                          onClick={handleSetupCapTable} 
-                          disabled={totalFunding === '' || isNaN(parseInt(totalFunding, 10)) || parseInt(totalFunding, 10) <= 0}
-                        >
-                          <SettingsIcon className="mr-2 h-4 w-4" /> Setup Cap Table
-                        </Button>
-                      </ConditionalTooltipWrapper>
-                    </div>
-                  </div>
-                  )}
-                </CardContent>
-              </>
-            );
-          })()}
-        </Card>
-        </main>
-      </div>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Cap Table</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FundDialog 
+              handle={companyQuery.data?.handle} 
+              companyName={companyQuery.data?.name} 
+              cofounders={peopleQuery.data?.map((person: any) => person.name || person.email)} 
+              currentCofounder={companyQuery.data?.current_cofounder}
+            >
+              <Button>Fund the Company</Button>
+            </FundDialog>
+            </CardContent>
+          </Card>
+          </main>
+        </div>
     </div>
   );
 }
