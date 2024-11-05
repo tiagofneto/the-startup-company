@@ -1,8 +1,16 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ReactNode, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ReactNode, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 export interface StepComponentProps {
   onNext: () => void;
@@ -23,15 +31,23 @@ interface BaseStepDialogProps {
   children: ReactNode;
 }
 
-const StepCounter = ({ currentStep, steps }: { currentStep: number; steps: string[] }) => {
+const StepCounter = ({
+  currentStep,
+  steps
+}: {
+  currentStep: number;
+  steps: string[];
+}) => {
   return (
     <div className="flex justify-between items-center w-full px-4 mb-6">
       {steps.map((step, index) => (
         <div key={step} className="flex flex-col items-center">
           <div
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-              index < currentStep ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+              'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
+              index < currentStep
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-secondary-foreground'
             )}
           >
             {index + 1}
@@ -43,12 +59,11 @@ const StepCounter = ({ currentStep, steps }: { currentStep: number; steps: strin
   );
 };
 
-
-export function BaseStepDialog({ 
-  title, 
+export function BaseStepDialog({
+  title,
   steps,
   onComplete,
-  children 
+  children
 }: BaseStepDialogProps) {
   const [step, setStep] = useState(1);
 
@@ -57,7 +72,7 @@ export function BaseStepDialog({
     return currentStep.component({
       onNext: () => setStep(step + 1),
       onBack: () => setStep(step - 1),
-      isNextDisabled: false,
+      isNextDisabled: false
     });
   };
 
@@ -67,14 +82,9 @@ export function BaseStepDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {steps[step - 1].description}
-          </DialogDescription>
+          <DialogDescription>{steps[step - 1].description}</DialogDescription>
         </DialogHeader>
-        <StepCounter 
-          currentStep={step} 
-          steps={steps.map(s => s.title)} 
-        />
+        <StepCounter currentStep={step} steps={steps.map((s) => s.title)} />
         <div className="h-[200px] flex items-center justify-center overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
@@ -96,16 +106,12 @@ export function BaseStepDialog({
             </Button>
           )}
           {step < steps.length ? (
-            <Button onClick={() => setStep(step + 1)}>
-              Next
-            </Button>
+            <Button onClick={() => setStep(step + 1)}>Next</Button>
           ) : (
-            <Button onClick={onComplete}>
-              Confirm
-            </Button>
+            <Button onClick={onComplete}>Confirm</Button>
           )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-} 
+}

@@ -1,5 +1,11 @@
 import { Company } from '../types.js';
-import { companies, shareholders, userCompanies, userProfiles, users } from '../schema.js';
+import {
+  companies,
+  shareholders,
+  userCompanies,
+  userProfiles,
+  users
+} from '../schema.js';
 import { eq, desc, and } from 'drizzle-orm';
 import { getUserEmail } from './user.js';
 import { db } from './db.js';
@@ -29,7 +35,10 @@ export async function fetchCompany(handle: string) {
 
 export async function getCompanies() {
   console.log('Fetching companies from database');
-  const companyList = (await db.select().from(companies).orderBy(desc(companies.createdAt))) as Company[];
+  const companyList = (await db
+    .select()
+    .from(companies)
+    .orderBy(desc(companies.createdAt))) as Company[];
   return companyList;
 }
 
@@ -98,26 +107,42 @@ export async function getCompanyId(handle: string) {
   return companyId;
 }
 
-export async function updateShareholders(companyId: number, email: string, shares: number) {
+export async function updateShareholders(
+  companyId: number,
+  email: string,
+  shares: number
+) {
   console.log('Updating shareholders in database:', companyId, email, shares);
-  await db.insert(shareholders).values({ companyId: companyId, email: email, shares: shares });
+  await db
+    .insert(shareholders)
+    .values({ companyId: companyId, email: email, shares: shares });
   console.log('Shareholders updated successfully');
 }
 
 export async function fetchShareholders(companyId: number) {
   console.log('Fetching shareholders from database:', companyId);
-  const fetchedShareholders = await db.select({
-    email: shareholders.email,
-    shares: shareholders.shares,
-    funded: shareholders.funded
-  }).from(shareholders)
-  .where(eq(shareholders.companyId, companyId));
+  const fetchedShareholders = await db
+    .select({
+      email: shareholders.email,
+      shares: shareholders.shares,
+      funded: shareholders.funded
+    })
+    .from(shareholders)
+    .where(eq(shareholders.companyId, companyId));
   console.log('Shareholders fetched successfully:', fetchedShareholders);
   return fetchedShareholders;
 }
 
-export async function updateShareholderFunded(companyId: number, email: string) {
+export async function updateShareholderFunded(
+  companyId: number,
+  email: string
+) {
   console.log('Updating shareholder funded in database:', companyId, email);
-  await db.update(shareholders).set({ funded: true }).where(and(eq(shareholders.companyId, companyId), eq(shareholders.email, email)));
+  await db
+    .update(shareholders)
+    .set({ funded: true })
+    .where(
+      and(eq(shareholders.companyId, companyId), eq(shareholders.email, email))
+    );
   console.log('Shareholder funded updated successfully');
 }

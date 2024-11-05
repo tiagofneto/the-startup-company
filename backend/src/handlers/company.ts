@@ -1,7 +1,17 @@
 import { Request, Response } from 'express';
 import { readFileSync } from 'fs';
 import { AuthenticatedRequest } from '../middleware.js';
-import { authorizeUser, createCompany, fundCompany, getCompany, getCompanyBalance, getShares, issueShares, transferTokensToAddress, transferTokensToHandle } from '../aztec.js';
+import {
+  authorizeUser,
+  createCompany,
+  fundCompany,
+  getCompany,
+  getCompanyBalance,
+  getShares,
+  issueShares,
+  transferTokensToAddress,
+  transferTokensToHandle
+} from '../aztec.js';
 import {
   createCompanyUser,
   createUserCompany,
@@ -177,7 +187,10 @@ export const getCompanyBalanceHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const fundCompanyHandler = async (req: AuthenticatedRequest, res: Response) => {
+export const fundCompanyHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { handle, amount } = req.body;
 
@@ -203,13 +216,15 @@ export const getShareholdersHandler = async (req: Request, res: Response) => {
   try {
     const { handle } = req.query;
     const companyId = await getCompanyId(handle as string);
-    const shareholders = (await fetchShareholders(companyId)).map((shareholder) => {
-      return {
-        shares: shareholder.shares,
-        funded: shareholder.funded,
-        email: shareholder.email
-      };
-    });
+    const shareholders = (await fetchShareholders(companyId)).map(
+      (shareholder) => {
+        return {
+          shares: shareholder.shares,
+          funded: shareholder.funded,
+          email: shareholder.email
+        };
+      }
+    );
     res.status(200).json(shareholders);
   } catch (error) {
     console.error('Error fetching shareholders:', error);
@@ -246,10 +261,10 @@ export const issueSharesHandler = async (req: Request, res: Response) => {
     const companyId = await getCompanyId(handle);
 
     await issueShares(companyRegistry, handle, shares);
-    
+
     // TODO all in one query
     for (const split of splits) {
-      const user_shares = Math.floor(shares * split.equity / 100);
+      const user_shares = Math.floor((shares * split.equity) / 100);
       console.log('Updating shareholder:', split.email, user_shares);
       await updateShareholders(companyId, split.email, user_shares);
     }

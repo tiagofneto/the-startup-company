@@ -167,7 +167,12 @@ export async function issueShares(handle: string, shares: number, splits: any) {
   return response.data;
 }
 
-export async function transferTokens(from: string, to: string, amount: number, isAddress: boolean) {
+export async function transferTokens(
+  from: string,
+  to: string,
+  amount: number,
+  isAddress: boolean
+) {
   const response = await apiClient.post(
     '/transfer-tokens',
     { from, to, amount, isAddress },

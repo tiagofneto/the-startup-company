@@ -187,9 +187,7 @@ export default function UserDashboard() {
                       <span
                         className={`px-3 py-1 ${profileQuery.data.kyc ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}
                       >
-                        {profileQuery.data.kyc
-                          ? 'Verified'
-                          : 'Pending'}
+                        {profileQuery.data.kyc ? 'Verified' : 'Pending'}
                       </span>
                     </div>
                     {profileQuery.data.kyc ? (
@@ -215,13 +213,17 @@ export default function UserDashboard() {
                             <DialogHeader>
                               <DialogTitle>KYC Verification</DialogTitle>
                               <DialogDescription>
-                                Scan the QR code using the OpenPassport app.
-                                If you have not used OpenPassport before, <a
+                                Scan the QR code using the OpenPassport app. If
+                                you have not used OpenPassport before,{' '}
+                                <a
                                   href="https://openpassport.app"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-primary hover:underline"
-                                >download the app</a> to verify your identity
+                                >
+                                  download the app
+                                </a>{' '}
+                                to verify your identity
                               </DialogDescription>
                             </DialogHeader>
                             <OpenPassportQRcode
