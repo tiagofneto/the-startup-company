@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { BaseStepDialog, Step } from "@/components/base-step-dialog"
 import { Separator } from "@/components/ui/separator"
+import { issueShares } from "@/services/api"
 
 interface Cofounder {
-  handle: string
+  email: string
   equity: number
 }
 
@@ -29,16 +30,13 @@ export function FundDialog({
 }: FundDialogProps) {
   const [totalCapital, setTotalCapital] = useState('200')
   const [equitySplit, setEquitySplit] = useState<Cofounder[]>(
-    cofounders.map(handle => ({ handle, equity: 100 / cofounders.length }))
+    cofounders.map(email => ({ email, equity: 100 / cofounders.length }))
   )
 
   const queryClient = useQueryClient()
 
   const fundMutation = useMutation({
-    mutationFn: () => {
-      // Implement your fund API call here
-      return Promise.resolve()
-    },
+    mutationFn: () => issueShares(handle, parseFloat(totalCapital), equitySplit),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['balance', handle] })
     },
@@ -63,9 +61,9 @@ export function FundDialog({
       component: () => (
         <div className="space-y-4">
           {equitySplit.map((cofounder, index) => (
-            <div key={cofounder.handle} className="space-y-1">
+            <div key={cofounder.email} className="space-y-1">
               <div className="flex justify-between items-center">
-                <Label className="text-sm">{cofounder.handle}</Label>
+                <Label className="text-sm">{cofounder.email}</Label>
                 <div className="relative">
                   <Input
                     type="number"
@@ -105,8 +103,8 @@ export function FundDialog({
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Individual Contributions:</h3>
               {equitySplit.map((cofounder) => (
-                <div key={cofounder.handle} className="flex justify-between items-center text-sm">
-                  <span>{cofounder.handle}</span>
+                <div key={cofounder.email} className="flex justify-between items-center text-sm">
+                  <span>{cofounder.email}</span>
                   <span className="font-medium">
                     ${(parseFloat(totalCapital) * (cofounder.equity / 100)).toFixed(2)}
                   </span>

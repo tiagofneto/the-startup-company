@@ -1,5 +1,5 @@
 {
-  "id": "d2c06624-e787-45a6-ba45-d4ecc930122b",
+  "id": "1283ce5f-6a8e-4167-91f8-4e94fa653164",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -75,9 +75,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -86,6 +86,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "funded": {
+          "name": "funded",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -102,28 +109,14 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        },
-        "shareholders_user_id_users_id_fk": {
-          "name": "shareholders_user_id_users_id_fk",
-          "tableFrom": "shareholders",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "shareholders_company_id_user_id_pk": {
-          "name": "shareholders_company_id_user_id_pk",
+        "shareholders_company_id_email_pk": {
+          "name": "shareholders_company_id_email_pk",
           "columns": [
             "company_id",
-            "user_id"
+            "email"
           ]
         }
       },

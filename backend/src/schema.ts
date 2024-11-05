@@ -70,12 +70,11 @@ export const shareholders = pgTable('shareholders', {
   companyId: integer('company_id')
     .notNull()
     .references(() => companies.id),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id),
-  shares: integer('shares').notNull()
+  email: varchar('email', { length: 255 }).notNull(),
+  shares: integer('shares').notNull(),
+  funded: boolean('funded').notNull().default(false)
   },
   (t) => ({
-    id: primaryKey({ columns: [t.companyId, t.userId] })
+    id: primaryKey({ columns: [t.companyId, t.email] })
   })
 );

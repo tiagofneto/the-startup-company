@@ -97,13 +97,6 @@ export default function CompanyDashboard({
     queryFn: () => getShares(params.handle)
   });
   
-  const issueSharesMutation = useMutation({
-    mutationFn: (shares: number) => issueShares(params.handle, shares),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shares', params.handle] });
-    }
-  });
-
   const kycStatusQuery = useQuery({
     queryKey: ['kyc-status'],
     queryFn: () => getKycStatus()
@@ -113,13 +106,6 @@ export default function CompanyDashboard({
     const emailToAdd = email;
     setEmail('');
     addPersonMutation.mutate(emailToAdd);
-  };
-
-  const handleSetupCapTable = () => {
-    const shares = parseInt(totalFunding, 10);
-    if (!isNaN(shares) && shares > 0) {
-      issueSharesMutation.mutate(shares);
-    }
   };
 
   if (companyQuery.isPending || kycStatusQuery.isPending) {
@@ -485,7 +471,7 @@ export default function CompanyDashboard({
             <FundDialog 
               handle={companyQuery.data?.handle} 
               companyName={companyQuery.data?.name} 
-              cofounders={peopleQuery.data?.map((person: any) => person.name || person.email)} 
+              cofounders={peopleQuery.data?.map((person: any) => person.email)} 
               currentCofounder={companyQuery.data?.current_cofounder}
             >
               <Button>Fund the Company</Button>
