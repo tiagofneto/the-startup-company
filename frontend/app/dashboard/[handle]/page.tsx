@@ -27,7 +27,6 @@ import {
   getKycStatus,
   getShareholders,
   getShares,
-  issueShares
 } from '@/services/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -54,7 +53,6 @@ export default function CompanyDashboard({
   params: { handle: string };
 }) {
   const [email, setEmail] = useState('');
-  const [totalFunding, setTotalFunding] = useState('');
 
   const missingActions = [
     { id: 1, action: 'Complete KYC verification', priority: 'high' },
@@ -468,14 +466,48 @@ export default function CompanyDashboard({
             <CardTitle>Cap Table</CardTitle>
           </CardHeader>
           <CardContent>
-            <FundDialog 
-              handle={companyQuery.data?.handle} 
-              companyName={companyQuery.data?.name} 
-              cofounders={peopleQuery.data?.map((person: any) => person.email)} 
-              currentCofounder={companyQuery.data?.current_cofounder}
-            >
-              <Button>Fund the Company</Button>
-            </FundDialog>
+            {shareholdersQuery.data?.length === 0 ? (
+              <FundDialog 
+                handle={companyQuery.data?.handle} 
+                companyName={companyQuery.data?.name} 
+                cofounders={peopleQuery.data?.map((person: any) => person.email)} 
+                currentCofounder={companyQuery.data?.current_cofounder}
+              >
+                <Button>Fund the Company</Button>
+              </FundDialog>
+            ) : (
+              <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Shareholder</th>
+                          <th className="text-right py-2">Shares</th>
+                          <th className="text-right py-2">Percentage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(() => {
+                          const totalShares = shareholdersQuery.data?.reduce(
+                            (sum: number, shareholder: any) => sum + shareholder.shares,
+                            0
+                          );
+                          
+                          return shareholdersQuery.data?.map((shareholder: any, index: number) => (
+                            <tr key={index} className="border-b last:border-b-0">
+                              <td className="py-2">{shareholder.email}</td>
+                              <td className="text-right py-2">
+                                {shareholder.shares.toLocaleString()}
+                              </td>
+                              <td className="text-right py-2">
+                                {((shareholder.shares / totalShares) * 100).toFixed(2)}%
+                              </td>
+                            </tr>
+                          ));
+                        })()}
+                      </tbody>
+                      </table>
+                    </div>
+            )}
             </CardContent>
           </Card>
           </main>
