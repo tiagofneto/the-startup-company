@@ -37,6 +37,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
+import { KYCDialog } from './kyc-dialog';
 
 const supabase = createSupabaseClient();
 
@@ -197,8 +198,7 @@ export default function UserDashboard() {
                       </p>
                     ) : (
                       <>
-                        <Dialog>
-                          <DialogTrigger asChild>
+                        <KYCDialog userId={user.id}>
                             <div className="relative w-full">
                               <Button className="w-full">
                                 Complete KYC Verification
@@ -208,35 +208,7 @@ export default function UserDashboard() {
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
                               </span>
                             </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>KYC Verification</DialogTitle>
-                              <DialogDescription>
-                                Scan the QR code using the OpenPassport app. If
-                                you have not used OpenPassport before,{' '}
-                                <a
-                                  href="https://openpassport.app"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:underline"
-                                >
-                                  download the app
-                                </a>{' '}
-                                to verify your identity
-                              </DialogDescription>
-                            </DialogHeader>
-                            <OpenPassportQRcode
-                              appName="The Startup Company"
-                              scope="@thestartupcompany"
-                              userId={user.id}
-                              requirements={[]}
-                              onSuccess={handleSuccessfulVerification}
-                              devMode={true}
-                              size={300}
-                            />
-                          </DialogContent>
-                        </Dialog>
+                        </KYCDialog>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
                           Unlock all features with KYC
                         </p>

@@ -29,6 +29,7 @@ interface BaseStepDialogProps {
   steps: Step[];
   onComplete: () => void;
   children: ReactNode;
+  contentHeight?: string;
 }
 
 const StepCounter = ({
@@ -63,7 +64,8 @@ export function BaseStepDialog({
   title,
   steps,
   onComplete,
-  children
+  children,
+  contentHeight = '200px'
 }: BaseStepDialogProps) {
   const [step, setStep] = useState(1);
 
@@ -85,7 +87,7 @@ export function BaseStepDialog({
           <DialogDescription>{steps[step - 1].description}</DialogDescription>
         </DialogHeader>
         <StepCounter currentStep={step} steps={steps.map((s) => s.title)} />
-        <div className="h-[200px] flex items-center justify-center overflow-hidden">
+        <div className={`h-[${contentHeight}] flex items-center justify-center overflow-hidden`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
