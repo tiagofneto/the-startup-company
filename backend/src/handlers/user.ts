@@ -46,6 +46,8 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
       const nullifier = dynamicAttestation.getNullifier();
       console.log('Nullifier: ', nullifier);
 
+      // TODO: Verify face
+
       await verifyUser(companyRegistry, id);
       await setKycVerified(id);
       res.sendStatus(200);
@@ -55,6 +57,19 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).json({ error: 'Failed to verify KYC' });
   }
 };
+
+export const isFaceValid = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const img = req.body.img;
+
+    console.log("Validating face");
+
+    res.status(200).json({ valid: true });
+  } catch (error) {
+    console.error('Error verifying face:', error);
+    res.status(500).json({ error: 'Failed to verify face' });
+  }
+}
 
 export const getKycStatus = async (
   req: AuthenticatedRequest,

@@ -1,14 +1,28 @@
 import { BaseStepDialog, Step } from '@/components/base-step-dialog';
 import { Button } from '@/components/ui/button';
-import { OpenPassportVerifier } from '@openpassport/core';
+import { OpenPassportAttestation, OpenPassportVerifier } from '@openpassport/core';
 import { OpenPassportQRcode } from '@openpassport/qrcode';
 import { ReactNode, useCallback, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import Image from 'next/image';
+import { useMutation } from '@tanstack/react-query';
+import { isFaceValid } from '@/services/api';
 
 export function KYCDialog({ children, userId }: { children: ReactNode, userId: string }) {
     const webcamRef = useRef<Webcam>(null);
     const [imgSrc, setImgSrc] = useState('');
+    const [attestation, setAttestation] = useState<OpenPassportAttestation | null>(null);
+    const [validFace, setValidFace] = useState(false);
+
+    const validateFaceMutation = useMutation({
+        mutationFn: () => isFaceValid(imgSrc),
+        onSuccess: () => setValidFace(true)
+    });
+
+    const submitPhoto = () => {
+        console.log('Submitting photo');
+        setValidFace(true);
+    }
 
     const capture = useCallback(() => {
         const imageSrc = webcamRef.current?.getScreenshot();
@@ -28,7 +42,7 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
                     userId={userId}
                     userIdType={'uuid'}
                     openPassportVerifier={openPassportVerifier}
-                    onSuccess={() => console.log('KYC verification successful')}
+                    onSuccess={(attestation) => setAttestation(attestation)}
                     size={300}
                 />
             )
@@ -42,6 +56,7 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
                         <>
                             <Image src={imgSrc} alt="Captured selfie" width={1280} height={720} />
                             <Button onClick={() => setImgSrc('')}>Retake photo</Button>
+                            <Button onClick={() => validateFaceMutation.mutate()}>Submit photo</Button>
                         </>
                     ) : (
                         <>

@@ -17,7 +17,7 @@ import {
   issueSharesHandler,
   transferTokensHandler
 } from './handlers/company.js';
-import { getKycStatus, getProfile, verifyKyc } from './handlers/user.js';
+import { getKycStatus, getProfile, isFaceValid, verifyKyc } from './handlers/user.js';
 import {
   createStreamHandler,
   getUserCompanyStreamsHandler,
@@ -86,3 +86,4 @@ app.get('/user-companies', authenticateToken, getUserCompanies);
 app.post('/verify-kyc', authenticateToken, verifyKyc);
 app.get('/user-streams', authenticateToken, getUserStreams);
 app.get('/kyc-status', authenticateToken, getKycStatus);
+app.post('/is-face-valid', authenticateToken, isFaceValid);
