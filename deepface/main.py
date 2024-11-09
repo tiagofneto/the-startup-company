@@ -1,7 +1,10 @@
 from deepface import DeepFace
 from flask import Flask, request, jsonify
+import sys
 
 app = Flask(__name__)
+
+sys.stdout.flush()
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -19,7 +22,7 @@ def is_face_valid():
             img1_path = img, 
             img2_path = "dataset/tiago.jpg"
         )
-        print(result)
+        print(result, flush=True)
 
         return jsonify(result)
     except Exception as e:
