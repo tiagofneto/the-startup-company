@@ -34,7 +34,7 @@ export const transport = nodemailer.createTransport({
 
 export const isFaceValidHelper = async (img: string) => {
   // TODO env
-  const url = `http://127.0.0.1:5000/is-face-valid`;
+  const url = `http://0.0.0.0:5001/is-face-valid`;
   const response = await axios.post(url, { img });
   console.log(response.data)
   return response.data.verified;

@@ -29,6 +29,7 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
     const img = req.body.img;
 
     if (!proof || !img) {
+      console.log('Missing proof or image');
       return res.status(400).json({ error: 'Missing proof or image' });
     }
 
