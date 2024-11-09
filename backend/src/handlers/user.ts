@@ -4,7 +4,7 @@ import { createOrGetUser, setKycVerified } from '../interactions/user.js';
 import { isUserVerified, verifyUser } from '../aztec.js';
 import { readFileSync } from 'fs';
 import { OpenPassportAttestation, OpenPassportDynamicAttestation, OpenPassportVerifier, OpenPassportVerifierReport } from '@openpassport/core';
-import axios from 'axios';
+import { isFaceValidHelper } from '../utils.js';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -26,6 +26,11 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const id = req.user.sub;
     const proof = req.body.proof as OpenPassportAttestation;
+    const img = req.body.img;
+
+    if (!proof || !img) {
+      return res.status(400).json({ error: 'Missing proof or image' });
+    }
 
     console.log('Verifying KYC');
 
@@ -47,11 +52,16 @@ export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
       const nullifier = dynamicAttestation.getNullifier();
       console.log('Nullifier: ', nullifier);
 
-      // TODO: Verify face
-
-      await verifyUser(companyRegistry, id);
-      await setKycVerified(id);
-      res.sendStatus(200);
+      const faceValid = await isFaceValidHelper(img);
+      if (!faceValid) {
+        console.log('Face is invalid');
+        res.status(400).json({ error: 'Invalid face' });
+      } else {
+        console.log('Face is valid');
+        await verifyUser(companyRegistry, id);
+        await setKycVerified(id);
+        res.sendStatus(200);
+      }
     }
   } catch (error) {
     console.error('Error verifying KYC:', error);
@@ -65,15 +75,8 @@ export const isFaceValid = async (req: AuthenticatedRequest, res: Response) => {
 
     console.log("Validating face");
 
-    // TODO env
-    const url = `http://127.0.0.1:5000/is-face-valid`;
-
-    const response = await axios.post(url, { img });
-    const data = response.data;
-
-    console.log(data);
-
-    res.status(200).json(data.verified);
+    const valid = await isFaceValidHelper(img);
+    res.status(200).json(valid);
   } catch (error) {
     console.error('Error verifying face:', error);
     res.status(500).json({ error: 'Failed to verify face' });

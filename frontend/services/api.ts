@@ -58,10 +58,10 @@ export async function getCompanyPeople(handle: string) {
   return response.data;
 }
 
-export async function verifyKyc(proof: OpenPassportAttestation) {
+export async function verifyKyc(proof: OpenPassportAttestation, img: string) {
   const response = await apiClient.post(
     '/verify-kyc',
-    { proof: proof },
+    { proof: proof, img: img },
     {
       headers: {
         Authorization: `Bearer ${getAccessToken()}`

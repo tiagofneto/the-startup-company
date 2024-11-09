@@ -17,21 +17,11 @@ import { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   getProfile,
   getUserCompanies,
-  verifyKyc,
   getUserStreams
 } from '@/services/api';
 import Link from 'next/link';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { StreamItem } from '@/components/stream-item';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
 import { KYCDialog } from './kyc-dialog';
 
 const supabase = createSupabaseClient();
@@ -62,13 +52,6 @@ export default function UserDashboard() {
   const streamsQuery = useQuery({
     queryKey: ['user_streams'],
     queryFn: () => getUserStreams(user!.id)
-  });
-
-  const kycMutation = useMutation({
-    mutationFn: verifyKyc,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    }
   });
 
   if (!user) {
@@ -165,7 +148,7 @@ export default function UserDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {profileQuery.isPending || kycMutation.isPending ? (
+                {profileQuery.isPending ? (
                   <div className="flex justify-center items-center h-24">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                   </div>

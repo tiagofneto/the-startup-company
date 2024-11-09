@@ -5,8 +5,8 @@ import { OpenPassportQRcode } from '@openpassport/qrcode';
 import { ReactNode, useCallback, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import Image from 'next/image';
-import { useMutation } from '@tanstack/react-query';
-import { isFaceValid } from '@/services/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { isFaceValid, verifyKyc } from '@/services/api';
 
 export function KYCDialog({ children, userId }: { children: ReactNode, userId: string }) {
     const webcamRef = useRef<Webcam>(null);
@@ -19,10 +19,15 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
         onSuccess: () => setValidFace(true)
     });
 
-    const submitPhoto = () => {
-        console.log('Submitting photo');
-        setValidFace(true);
-    }
+    const queryClient = useQueryClient();
+
+    const kycMutation = useMutation({
+        mutationFn: () => verifyKyc(attestation!, imgSrc),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+        }
+    });
+
 
     const capture = useCallback(() => {
         const imageSrc = webcamRef.current?.getScreenshot();
@@ -80,7 +85,7 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
         <BaseStepDialog
             title="KYC Verification"
             steps={steps}
-            onComplete={() => console.log('KYC complete')}
+            onComplete={() => kycMutation.mutate()}
             contentHeight="400px"
         >
             {children}
