@@ -4,6 +4,7 @@ import { createOrGetUser, setKycVerified } from '../interactions/user.js';
 import { isUserVerified, verifyUser } from '../aztec.js';
 import { readFileSync } from 'fs';
 import { OpenPassportAttestation, OpenPassportDynamicAttestation, OpenPassportVerifier, OpenPassportVerifierReport } from '@openpassport/core';
+import axios from 'axios';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -64,7 +65,15 @@ export const isFaceValid = async (req: AuthenticatedRequest, res: Response) => {
 
     console.log("Validating face");
 
-    res.status(200).json({ valid: true });
+    // TODO env
+    const url = `http://127.0.0.1:5000/is-face-valid`;
+
+    const response = await axios.post(url, { img });
+    const data = response.data;
+
+    console.log(data);
+
+    res.status(200).json(data.verified);
   } catch (error) {
     console.error('Error verifying face:', error);
     res.status(500).json({ error: 'Failed to verify face' });
