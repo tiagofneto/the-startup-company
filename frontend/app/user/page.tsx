@@ -22,11 +22,6 @@ import {
 } from '@/services/api';
 import Link from 'next/link';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import {
-  OpenPassportQRcode,
-  OpenPassport1StepInputs,
-  OpenPassportVerifierReport
-} from '@openpassport/sdk';
 import { StreamItem } from '@/components/stream-item';
 
 import {
@@ -75,13 +70,6 @@ export default function UserDashboard() {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     }
   });
-
-  const handleSuccessfulVerification = (
-    proof: OpenPassport1StepInputs,
-    verificatonResult: OpenPassportVerifierReport
-  ) => {
-    kycMutation.mutate(proof);
-  };
 
   if (!user) {
     return (

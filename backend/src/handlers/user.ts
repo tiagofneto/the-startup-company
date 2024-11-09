@@ -1,12 +1,9 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware.js';
-import {
-  OpenPassport1StepInputs,
-  OpenPassport1StepVerifier
-} from '@openpassport/sdk';
 import { createOrGetUser, setKycVerified } from '../interactions/user.js';
 import { isUserVerified, verifyUser } from '../aztec.js';
 import { readFileSync } from 'fs';
+import { OpenPassportAttestation, OpenPassportDynamicAttestation, OpenPassportVerifier, OpenPassportVerifierReport } from '@openpassport/core';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -27,30 +24,28 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
 export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const id = req.user.sub;
-    const proof = req.body.proof as OpenPassport1StepInputs;
+    const proof = req.body.proof as OpenPassportAttestation;
 
     console.log('Verifying KYC');
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
-    const verifierArgs = {
-      scope: '@thestartupcompany',
-      requirements: [],
-      dev_mode: true
-    };
-    const openPassport1StepVerifier = new OpenPassport1StepVerifier(
-      verifierArgs
-    );
-
-    const isValid = (await openPassport1StepVerifier.verify(proof)).valid;
+    const openPassportVerifier: OpenPassportVerifier = new OpenPassportVerifier('prove_offchain', 'thestartupcompany')
+        .allowMockPassports();
+    
+    const isValid: boolean = (await openPassportVerifier.verify(proof)).valid;
     if (!isValid) {
       console.log('Passport proof is invalid');
       res.status(400).json({ error: 'Invalid proof' });
     } else {
       console.log('Passport proof is valid');
-      // TODO: Store nullifier in database
-      //console.log("Nullifier: ", proof.getNullifier());
+
+      // TODO: Store nullifier
+      const dynamicAttestation = new OpenPassportDynamicAttestation(proof);
+      const nullifier = dynamicAttestation.getNullifier();
+      console.log('Nullifier: ', nullifier);
+
       await verifyUser(companyRegistry, id);
       await setKycVerified(id);
       res.sendStatus(200);
