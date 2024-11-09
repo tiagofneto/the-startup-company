@@ -4,6 +4,17 @@ services:
     volumes:
       - contracts_target:/app/target
 
+  deepface:
+    build: ./deepface
+    ports:
+      - "5001:5001"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build: ./backend
     restart: always
@@ -15,10 +26,13 @@ services:
         condition: service_completed_successfully
       aztec:
         condition: service_healthy
+      deepface:
+        condition: service_healthy
     volumes:
       - contracts_target:/app/contracts/target
     environment:
       PXE_URL: http://aztec:${PXE_PORT:-8080}
+      DEEPFACE_URL: http://deepface:5001
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 10s
