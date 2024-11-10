@@ -17,26 +17,12 @@ import { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   getProfile,
   getUserCompanies,
-  verifyKyc,
   getUserStreams
 } from '@/services/api';
 import Link from 'next/link';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import {
-  OpenPassportQRcode,
-  OpenPassport1StepInputs,
-  OpenPassportVerifierReport
-} from '@openpassport/sdk';
 import { StreamItem } from '@/components/stream-item';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
+import { KYCDialog } from './kyc-dialog';
 
 const supabase = createSupabaseClient();
 
@@ -67,20 +53,6 @@ export default function UserDashboard() {
     queryKey: ['user_streams'],
     queryFn: () => getUserStreams(user!.id)
   });
-
-  const kycMutation = useMutation({
-    mutationFn: verifyKyc,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-    }
-  });
-
-  const handleSuccessfulVerification = (
-    proof: OpenPassport1StepInputs,
-    verificatonResult: OpenPassportVerifierReport
-  ) => {
-    kycMutation.mutate(proof);
-  };
 
   if (!user) {
     return (
@@ -176,7 +148,7 @@ export default function UserDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {profileQuery.isPending || kycMutation.isPending ? (
+                {profileQuery.isPending ? (
                   <div className="flex justify-center items-center h-24">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                   </div>
@@ -197,8 +169,7 @@ export default function UserDashboard() {
                       </p>
                     ) : (
                       <>
-                        <Dialog>
-                          <DialogTrigger asChild>
+                        <KYCDialog userId={user.id}>
                             <div className="relative w-full">
                               <Button className="w-full">
                                 Complete KYC Verification
@@ -208,35 +179,7 @@ export default function UserDashboard() {
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
                               </span>
                             </div>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>KYC Verification</DialogTitle>
-                              <DialogDescription>
-                                Scan the QR code using the OpenPassport app. If
-                                you have not used OpenPassport before,{' '}
-                                <a
-                                  href="https://openpassport.app"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:underline"
-                                >
-                                  download the app
-                                </a>{' '}
-                                to verify your identity
-                              </DialogDescription>
-                            </DialogHeader>
-                            <OpenPassportQRcode
-                              appName="The Startup Company"
-                              scope="@thestartupcompany"
-                              userId={user.id}
-                              requirements={[]}
-                              onSuccess={handleSuccessfulVerification}
-                              devMode={true}
-                              size={300}
-                            />
-                          </DialogContent>
-                        </Dialog>
+                        </KYCDialog>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
                           Unlock all features with KYC
                         </p>

@@ -1,12 +1,10 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware.js';
-import {
-  OpenPassport1StepInputs,
-  OpenPassport1StepVerifier
-} from '@openpassport/sdk';
 import { createOrGetUser, setKycVerified } from '../interactions/user.js';
 import { isUserVerified, verifyUser } from '../aztec.js';
 import { readFileSync } from 'fs';
+import { OpenPassportAttestation, OpenPassportDynamicAttestation, OpenPassportVerifier, OpenPassportVerifierReport } from '@openpassport/core';
+import { isFaceValidHelper } from '../utils.js';
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -27,39 +25,64 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
 export const verifyKyc = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const id = req.user.sub;
-    const proof = req.body.proof as OpenPassport1StepInputs;
+    const proof = req.body.proof as OpenPassportAttestation;
+    const img = req.body.img;
+
+    if (!proof || !img) {
+      console.log('Missing proof or image');
+      return res.status(400).json({ error: 'Missing proof or image' });
+    }
 
     console.log('Verifying KYC');
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
 
-    const verifierArgs = {
-      scope: '@thestartupcompany',
-      requirements: [],
-      dev_mode: true
-    };
-    const openPassport1StepVerifier = new OpenPassport1StepVerifier(
-      verifierArgs
-    );
-
-    const isValid = (await openPassport1StepVerifier.verify(proof)).valid;
+    const openPassportVerifier: OpenPassportVerifier = new OpenPassportVerifier('prove_offchain', 'thestartupcompany')
+        .allowMockPassports();
+    
+    const isValid: boolean = (await openPassportVerifier.verify(proof)).valid;
     if (!isValid) {
       console.log('Passport proof is invalid');
       res.status(400).json({ error: 'Invalid proof' });
     } else {
       console.log('Passport proof is valid');
-      // TODO: Store nullifier in database
-      //console.log("Nullifier: ", proof.getNullifier());
-      await verifyUser(companyRegistry, id);
-      await setKycVerified(id);
-      res.sendStatus(200);
+
+      // TODO: Store nullifier
+      const dynamicAttestation = new OpenPassportDynamicAttestation(proof);
+      const nullifier = dynamicAttestation.getNullifier();
+      console.log('Nullifier: ', nullifier);
+
+      const faceValid = await isFaceValidHelper(img);
+      if (!faceValid) {
+        console.log('Face is invalid');
+        res.status(400).json({ error: 'Invalid face' });
+      } else {
+        console.log('Face is valid');
+        await verifyUser(companyRegistry, id);
+        await setKycVerified(id);
+        res.sendStatus(200);
+      }
     }
   } catch (error) {
     console.error('Error verifying KYC:', error);
     res.status(500).json({ error: 'Failed to verify KYC' });
   }
 };
+
+export const isFaceValid = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const img = req.body.img;
+
+    console.log("Validating face");
+
+    const valid = await isFaceValidHelper(img);
+    res.status(200).json(valid);
+  } catch (error) {
+    console.error('Error verifying face:', error);
+    res.status(500).json({ error: 'Failed to verify face' });
+  }
+}
 
 export const getKycStatus = async (
   req: AuthenticatedRequest,

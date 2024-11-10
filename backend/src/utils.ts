@@ -1,6 +1,6 @@
 import { Fr } from '@aztec/circuits.js';
 import nodemailer from 'nodemailer';
-
+import axios from 'axios';
 export const toString = (value: bigint) => {
   const vals: number[] = Array.from(new Fr(value).toBuffer());
 
@@ -31,3 +31,12 @@ export const transport = nodemailer.createTransport({
     pass: process.env.NODEMAILER_PASS
   }
 });
+
+export const isFaceValidHelper = async (img: string) => {
+  // TODO env
+  const { DEEPFACE_URL = 'http://localhost:5001' } = process.env;
+  const url = `${DEEPFACE_URL}/is-face-valid`;
+  const response = await axios.post(url, { img });
+  console.log(response.data)
+  return response.data.verified;
+}
