@@ -34,7 +34,7 @@ export const transport = nodemailer.createTransport({
 
 export const isFaceValidHelper = async (img: string) => {
   // TODO env
-  const { DEEPFACE_URL = 'http://localhost:5001' } = process.env;
+  const { DEEPFACE_URL = 'http://0.0.0.0:5001' } = process.env;
   const url = `${DEEPFACE_URL}/is-face-valid`;
   const response = await axios.post(url, { img });
   console.log(response.data)

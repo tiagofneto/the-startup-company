@@ -22,6 +22,14 @@ def is_face_valid():
             img1_path = img, 
             img2_path = "dataset/tiago.jpg"
         )
+        verified = result['verified']
+        if not verified:
+            print('not verified', flush=True)
+            result = DeepFace.verify(
+                img1_path = img, 
+                img2_path = "dataset/arthaud.jpg"
+            )
+
         print(result, flush=True)
 
         return jsonify(result)
