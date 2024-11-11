@@ -202,3 +202,8 @@ export async function isFaceValid(img: string) {
   });
   return response.data;
 }
+
+export async function getPayments(handle: string) {
+  const response = await apiClient.get(`/payments?handle=${handle}`);
+  return response.data;
+}

@@ -15,7 +15,8 @@ import {
   getShareholdersHandler,
   getSharesHandler,
   issueSharesHandler,
-  transferTokensHandler
+  transferTokensHandler,
+  getPaymentsHandler
 } from './handlers/company.js';
 import { getKycStatus, getProfile, isFaceValid, verifyKyc } from './handlers/user.js';
 import {
@@ -79,6 +80,7 @@ app.get('/shareholders', getShareholdersHandler);
 app.get('/shares', getSharesHandler);
 app.post('/issue-shares', authenticateToken, issueSharesHandler);
 app.post('/transfer-tokens', authenticateToken, transferTokensHandler);
+app.get('/payments', getPaymentsHandler);
 
 // User routes
 app.get('/profile', authenticateToken, getProfile);

@@ -15,6 +15,7 @@ import {
   getCompanyBalance,
   getCompanyPeople,
   getKycStatus,
+  getPayments,
   getShareholders,
   getShares
 } from '@/services/api';
@@ -36,6 +37,7 @@ import { SendMoneyDialog } from './transfer-dialog';
 import ConditionalTooltipWrapper from '@/components/conditional-tooltip';
 import { FundDialog } from './fund-dialog';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 
 const supabase = createSupabaseClient();
 
@@ -103,6 +105,11 @@ export default function CompanyDashboard({
         queryKey: ['shareholders', params.handle]
       });
     }
+  });
+
+  const paymentsQuery = useQuery({
+    queryKey: ['payments', params.handle],
+    queryFn: () => getPayments(params.handle)
   });
 
   const addPerson = () => {
@@ -302,29 +309,63 @@ export default function CompanyDashboard({
             </CardHeader>
             <CardContent>
               <div className="flex flex-col space-y-6">
-                <div className="text-right">
-                  {balanceQuery.isPending ? (
-                    <div className="h-10 flex items-center justify-end">
-                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-foreground"></div>
-                    </div>
-                  ) : (
-                    <p className="text-xl font-bold">
-                      ${balanceQuery.data?.balance}
-                    </p>
-                  )}
-                  <p className="text-md font-medium">Current Balance</p>
-                </div>
-                <div className="flex flex-col items-center space-y-4">
-                    <SendMoneyDialog handle={companyQuery.data?.handle}>
-                      <Button className="w-1/3">
+                <div className="flex justify-between items-center">
+                  <div className="w-32">
+                    {/* Empty div for spacing */}
+                  </div>
+                  
+                  <SendMoneyDialog handle={companyQuery.data?.handle}>
+                    <Button className="w-1/3" disabled={!kycStatusQuery.data}>
                       <ArrowUpRight className="mr-2 h-4 w-4" />
                       Send Money
                     </Button>
                   </SendMoneyDialog>
-                  <p className="text-sm text-muted-foreground text-center">
-                    To send your first payment, you must have set up your company ownership
-                  </p>
+
+                  <div className="text-right w-32">
+                    {balanceQuery.isPending ? (
+                      <div className="h-10 flex items-center justify-end">
+                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-foreground"></div>
+                      </div>
+                    ) : (
+                      <p className="text-xl font-bold">
+                        ${balanceQuery.data?.balance}
+                      </p>
+                    )}
+                    <p className="text-md font-medium">Current Balance</p>
+                  </div>
                 </div>
+
+                {paymentsQuery.data?.length === 0 && (
+                  <div className="flex-1 flex items-center justify-center">
+                    <p className="text-sm text-muted-foreground text-center -mt-5">
+                      To send your first payment, you must have set up your company ownership
+                    </p>
+                  </div>
+                )}
+
+                {paymentsQuery.data?.length > 0 && (
+                  <Table>
+                    <TableHeader>
+                      <p className="font-semibold text-sm">Payments History</p>
+                      <TableRow>
+                        <TableHead>To</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paymentsQuery.data?.map((payment: any) => (
+                        <TableRow key={payment.id} className="hover:bg-transparent border-b border-gray-200 dark:border-gray-800">
+                          <TableCell className="font-medium">@{payment.companyDestination}</TableCell>
+                          <TableCell>{payment.description}</TableCell>
+                          <TableCell>{payment.type === "wire" ? "Wire" : "Stream"}</TableCell>
+                          <TableCell className="text-right">${payment.amount}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -346,10 +387,10 @@ export default function CompanyDashboard({
                     )}
                     currentCofounder={companyQuery.data?.current_cofounder}
                   >
-                    <Button className="w-2/3">Fund the Company</Button>
+                    <Button className="w-2/3" disabled={!kycStatusQuery.data}>Fund the Company</Button>
                   </FundDialog>
                   <p className="text-sm text-muted-foreground text-center">
-                    Set up the company ownership and buy your shares to register your company
+                    Set up the company ownership and buy your shares to register your company. You must be verified to do this.
                   </p>
                 </div>
               ) : (

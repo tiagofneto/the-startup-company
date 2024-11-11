@@ -172,3 +172,10 @@ export async function createPayment(companyOrigin: string, companyDestination: s
   await db.insert(payments).values({ companyOrigin, companyDestination, amount, type });
   console.log('Payment created successfully');
 }
+
+export async function fetchPayments(handle: string) {
+  console.log('Fetching payments from database:', handle);
+  const fetchedPayments = await db.select().from(payments).where(eq(payments.companyOrigin, handle));
+  console.log('Payments fetched successfully:', fetchedPayments);
+  return fetchedPayments;
+}

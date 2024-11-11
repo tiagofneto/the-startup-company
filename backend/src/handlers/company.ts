@@ -17,6 +17,7 @@ import {
   createPayment,
   createUserCompany,
   fetchCompanyPeople,
+  fetchPayments,
   fetchShareholders,
   fetchUserCompanies,
   getCompanies,
@@ -306,3 +307,15 @@ export const transferTokensHandler = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to transfer tokens' });
   }
 };
+
+export const getPaymentsHandler = async (req: Request, res: Response) => {
+  try {
+    const { handle } = req.query;
+
+    const payments = await fetchPayments(handle as string);
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).json({ error: 'Failed to fetch payments' });
+  }
+}
