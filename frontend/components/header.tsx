@@ -80,13 +80,7 @@ export default function ModernHeader() {
             href="/companies"
             className="text-sm text-foreground hover:text-primary transition-colors duration-300"
           >
-            Companies
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm text-foreground hover:text-primary transition-colors duration-300"
-          >
-            Contact
+            Company House
           </Link>
         </div>
 
@@ -167,13 +161,7 @@ export default function ModernHeader() {
             href="/companies"
             className="block text-sm text-foreground hover:text-primary transition-colors duration-300"
           >
-            Companies
-          </Link>
-          <Link
-            href="/contact"
-            className="block text-sm text-foreground hover:text-primary transition-colors duration-300"
-          >
-            Contact
+            Company House
           </Link>
           <div className="pt-2 flex items-center justify-between">
             {session?.user ? (
