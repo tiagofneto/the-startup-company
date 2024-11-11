@@ -25,8 +25,6 @@ export default function CompaniesRegistry() {
     company.description.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  
-
   return (
     <div className="min-h-screen pt-32 px-6 flex flex-col">
       <h1 className="text-4xl font-bold mb-16 text-center">Sark Company Register</h1>

@@ -169,107 +169,119 @@ export default function CompanyDashboard({
         <Button variant="outline">Edit Profile</Button>
       </header>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        <aside className="lg:w-1/4 space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Quick Actions
-              </CardTitle>
-              <Settings className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button className="w-full justify-start" variant="ghost">
-                <Inbox className="mr-2 h-4 w-4" />
-                Inbox
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                <FileText className="mr-2 h-4 w-4" />
-                Documents
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                <PieChart className="mr-2 h-4 w-4" />
-                Cap Table
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                <DollarSign className="mr-2 h-4 w-4" />
-                Transactions
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                <Users className="mr-2 h-4 w-4" />
-                Team
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Fundraising
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Company Stats
-              </CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Revenue</span>
-                <span className="font-medium">$1.2M</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Employees</span>
-                <span className="font-medium">24</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Customers</span>
-                <span className="font-medium">1,234</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Growth</span>
-                <span className="font-medium text-green-500">+15%</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:grid-flow-dense">
+        <div className="lg:col-span-2">
+          <Card className="h-full">
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
+              <CardTitle>People</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-4">
-                <li className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">New team member added</p>
-                    <p className="text-sm text-muted-foreground">
-                      John Doe joined as Developer
-                    </p>
+              {peopleQuery.isPending ? (
+                <div className="flex justify-center items-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {peopleQuery.data?.map((person: any) => {
+                    const PersonContent = (
+                      <div
+                        className={`flex items-center justify-between bg-background rounded-lg ${person.id ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''}`}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <Avatar>
+                            <AvatarImage
+                              src={person.picture}
+                              alt={person.email || 'Person'}
+                            />
+                            <AvatarFallback>
+                              {computeAvatarFallback(
+                                person.email || 'Person'
+                              )}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">
+                              {person.name || person.email}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Director
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          className={`px-3 py-1 ${
+                            !person.id
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
+                              : person.kyc_verified
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'
+                          } rounded-full text-sm font-medium`}
+                        >
+                          {!person.id
+                            ? 'Not Registered'
+                            : person.kyc_verified
+                              ? 'Verified'
+                              : 'Pending Verification'}
+                        </span>
+                      </div>
+                    );
+
+                    return person.id ? (
+                      <PersonDialog
+                        key={person.id}
+                        person={person}
+                        handle={companyQuery.data?.handle}
+                      >
+                        {PersonContent}
+                      </PersonDialog>
+                    ) : (
+                      PersonContent
+                    );
+                  })}
+                </div>
+              )}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full mt-4">
+                    <Plus className="mr-2 h-4 w-4" /> Add Person
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Add Person</DialogTitle>
+                    <DialogDescription>
+                      Enter the person's email address and select their role.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid flex-1 gap-2">
+                    <Label htmlFor="email" className="sr-only">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      value={email}
+                      placeholder="Email"
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </div>
-                  <span className="text-sm text-muted-foreground">2h ago</span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">Invoice paid</p>
-                    <p className="text-sm text-muted-foreground">
-                      $5,000 received from Client X
-                    </p>
-                  </div>
-                  <span className="text-sm text-muted-foreground">1d ago</span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">New project started</p>
-                    <p className="text-sm text-muted-foreground">
-                      Project Y kicked off
-                    </p>
-                  </div>
-                  <span className="text-sm text-muted-foreground">3d ago</span>
-                </li>
-              </ul>
+                  <DialogFooter className="sm:justify-start">
+                    <DialogClose asChild>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={addPerson}
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
+        </div>
 
+        <div className="lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>Upcoming Events</CardTitle>
@@ -315,9 +327,9 @@ export default function CompanyDashboard({
               </ul>
             </CardContent>
           </Card>
-        </aside>
+        </div>
 
-        <main className="flex-1 space-y-6">
+        <div className="lg:col-span-2">
           <Card className="bg-primary text-primary-foreground">
             <CardHeader>
               <CardTitle>Financial Overview</CardTitle>
@@ -361,148 +373,9 @@ export default function CompanyDashboard({
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>People</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {peopleQuery.isPending ? (
-                  <div className="flex justify-center items-center h-32">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {peopleQuery.data?.map((person: any) => {
-                      const PersonContent = (
-                        <div
-                          className={`flex items-center justify-between bg-background rounded-lg ${person.id ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''}`}
-                        >
-                          <div className="flex items-center space-x-4">
-                            <Avatar>
-                              <AvatarImage
-                                src={person.picture}
-                                alt={person.email || 'Person'}
-                              />
-                              <AvatarFallback>
-                                {computeAvatarFallback(
-                                  person.email || 'Person'
-                                )}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium">
-                                {person.name || person.email}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                Director
-                              </p>
-                            </div>
-                          </div>
-                          <span
-                            className={`px-3 py-1 ${
-                              !person.id
-                                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
-                                : person.kyc_verified
-                                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-                                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'
-                            } rounded-full text-sm font-medium`}
-                          >
-                            {!person.id
-                              ? 'Not Registered'
-                              : person.kyc_verified
-                                ? 'Verified'
-                                : 'Pending Verification'}
-                          </span>
-                        </div>
-                      );
-
-                      return person.id ? (
-                        <PersonDialog
-                          key={person.id}
-                          person={person}
-                          handle={companyQuery.data?.handle}
-                        >
-                          {PersonContent}
-                        </PersonDialog>
-                      ) : (
-                        PersonContent
-                      );
-                    })}
-                  </div>
-                )}
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="w-full mt-4">
-                      <Plus className="mr-2 h-4 w-4" /> Add Person
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Add Person</DialogTitle>
-                      <DialogDescription>
-                        Enter the person's email address and select their role.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid flex-1 gap-2">
-                      <Label htmlFor="email" className="sr-only">
-                        Email
-                      </Label>
-                      <Input
-                        id="email"
-                        value={email}
-                        placeholder="Email"
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                    <DialogFooter className="sm:justify-start">
-                      <DialogClose asChild>
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          onClick={addPerson}
-                        >
-                          <Plus className="mr-2 h-4 w-4" /> Add
-                        </Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Missing Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {missingActions.map((action) => (
-                    <div
-                      key={action.id}
-                      className="flex items-center justify-between p-4 bg-muted rounded-lg"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <AlertCircle
-                          className={`h-6 w-6 ${
-                            action.priority === 'high'
-                              ? 'text-red-500'
-                              : action.priority === 'medium'
-                                ? 'text-yellow-500'
-                                : 'text-blue-500'
-                          }`}
-                        />
-                        <span>{action.action}</span>
-                      </div>
-                      <Button size="sm">Complete</Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
+        <div className="lg:col-span-1">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Cap Table</CardTitle>
@@ -611,7 +484,7 @@ export default function CompanyDashboard({
               )}
             </CardContent>
           </Card>
-        </main>
+        </div>
       </div>
     </div>
   );
