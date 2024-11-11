@@ -78,18 +78,18 @@ export default function UserDashboard() {
         </h1>
 
         <div className="grid grid-cols-3 gap-8">
-          <Card className="col-span-2 h-full flex flex-col">
+          <Card className="col-span-2">
             <CardHeader>
               <CardTitle>Your Companies</CardTitle>
               <CardDescription>Click on a company to manage</CardDescription>
             </CardHeader>
-            <CardContent className="flex-grow overflow-hidden">
+            <CardContent>
               {companiesQuery.isPending ? (
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
                 </div>
               ) : (
-                <div className="h-full overflow-y-auto pr-2">
+                <div className="overflow-y-auto pr-2">
                   {companiesQuery.data?.map(
                     (
                       company: {
@@ -136,84 +136,75 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Your Information
-                <Avatar className="h-12 w-12">
-                  <AvatarImage
-                    src={user?.user_metadata.picture}
-                    alt={user?.user_metadata.full_name || user?.email}
-                  />
-                  <AvatarFallback>
-                    {computeAvatarFallback(user?.user_metadata.full_name || user?.email)}
-                  </AvatarFallback>
-                </Avatar>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {profileQuery.isPending ? (
-                <div className="flex justify-center items-center h-24">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              ) : (
-                <>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Name</span>
-                      <span className="font-medium">{user?.user_metadata.full_name}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Email</span>
-                      <span className="font-medium">{user?.email}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Status</span>
-                      <span
-                        className={`px-3 py-1 ${
-                          profileQuery.data.kyc
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'
-                        } rounded-full text-sm font-medium`}
-                      >
-                        {profileQuery.data.kyc ? 'Verified' : 'Pending'}
-                      </span>
-                    </div>
-
-                    {profileQuery.data.kyc ? (
-                      <>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Nationality</span>
-                          <span className="font-medium">{profileQuery.data.nationality}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Date of Birth</span>
-                          <span className="font-medium">{profileQuery.data.date_of_birth}</span>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="mt-6">
-                        <KYCDialog userId={user.id}>
-                          <div className="relative w-full">
-                            <Button className="w-full">
-                              Complete Identity Verification
-                            </Button>
-                            <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
-                            </span>
-                          </div>
-                        </KYCDialog>
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-                          Unlock all features with identity verification
-                        </p>
-                      </div>
-                    )}
+          <div className="h-fit">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  Your Information
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage
+                      src={user?.user_metadata.picture}
+                      alt={user?.user_metadata.full_name || user?.email}
+                    />
+                    <AvatarFallback>
+                      {computeAvatarFallback(user?.user_metadata.full_name || user?.email)}
+                    </AvatarFallback>
+                  </Avatar>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {profileQuery.isPending ? (
+                  <div className="flex justify-center items-center h-24">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
                   </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                ) : (
+                  <>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Name</span>
+                        <span className="font-medium">{user?.user_metadata.full_name}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Email</span>
+                        <span className="font-medium">{user?.email}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Status</span>
+                        <span
+                          className={`px-3 py-1 ${
+                            profileQuery.data.kyc
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'
+                          } rounded-full text-sm font-medium`}
+                        >
+                          {profileQuery.data.kyc ? 'Verified' : 'Pending'}
+                        </span>
+                      </div>
+
+                      {!profileQuery.data.kyc && (
+                        <div className="mt-6">
+                          <KYCDialog userId={user.id}>
+                            <div className="relative w-full">
+                              <Button className="w-full">
+                                Complete Identity Verification
+                              </Button>
+                              <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+                              </span>
+                            </div>
+                          </KYCDialog>
+                          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                            Unlock all features with identity verification
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
