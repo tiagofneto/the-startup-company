@@ -41,17 +41,19 @@ export async function getCompanies() {
       name: companies.name,
       handle: companies.handle,
       description: companies.description,
-      userInfo: sql<Array<{ email: string; raw_user_meta_data: any }>>`
+      userInfo: sql<Array<{ email: string; raw_user_meta_data: any, kyc_verified: boolean }>>`
         array_agg(
           json_build_object(
             'email', ${userCompanies.email},
-            'raw_user_meta_data', ${users.raw_user_meta_data}
+            'raw_user_meta_data', ${users.raw_user_meta_data},
+            'kyc_verified', ${userProfiles.kyc_verified}
           )
         )`,
     })
     .from(companies)
     .leftJoin(userCompanies, eq(companies.id, userCompanies.companyId))
     .leftJoin(users, eq(userCompanies.email, users.email))
+    .leftJoin(userProfiles, eq(users.id, userProfiles.id))
     .groupBy(companies.id)
     .orderBy(desc(companies.createdAt)));
   return companyList;

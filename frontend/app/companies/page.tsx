@@ -12,12 +12,20 @@ export default function CompaniesRegistry() {
   const [searchTerm, setSearchTerm] = useState('')
   const companiesQuery = useQuery({ queryKey: ['companies'], queryFn: getCompanies })
 
-  const filteredCompanies = companiesQuery.data?.filter((company: any) =>
+  const filteredCompanies = companiesQuery.data?.map((company: any) => {
+    const labels = [...(company.labels || [])]
+    if (company.directors.every((director: any) => director.kyc_verified)) {
+      labels.push('Compliant')
+    }
+    return { ...company, labels }
+  }).filter((company: any) =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.directors.some((director: string) => director.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    company.directors.some((director: any) => director.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
     company.labels.some((label: string) => label.toLowerCase().includes(searchTerm.toLowerCase())) ||
     company.description.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  
 
   return (
     <div className="min-h-screen pt-32 px-6 flex flex-col">
@@ -63,7 +71,7 @@ export default function CompaniesRegistry() {
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="text-center">{company.directors.join(', ')}</TableCell>
+                <TableCell className="text-center">{company.directors.map((director: any) => director.name).join(', ')}</TableCell>
                 <TableCell className="text-center">{company.description}</TableCell>
               </TableRow>
             ))}

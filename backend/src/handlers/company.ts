@@ -87,9 +87,9 @@ export const createCompanyHandler = async (
 
 export const getCompaniesHandler = async (req: Request, res: Response) => {
   try {
-    const companies = (await getCompanies()).map((company) => ({
+    const companies = (await getCompanies()).map(({ userInfo, ...company }) => ({
       ...company,
-      directors: company.userInfo.map((user) => user.raw_user_meta_data?.full_name || user.email)
+      directors: userInfo.map((user) => ({ name: user.raw_user_meta_data?.full_name || user.email, kyc_verified: user.kyc_verified }))
     }));
     res.status(200).json(companies);
   } catch (error) {
