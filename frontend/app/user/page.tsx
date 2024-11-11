@@ -138,9 +138,17 @@ export default function UserDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Shield className="mr-2" />
-                KYC Status
+              <CardTitle className="flex items-center justify-between">
+                Your Information
+                <Avatar className="h-12 w-12">
+                  <AvatarImage
+                    src={user?.user_metadata.picture}
+                    alt={user?.user_metadata.full_name || user?.email}
+                  />
+                  <AvatarFallback>
+                    {computeAvatarFallback(user?.user_metadata.full_name || user?.email)}
+                  </AvatarFallback>
+                </Avatar>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -150,37 +158,58 @@ export default function UserDashboard() {
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-4">
-                    <span>Status:</span>
-                    <span
-                      className={`px-3 py-1 ${profileQuery.data.kyc ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'} rounded-full text-sm font-medium`}
-                    >
-                      {profileQuery.data.kyc ? 'Verified' : 'Pending'}
-                    </span>
-                  </div>
-                  {profileQuery.data.kyc ? (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                      Your KYC verification is complete. All features are
-                      unlocked.
-                    </p>
-                  ) : (
-                    <>
-                      <KYCDialog userId={user.id}>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Name</span>
+                      <span className="font-medium">{user?.user_metadata.full_name}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Email</span>
+                      <span className="font-medium">{user?.email}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Status</span>
+                      <span
+                        className={`px-3 py-1 ${
+                          profileQuery.data.kyc
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100'
+                        } rounded-full text-sm font-medium`}
+                      >
+                        {profileQuery.data.kyc ? 'Verified' : 'Pending'}
+                      </span>
+                    </div>
+
+                    {profileQuery.data.kyc ? (
+                      <>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Nationality</span>
+                          <span className="font-medium">{profileQuery.data.nationality}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Date of Birth</span>
+                          <span className="font-medium">{profileQuery.data.date_of_birth}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mt-6">
+                        <KYCDialog userId={user.id}>
                           <div className="relative w-full">
                             <Button className="w-full">
-                              Complete KYC Verification
+                              Complete Identity Verification
                             </Button>
                             <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
                             </span>
                           </div>
-                      </KYCDialog>
-                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-                        Unlock all features with KYC
-                      </p>
-                    </>
-                  )}
+                        </KYCDialog>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                          Unlock all features with identity verification
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </CardContent>
