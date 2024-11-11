@@ -38,7 +38,7 @@ import ConditionalTooltipWrapper from '@/components/conditional-tooltip';
 import { FundDialog } from './fund-dialog';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-
+import { Badge } from '@/components/ui/badge';
 const supabase = createSupabaseClient();
 
 export default function CompanyDashboard({
@@ -359,7 +359,11 @@ export default function CompanyDashboard({
                         <TableRow key={payment.id} className="hover:bg-transparent border-b border-gray-200 dark:border-gray-800">
                           <TableCell className="font-medium">@{payment.companyDestination}</TableCell>
                           <TableCell>{payment.description}</TableCell>
-                          <TableCell>{payment.type === "wire" ? "Wire" : "Stream"}</TableCell>
+                          <TableCell>
+                            <Badge>
+                              {payment.type === "wire" ? "Wire" : "Stream"}
+                            </Badge>
+                          </TableCell>
                           <TableCell className="text-right">${payment.amount}</TableCell>
                         </TableRow>
                       ))}
@@ -428,6 +432,7 @@ export default function CompanyDashboard({
                             <Button
                               size="sm"
                               onClick={() => fundCompanyMutation.mutate(shareholder.shares)}
+                              disabled={!kycStatusQuery.data}
                             >
                               Fund
                             </Button>

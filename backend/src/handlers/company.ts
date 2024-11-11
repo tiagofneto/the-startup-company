@@ -289,7 +289,7 @@ export const issueSharesHandler = async (req: Request, res: Response) => {
 
 export const transferTokensHandler = async (req: Request, res: Response) => {
   try {
-    const { from, to, amount, isAddress } = req.body;
+    const { from, to, amount, description, isAddress } = req.body;
 
     const addresses = JSON.parse(readFileSync('addresses.json', 'utf-8'));
     const { companyRegistry } = addresses;
@@ -298,7 +298,7 @@ export const transferTokensHandler = async (req: Request, res: Response) => {
       await transferTokensToAddress(companyRegistry, from, to, amount);
     } else {
       await transferTokensToHandle(companyRegistry, from, to, amount);
-      await createPayment(from, to, amount, "wire");
+      await createPayment(from, to, amount, description, "wire");
     }
 
     res.status(200).json({ message: 'Tokens transferred successfully' });

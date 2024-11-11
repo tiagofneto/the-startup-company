@@ -171,11 +171,12 @@ export async function transferTokens(
   from: string,
   to: string,
   amount: number,
+  description: string,
   isAddress: boolean
 ) {
   const response = await apiClient.post(
     '/transfer-tokens',
-    { from, to, amount, isAddress },
+    { from, to, amount, description, isAddress },
     {
       headers: {
         Authorization: `Bearer ${getAccessToken()}`

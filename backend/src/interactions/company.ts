@@ -167,9 +167,9 @@ export async function updateShareholderFunded(
   console.log('Shareholder funded updated successfully');
 }
 
-export async function createPayment(companyOrigin: string, companyDestination: string, amount: number, type: "wire" | "stream") {
-  console.log('Creating payment in database:', companyOrigin, companyDestination, amount, type);
-  await db.insert(payments).values({ companyOrigin, companyDestination, amount, type });
+export async function createPayment(companyOrigin: string, companyDestination: string, amount: number, description: string, type: "wire" | "stream") {
+  console.log('Creating payment in database:', companyOrigin, companyDestination, amount, description, type);
+  await db.insert(payments).values({ companyOrigin, companyDestination, amount, description, type });
   console.log('Payment created successfully');
 }
 

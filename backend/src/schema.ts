@@ -77,6 +77,7 @@ export const payments = pgTable('payments', {
   companyDestination: varchar('company_destination', { length: 255 })
     .notNull()
     .references(() => companies.handle),
+  description: text('description'),
   amount: integer('amount').notNull(),
   type: paymentTypes('type').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()

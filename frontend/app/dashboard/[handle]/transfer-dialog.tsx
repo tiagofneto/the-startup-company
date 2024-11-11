@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
 import { createStream, transferTokens } from '@/services/api';
@@ -13,11 +12,12 @@ const sendMoney = async (
   handle: string,
   recipient: string,
   amount: number,
+  description: string,
   isAztecAddress: boolean,
   paymentType: 'Wire' | 'Stream'
 ) => {
   if (paymentType === 'Wire') {
-    await transferTokens(handle, recipient, amount, isAztecAddress);
+    await transferTokens(handle, recipient, amount, description, isAztecAddress);
   } else {
     await createStream(recipient, handle, amount);
   }
@@ -35,7 +35,7 @@ export function SendMoneyDialog({
   );
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
-  const [activeTab, setActiveTab] = useState('company');
+  const [description, setDescription] = useState('');
 
   const queryClient = useQueryClient();
 
@@ -45,14 +45,14 @@ export function SendMoneyDialog({
         handle,
         recipient,
         parseFloat(amount),
-        activeTab === 'aztec',
+        description,
+        false,
         paymentType!
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['balance', handle] });
-      if (activeTab === 'company') {
-        queryClient.invalidateQueries({ queryKey: ['balance', recipient] });
-      }
+      queryClient.invalidateQueries({ queryKey: ['balance', recipient] });
+      queryClient.invalidateQueries({ queryKey: ['payments', handle] });
     }
   });
 
@@ -87,64 +87,45 @@ export function SendMoneyDialog({
       title: 'Recipient',
       description: 'Enter the recipient details and amount to send money.',
       component: ({ onNext }) => (
-        <>
-          <Tabs
-            defaultValue="company"
-            onValueChange={(value: string) => setActiveTab(value)}
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="company">Company Handle</TabsTrigger>
-              <TabsTrigger value="aztec">Aztec Address</TabsTrigger>
-            </TabsList>
-            <TabsContent value="company">
-              <div className="grid gap-2 py-2">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="company-handle" className="text-right">
-                    Handle
-                  </Label>
-                  <Input
-                    id="company-handle"
-                    value={recipient}
-                    onChange={(e) => setRecipient(e.target.value)}
-                    className="col-span-3"
-                    placeholder="Enter company handle"
-                  />
-                </div>
-              </div>
-            </TabsContent>
-            <TabsContent value="aztec">
-              <div className="grid gap-2 py-2">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="aztec-address" className="text-right">
-                    Address
-                  </Label>
-                  <Input
-                    id="aztec-address"
-                    value={recipient}
-                    onChange={(e) => setRecipient(e.target.value)}
-                    className="col-span-3"
-                    placeholder="Enter Aztec address"
-                  />
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-          <div className="grid gap-2 py-2">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="amount" className="text-right">
-                Amount
-              </Label>
-              <Input
-                id="amount"
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="col-span-3"
-                placeholder="Enter amount"
-              />
-            </div>
+        <div className="grid gap-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="handle" className="text-right">
+              Handle
+            </Label>
+            <Input
+              id="handle"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              className="col-span-3"
+              placeholder="Enter recipient handle"
+            />
           </div>
-        </>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="amount" className="text-right">
+              Amount
+            </Label>
+            <Input
+              id="amount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="col-span-3"
+              placeholder="Enter amount"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="description" className="text-right">
+              Description
+            </Label>
+            <Input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="col-span-3"
+              placeholder="Enter payment description"
+            />
+          </div>
+        </div>
       )
     },
     {
@@ -152,7 +133,7 @@ export function SendMoneyDialog({
       description: 'Review and confirm your transfer details.',
       component: ({ onNext }) => (
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Confirm Transfer Details</h3>
+          <h3 className="text-lg font-semibold">Payment Summary</h3>
           <p>
             <strong>Payment Type:</strong> {paymentType}
           </p>
@@ -160,11 +141,10 @@ export function SendMoneyDialog({
             <strong>Recipient:</strong> {recipient}
           </p>
           <p>
-            <strong>Amount:</strong> {amount}
+            <strong>Amount:</strong> {amount}$
           </p>
           <p>
-            <strong>Transfer Method:</strong>{' '}
-            {activeTab === 'company' ? 'Company Handle' : 'Aztec Address'}
+            <strong>Description:</strong> {description}
           </p>
         </div>
       )
