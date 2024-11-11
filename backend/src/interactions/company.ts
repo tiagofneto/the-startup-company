@@ -1,6 +1,7 @@
 import { Company } from '../types.js';
 import {
   companies,
+  payments,
   shareholders,
   userCompanies,
   userProfiles,
@@ -164,4 +165,10 @@ export async function updateShareholderFunded(
       and(eq(shareholders.companyId, companyId), eq(shareholders.email, email))
     );
   console.log('Shareholder funded updated successfully');
+}
+
+export async function createPayment(companyOrigin: string, companyDestination: string, amount: number, type: "wire" | "stream") {
+  console.log('Creating payment in database:', companyOrigin, companyDestination, amount, type);
+  await db.insert(payments).values({ companyOrigin, companyDestination, amount, type });
+  console.log('Payment created successfully');
 }

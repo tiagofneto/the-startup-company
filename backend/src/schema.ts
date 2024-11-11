@@ -9,10 +9,13 @@ import {
   boolean,
   primaryKey,
   jsonb,
-  text
+  text,
+  pgEnum
 } from 'drizzle-orm/pg-core';
 
 const authSchema = pgSchema('auth');
+
+export const paymentTypes = pgEnum('payment_type', ['wire', 'stream']);
 
 export const users = authSchema.table('users', {
   id: uuid('id').primaryKey(),
@@ -64,6 +67,19 @@ export const streams = pgTable('streams', {
     .notNull()
     .defaultNow(),
   totalClaimed: integer('total_claimed').notNull().default(0)
+});
+
+export const payments = pgTable('payments', {
+  id: serial('id').primaryKey(),
+  companyOrigin: varchar('company_origin', { length: 255 })
+    .notNull()
+    .references(() => companies.handle),
+  companyDestination: varchar('company_destination', { length: 255 })
+    .notNull()
+    .references(() => companies.handle),
+  amount: integer('amount').notNull(),
+  type: paymentTypes('type').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()
 });
 
 export const shareholders = pgTable(

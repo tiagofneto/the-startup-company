@@ -14,6 +14,7 @@ import {
 } from '../aztec.js';
 import {
   createCompanyUser,
+  createPayment,
   createUserCompany,
   fetchCompanyPeople,
   fetchShareholders,
@@ -296,6 +297,7 @@ export const transferTokensHandler = async (req: Request, res: Response) => {
       await transferTokensToAddress(companyRegistry, from, to, amount);
     } else {
       await transferTokensToHandle(companyRegistry, from, to, amount);
+      await createPayment(from, to, amount, "wire");
     }
 
     res.status(200).json({ message: 'Tokens transferred successfully' });
