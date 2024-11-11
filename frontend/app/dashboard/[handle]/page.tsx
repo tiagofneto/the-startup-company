@@ -74,12 +74,6 @@ export default function CompanyDashboard({
     });
   }, []);
 
-  const missingActions = [
-    { id: 1, action: 'Complete KYC verification', priority: 'high' },
-    { id: 2, action: 'Set up cap table', priority: 'medium' },
-    { id: 3, action: 'Add company logo', priority: 'low' }
-  ];
-
   const companyQuery = useQuery({
     queryKey: ['company', params.handle],
     queryFn: () => getCompany(params.handle)
@@ -166,7 +160,7 @@ export default function CompanyDashboard({
             </p>
           </div>
         </div>
-        <Button variant="outline">Edit Profile</Button>
+        {/* <Button variant="outline">Edit Profile</Button> */}
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:grid-flow-dense">
@@ -175,17 +169,18 @@ export default function CompanyDashboard({
             <CardHeader>
               <CardTitle>People</CardTitle>
             </CardHeader>
-            <CardContent>
-              {peopleQuery.isPending ? (
-                <div className="flex justify-center items-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {peopleQuery.data?.map((person: any) => {
-                    const PersonContent = (
+            <CardContent className="h-[calc(100%-4rem)]">
+              <div className="flex flex-col justify-between h-full">
+                {peopleQuery.isPending ? (
+                  <div className="flex justify-center items-center h-32">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {peopleQuery.data?.map((person: any) => (
                       <div
-                        className={`flex items-center justify-between bg-background rounded-lg ${person.id ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''}`}
+                        key={person.id}
+                        className={`flex items-center justify-between bg-background rounded-lg`}
                       >
                         <div className="flex items-center space-x-4">
                           <Avatar>
@@ -224,59 +219,49 @@ export default function CompanyDashboard({
                               : 'Pending Verification'}
                         </span>
                       </div>
-                    );
-
-                    return person.id ? (
-                      <PersonDialog
-                        key={person.id}
-                        person={person}
-                        handle={companyQuery.data?.handle}
-                      >
-                        {PersonContent}
-                      </PersonDialog>
-                    ) : (
-                      PersonContent
-                    );
-                  })}
-                </div>
-              )}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="w-full mt-4">
-                    <Plus className="mr-2 h-4 w-4" /> Add Person
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Add Person</DialogTitle>
-                    <DialogDescription>
-                      Enter the person's email address and select their role.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid flex-1 gap-2">
-                    <Label htmlFor="email" className="sr-only">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      value={email}
-                      placeholder="Email"
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
+                    ))}
                   </div>
-                  <DialogFooter className="sm:justify-start">
-                    <DialogClose asChild>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={addPerson}
-                      >
-                        <Plus className="mr-2 h-4 w-4" /> Add
+                )}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="flex justify-center mt-8">
+                      <Button className="w-1/3">
+                        <Plus className="mr-2 h-4 w-4" /> Add Person
                       </Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add Person</DialogTitle>
+                      <DialogDescription>
+                        Enter the person's email address and select their role.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid flex-1 gap-2">
+                      <Label htmlFor="email" className="sr-only">
+                        Email
+                      </Label>
+                      <Input
+                        id="email"
+                        value={email}
+                        placeholder="Email"
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <DialogFooter className="sm:justify-start">
+                      <DialogClose asChild>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={addPerson}
+                        >
+                          <Plus className="mr-2 h-4 w-4" /> Add
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardContent>
           </Card>
         </div>
