@@ -362,21 +362,26 @@ export default function CompanyDashboard({
 
         <div className="lg:col-span-1">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Cap Table</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between pb-8">
+              <CardTitle>Company Ownership</CardTitle>
             </CardHeader>
             <CardContent>
               {shareholdersQuery.data?.length === 0 ? (
-                <FundDialog
-                  handle={companyQuery.data?.handle}
-                  companyName={companyQuery.data?.name}
-                  cofounders={peopleQuery.data?.map(
-                    (person: any) => person.email
-                  )}
-                  currentCofounder={companyQuery.data?.current_cofounder}
-                >
-                  <Button>Fund the Company</Button>
-                </FundDialog>
+                <div className="flex flex-col items-center space-y-4 py-4">
+                  <FundDialog
+                    handle={companyQuery.data?.handle}
+                    companyName={companyQuery.data?.name}
+                    cofounders={peopleQuery.data?.map(
+                      (person: any) => person.email
+                    )}
+                    currentCofounder={companyQuery.data?.current_cofounder}
+                  >
+                    <Button className="w-2/3">Fund the Company</Button>
+                  </FundDialog>
+                  <p className="text-sm text-muted-foreground text-center">
+                    Set up the company ownership and buy your shares to register your company
+                  </p>
+                </div>
               ) : (
                 <div className="container mx-auto p-4">
                   {(() => {
