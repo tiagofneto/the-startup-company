@@ -4,25 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
-import {
-  Inbox,
-  FileText,
-  PieChart,
-  DollarSign,
-  Users,
-  Settings,
-  BarChart3,
-  AlertCircle,
-  TrendingUp,
   ArrowUpRight,
-  ArrowDownLeft,
   Plus
 } from 'lucide-react';
 import { computeAvatarFallback, createSupabaseClient } from '@/lib/utils';
@@ -50,7 +32,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
-import { PersonDialog } from './person-dialog';
 import { SendMoneyDialog } from './transfer-dialog';
 import ConditionalTooltipWrapper from '@/components/conditional-tooltip';
 import { FundDialog } from './fund-dialog';
@@ -372,93 +353,48 @@ export default function CompanyDashboard({
                   </p>
                 </div>
               ) : (
-                <div className="container mx-auto p-4">
-                  {(() => {
-                    const totalShares =
-                      shareholdersQuery.data?.reduce(
-                        (sum: number, shareholder: any) =>
-                          sum + shareholder.shares,
-                        0
-                      ) || 0;
+                <div className="space-y-4">
+                  {shareholdersQuery.data?.map((shareholder: any) => {
+                    const totalShares = shareholdersQuery.data?.reduce(
+                      (sum: number, s: any) => sum + s.shares,
+                      0
+                    );
+                    const ownershipPercentage = ((shareholder.shares / totalShares) * 100).toFixed(2);
 
                     return (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="text-left font-bold">
-                              Shareholder
-                            </TableHead>
-                            <TableHead className="text-right font-bold">
-                              Shares
-                            </TableHead>
-                            <TableHead className="text-right font-bold">
-                              Percentage
-                            </TableHead>
-                            <TableHead className="text-right font-bold">
-                              Status
-                            </TableHead>
-                            <TableHead className="text-right font-bold">
-                              Action
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {shareholdersQuery.data?.map((shareholder: any) => (
-                            <TableRow
-                              key={shareholder.id}
-                              className={
-                                !shareholder.funded &&
-                                shareholder.email !== user?.email
-                                  ? 'opacity-50'
-                                  : ''
-                              }
+                      <div
+                        key={shareholder.id}
+                        className={`flex items-center justify-between bg-background rounded-lg ${
+                          !shareholder.funded && shareholder.email !== user?.email
+                            ? 'opacity-50'
+                            : ''
+                        }`}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <Avatar>
+                            <AvatarImage src={shareholder.picture} alt={shareholder.name || shareholder.email} />
+                            <AvatarFallback>
+                              {computeAvatarFallback(shareholder.name || shareholder.email)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{shareholder.name || shareholder.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="font-medium">{ownershipPercentage}%</span>
+                          {!shareholder.funded && shareholder.email === user?.email && (
+                            <Button
+                              size="sm"
+                              onClick={() => fundCompanyMutation.mutate(shareholder.shares)}
                             >
-                              <TableCell className="font-medium">
-                                {shareholder.email}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {shareholder.shares.toLocaleString()}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {(
-                                  (shareholder.shares / totalShares) *
-                                  100
-                                ).toFixed(2)}
-                                %
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-semibold
-                    ${
-                      shareholder.funded
-                        ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
-                    }`}
-                                >
-                                  {shareholder.funded ? 'Funded' : 'Unfunded'}
-                                </span>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {!shareholder.funded &&
-                                  shareholder.email === user?.email && (
-                                    <Button
-                                      size="sm"
-                                      onClick={() =>
-                                        fundCompanyMutation.mutate(
-                                          shareholder.shares
-                                        )
-                                      }
-                                    >
-                                      Fund
-                                    </Button>
-                                  )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                              Fund
+                            </Button>
+                          )}
+                        </div>
+                      </div>
                     );
-                  })()}
+                  })}
                 </div>
               )}
             </CardContent>

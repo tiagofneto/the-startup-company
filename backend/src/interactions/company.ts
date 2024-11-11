@@ -142,9 +142,11 @@ export async function fetchShareholders(companyId: number) {
     .select({
       email: shareholders.email,
       shares: shareholders.shares,
-      funded: shareholders.funded
+      funded: shareholders.funded,
+      raw_user_meta_data: users.raw_user_meta_data
     })
     .from(shareholders)
+    .leftJoin(users, eq(shareholders.email, users.email))
     .where(eq(shareholders.companyId, companyId));
   console.log('Shareholders fetched successfully:', fetchedShareholders);
   return fetchedShareholders;

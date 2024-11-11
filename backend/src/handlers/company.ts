@@ -221,10 +221,16 @@ export const getShareholdersHandler = async (req: Request, res: Response) => {
     const companyId = await getCompanyId(handle as string);
     const shareholders = (await fetchShareholders(companyId)).map(
       (shareholder) => {
+        const metadata = shareholder.raw_user_meta_data as {
+          full_name: string;
+          picture: string;
+        };
         return {
           shares: shareholder.shares,
           funded: shareholder.funded,
-          email: shareholder.email
+          email: shareholder.email,
+          name: metadata?.full_name,
+          picture: metadata?.picture
         };
       }
     );
