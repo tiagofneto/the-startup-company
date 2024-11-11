@@ -315,45 +315,34 @@ export default function CompanyDashboard({
         </div>
 
         <div className="lg:col-span-2">
-          <Card className="bg-primary text-primary-foreground">
+          <Card>
             <CardHeader>
-              <CardTitle>Financial Overview</CardTitle>
+              <CardTitle>Payments</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
-                <div className="text-center md:text-left">
-                  <p className="text-lg font-medium">Current Balance</p>
+              <div className="flex flex-col space-y-6">
+                <div className="text-right">
                   {balanceQuery.isPending ? (
-                    <div className="h-10 flex items-center">
+                    <div className="h-10 flex items-center justify-end">
                       <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-foreground"></div>
                     </div>
                   ) : (
-                    <p className="text-4xl font-bold">
+                    <p className="text-xl font-bold">
                       ${balanceQuery.data?.balance}
                     </p>
                   )}
+                  <p className="text-md font-medium">Current Balance</p>
                 </div>
-                <div className="flex space-x-2">
-                  <ConditionalTooltipWrapper
-                    isDisabled={!kycStatusQuery.data}
-                    tooltipContent="You must complete KYC verification to send money"
-                  >
+                <div className="flex flex-col items-center space-y-4">
                     <SendMoneyDialog handle={companyQuery.data?.handle}>
-                      <Button variant="secondary" size="lg">
-                        <ArrowUpRight className="mr-2 h-4 w-4" />
-                        Send Money
-                      </Button>
-                    </SendMoneyDialog>
-                  </ConditionalTooltipWrapper>
-                  <ConditionalTooltipWrapper
-                    isDisabled={!kycStatusQuery.data}
-                    tooltipContent="You must complete KYC verification to receive money"
-                  >
-                    <Button variant="secondary" size="lg">
-                      <ArrowDownLeft className="mr-2 h-4 w-4" />
-                      Receive Money
+                      <Button className="w-1/3">
+                      <ArrowUpRight className="mr-2 h-4 w-4" />
+                      Send Money
                     </Button>
-                  </ConditionalTooltipWrapper>
+                  </SendMoneyDialog>
+                  <p className="text-sm text-muted-foreground text-center">
+                    To send your first payment, you must have set up your company ownership
+                  </p>
                 </div>
               </div>
             </CardContent>
