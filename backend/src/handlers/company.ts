@@ -87,7 +87,10 @@ export const createCompanyHandler = async (
 
 export const getCompaniesHandler = async (req: Request, res: Response) => {
   try {
-    const companies = await getCompanies();
+    const companies = (await getCompanies()).map((company) => ({
+      ...company,
+      directors: company.userInfo.map((user) => user.raw_user_meta_data?.full_name || user.email)
+    }));
     res.status(200).json(companies);
   } catch (error) {
     console.error('Error fetching companies:', error);

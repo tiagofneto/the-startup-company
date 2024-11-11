@@ -6,7 +6,7 @@ import {
   userProfiles,
   users
 } from '../schema.js';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, sql } from 'drizzle-orm';
 import { getUserEmail } from './user.js';
 import { db } from './db.js';
 
@@ -36,9 +36,24 @@ export async function fetchCompany(handle: string) {
 export async function getCompanies() {
   console.log('Fetching companies from database');
   const companyList = (await db
-    .select()
+    .select({
+      companyId: companies.id,
+      name: companies.name,
+      handle: companies.handle,
+      description: companies.description,
+      userInfo: sql<Array<{ email: string; raw_user_meta_data: any }>>`
+        array_agg(
+          json_build_object(
+            'email', ${userCompanies.email},
+            'raw_user_meta_data', ${users.raw_user_meta_data}
+          )
+        )`,
+    })
     .from(companies)
-    .orderBy(desc(companies.createdAt))) as Company[];
+    .leftJoin(userCompanies, eq(companies.id, userCompanies.companyId))
+    .leftJoin(users, eq(userCompanies.email, users.email))
+    .groupBy(companies.id)
+    .orderBy(desc(companies.createdAt)));
   return companyList;
 }
 

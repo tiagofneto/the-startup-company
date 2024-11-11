@@ -6,35 +6,16 @@ import { Search } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-
-// Dummy function to simulate fetching companies data
-async function fetchCompanies() {
-  return [
-    {
-      id: 1,
-      name: 'Aztec',
-      labels: ['Active', 'Compliant'],
-      directors: ['Arthaud Mesnard', 'Tiago Neto'],
-      description: 'Aztec is a privacy startup built on Ethereum'
-    },
-    {
-      id: 2,
-      name: 'TSC',
-      labels: ['Active', 'Compliant'],
-      directors: ['Arthaud Mesnard', 'Tiago Neto'],
-      description: 'TSC is a tool for sovereignty'
-    },
-  ]
-}
+import { getCompanies } from '@/services/api'
 
 export default function CompaniesRegistry() {
   const [searchTerm, setSearchTerm] = useState('')
-  const companiesQuery = useQuery({ queryKey: ['companies'], queryFn: fetchCompanies })
+  const companiesQuery = useQuery({ queryKey: ['companies'], queryFn: getCompanies })
 
-  const filteredCompanies = companiesQuery.data?.filter(company =>
+  const filteredCompanies = companiesQuery.data?.filter((company: any) =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.directors.some(director => director.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    company.labels.some(label => label.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    company.directors.some((director: string) => director.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    company.labels.some((label: string) => label.toLowerCase().includes(searchTerm.toLowerCase())) ||
     company.description.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -66,12 +47,12 @@ export default function CompaniesRegistry() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredCompanies?.map((company) => (
-              <TableRow key={company.id} className="hover:bg-transparent border-b border-gray-200 dark:border-gray-800">
+            {filteredCompanies?.map((company: any) => (
+              <TableRow key={company.companyId} className="hover:bg-transparent border-b border-gray-200 dark:border-gray-800">
                 <TableCell className="font-medium text-center">{company.name}</TableCell>
                 <TableCell className="text-center">
                   <div className="flex justify-center flex-wrap gap-1">
-                    {company.labels.map((label, index) => (
+                    {company.labels?.map((label: string, index: number) => (
                       <Badge 
                         key={index} 
                         variant="secondary" 
