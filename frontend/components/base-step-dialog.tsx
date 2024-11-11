@@ -30,6 +30,8 @@ interface BaseStepDialogProps {
   onComplete: () => void;
   children: ReactNode;
   contentHeight?: string;
+  currentStep?: number;
+  onStepChange?: (step: number) => void;
 }
 
 const StepCounter = ({
@@ -65,15 +67,26 @@ export function BaseStepDialog({
   steps,
   onComplete,
   children,
-  contentHeight = '200px'
+  contentHeight = '200px',
+  currentStep,
+  onStepChange
 }: BaseStepDialogProps) {
-  const [step, setStep] = useState(1);
+  const [internalStep, setInternalStep] = useState(1);
+  const step = currentStep ?? internalStep;
+
+  const handleStepChange = (newStep: number) => {
+    if (onStepChange) {
+      onStepChange(newStep);
+    } else {
+      setInternalStep(newStep);
+    }
+  };
 
   const renderStepContent = () => {
     const currentStep = steps[step - 1];
     return currentStep.component({
-      onNext: () => setStep(step + 1),
-      onBack: () => setStep(step - 1),
+      onNext: () => handleStepChange(step + 1),
+      onBack: () => handleStepChange(step - 1),
       isNextDisabled: false
     });
   };
@@ -103,12 +116,12 @@ export function BaseStepDialog({
         </div>
         <DialogFooter>
           {step > 1 && (
-            <Button variant="outline" onClick={() => setStep(step - 1)}>
+            <Button variant="outline" onClick={() => handleStepChange(step - 1)}>
               Back
             </Button>
           )}
           {step < steps.length ? (
-            <Button onClick={() => setStep(step + 1)}>Next</Button>
+            <Button onClick={() => handleStepChange(step + 1)}>Next</Button>
           ) : (
             <Button onClick={onComplete}>Confirm</Button>
           )}
