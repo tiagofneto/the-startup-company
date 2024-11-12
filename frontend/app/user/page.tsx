@@ -188,10 +188,6 @@ export default function UserDashboard() {
                               <Button className="w-full">
                                 Complete Identity Verification
                               </Button>
-                              <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
-                              </span>
                             </div>
                           </KYCDialog>
                           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
