@@ -37,6 +37,7 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
         mutationFn: () => verifyKyc(attestation!, imgSrc),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['profile'] });
+            queryClient.invalidateQueries({ queryKey: ['kyc-status'] });
         }
     });
 

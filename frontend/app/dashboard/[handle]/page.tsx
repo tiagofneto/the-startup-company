@@ -84,6 +84,7 @@ export default function CompanyDashboard({
       createCompanyUser(email, companyQuery.data?.handle),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['people', params.handle] });
+      setEmail('');
     }
   });
 
@@ -114,7 +115,6 @@ export default function CompanyDashboard({
 
   const addPerson = () => {
     const emailToAdd = email;
-    setEmail('');
     addPersonMutation.mutate(emailToAdd);
   };
 
@@ -235,13 +235,26 @@ export default function CompanyDashboard({
                         </span>
                       </div>
                     ))}
+                    
+                    {addPersonMutation.isPending && (
+                      <div className="flex items-center justify-between rounded-lg animate-pulse">
+                        <div className="flex items-center space-x-4">
+                          <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                          <div>
+                            <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                            <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded mt-2"></div>
+                          </div>
+                        </div>
+                        <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      </div>
+                    )}
                   </div>
                 )}
                 <Dialog>
                   <DialogTrigger asChild>
                     <div className="flex justify-center mt-8">
-                      <Button className="w-1/3">
-                        <Plus className="mr-2 h-4 w-4" /> Add Person
+                      <Button className="w-1/3" disabled={addPersonMutation.isPending}>
+                        <Plus className="mr-2 h-4 w-4"/> Add Person
                       </Button>
                     </div>
                   </DialogTrigger>
@@ -269,8 +282,18 @@ export default function CompanyDashboard({
                           type="button"
                           variant="secondary"
                           onClick={addPerson}
+                          disabled={addPersonMutation.isPending}
                         >
-                          <Plus className="mr-2 h-4 w-4" /> Add
+                          {addPersonMutation.isPending ? (
+                            <div className="flex items-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary mr-2"></div>
+                              Adding...
+                            </div>
+                          ) : (
+                            <>
+                              <Plus className="mr-2 h-4 w-4" /> Add
+                            </>
+                          )}
                         </Button>
                       </DialogClose>
                     </DialogFooter>
@@ -408,9 +431,10 @@ export default function CompanyDashboard({
               <CardTitle>Company Ownership</CardTitle>
             </CardHeader>
             <CardContent>
-              {!isCompanyRegistered(companyQuery.data) ? (
+              {!isCompanyRegistered() ? (
                 <div className="flex flex-col items-center space-y-4 py-4">
                   <FundDialog
+                    key={peopleQuery.data?.length}
                     handle={companyQuery.data?.handle}
                     companyName={companyQuery.data?.name}
                     cofounders={peopleQuery.data?.map(

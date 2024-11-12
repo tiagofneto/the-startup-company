@@ -40,6 +40,7 @@ export function FundDialog({
       issueShares(handle, parseFloat(totalCapital), equitySplit),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['balance', handle] });
+      queryClient.invalidateQueries({ queryKey: ['shareholders', handle] });
     }
   });
 
