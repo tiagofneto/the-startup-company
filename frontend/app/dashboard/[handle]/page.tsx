@@ -290,37 +290,37 @@ export default function CompanyDashboard({
               <ul className="space-y-4">
                 <li className="flex items-center space-x-4">
                   <div className="flex-shrink-0 w-14 text-center">
-                    <div className="font-semibold">JUN</div>
+                    <div className="font-semibold">NOV</div>
+                    <div className="text-3xl font-bold">28</div>
+                  </div>
+                  <div>
+                    <p className="font-medium">Annual Compliance Review</p>
+                    <p className="text-sm text-muted-foreground">
+                      Year-end regulatory assessment
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-14 text-center">
+                    <div className="font-semibold">DEC</div>
                     <div className="text-3xl font-bold">15</div>
                   </div>
                   <div>
-                    <p className="font-medium">Board Meeting</p>
+                    <p className="font-medium">Shareholder Meeting</p>
                     <p className="text-sm text-muted-foreground">
-                      Annual strategy review
+                      Q4 financial review and voting
                     </p>
                   </div>
                 </li>
                 <li className="flex items-center space-x-4">
                   <div className="flex-shrink-0 w-14 text-center">
-                    <div className="font-semibold">JUN</div>
-                    <div className="text-3xl font-bold">22</div>
+                    <div className="font-semibold">JAN</div>
+                    <div className="text-3xl font-bold">05</div>
                   </div>
                   <div>
-                    <p className="font-medium">Team Offsite</p>
+                    <p className="font-medium">Tax Filing Deadline</p>
                     <p className="text-sm text-muted-foreground">
-                      Quarterly team building event
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-center space-x-4">
-                  <div className="flex-shrink-0 w-14 text-center">
-                    <div className="font-semibold">JUL</div>
-                    <div className="text-3xl font-bold">01</div>
-                  </div>
-                  <div>
-                    <p className="font-medium">Product Launch</p>
-                    <p className="text-sm text-muted-foreground">
-                      Release of new feature set
+                      Annual tax documentation due
                     </p>
                   </div>
                 </li>
