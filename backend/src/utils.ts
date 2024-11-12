@@ -36,7 +36,18 @@ export const isFaceValidHelper = async (img: string) => {
   // TODO env
   const { DEEPFACE_URL = 'http://0.0.0.0:5001' } = process.env;
   const url = `${DEEPFACE_URL}/is-face-valid`;
-  const response = await axios.post(url, { img });
-  console.log(response.data)
-  return response.data.verified;
+  try {
+    const response = await axios.post(url, { img });
+    console.log(response.data)
+    return {
+      verified: response.data.verified,
+      message: response.data.message
+    };
+  } catch (error) {
+    console.log("Error verifying face, server ran out of resources")
+    return {
+      verified: false,
+      message: 'Error verifying face, server ran out of resources'
+    };
+  }
 }

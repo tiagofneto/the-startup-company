@@ -15,10 +15,20 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
     const [attestation, setAttestation] = useState<OpenPassportAttestation | null>(null);
     const [validFace, setValidFace] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
+    const [faceError, setFaceError] = useState('');
 
     const validateFaceMutation = useMutation({
         mutationFn: () => isFaceValid(imgSrc),
-        onSuccess: () => setValidFace(true)
+        onSuccess: (data) => {
+            setValidFace(data.verified);
+            if (!data.verified) {
+                let errorMessage = data.message;
+                if (errorMessage.includes('No face detected in image')) {
+                    errorMessage = 'No face detected in image. Please try again.';
+                }
+                setFaceError(errorMessage);
+            }
+        }
     });
 
     const queryClient = useQueryClient();
@@ -34,6 +44,7 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
     const capture = useCallback(() => {
         const imageSrc = webcamRef.current?.getScreenshot();
         if (imageSrc) setImgSrc(imageSrc);
+        setFaceError('');
     }, [webcamRef]);
 
     const openPassportVerifier: OpenPassportVerifier = new OpenPassportVerifier('prove_offchain', 'thestartupcompany')
@@ -72,12 +83,24 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
             title: 'Face',
             description: 'Take a selfie to verify your identity.',
             component: () => (
-                <>
-                    {imgSrc ? (
+                <div className="flex flex-col items-center gap-4">
+                    {validFace ? (
+                        <div className="text-green-600 dark:text-green-400 text-center flex items-center justify-center gap-2 pb-4">
+                            <CheckCircle className="w-5 h-5" />
+                            Face verification complete
+                        </div>
+                    ) : imgSrc ? (
                         <>
                             <Image src={imgSrc} alt="Captured selfie" width={1280} height={720} />
-                            <Button onClick={() => setImgSrc('')}>Retake photo</Button>
-                            <Button onClick={() => validateFaceMutation.mutate()}>Submit photo</Button>
+                            <div className="flex gap-4 justify-center">
+                                <Button onClick={() => setImgSrc('')}>Retake photo</Button>
+                                <Button onClick={() => validateFaceMutation.mutate()} disabled={!!faceError}>Submit photo</Button>
+                            </div>
+                            {faceError && (
+                                <div className="text-red-600 dark:text-red-400 text-sm">
+                                    {faceError}
+                                </div>
+                            )}
                         </>
                     ) : (
                         <>
@@ -88,12 +111,12 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
                                 height={720}
                                 width={1280}
                             />
-                            <Button onClick={capture}>
-                                Capture photo
-                            </Button>
+                            <div>
+                                <Button onClick={capture}>Capture photo</Button>
+                            </div>
                         </>
                     )}
-                </>
+                </div>
             )
         }
     ]

@@ -29,11 +29,23 @@ def is_face_valid():
                 img1_path = img, 
                 img2_path = "dataset/arthaud.jpg"
             )
+            verified = result['verified']
+
+        if not verified:
+            result['message'] = 'Face does not match'
 
         print(result, flush=True)
 
         return jsonify(result)
+    except ValueError as e:
+        if "Exception while processing img1_path" in str(e):
+            print('No face detected in image', flush=True)
+            return jsonify({
+                'verified': False,
+                'message': 'No face detected in image'
+            }), 200
     except Exception as e:
+        print(e, flush=True)
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
