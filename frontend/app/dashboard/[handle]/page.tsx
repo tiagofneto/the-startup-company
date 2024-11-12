@@ -129,7 +129,7 @@ export default function CompanyDashboard({
 
   if (companyQuery.isPending || kycStatusQuery.isPending || !user) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
@@ -351,7 +351,7 @@ export default function CompanyDashboard({
                   <div className="text-right w-32">
                     {balanceQuery.isPending ? (
                       <div className="h-10 flex items-center justify-end">
-                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary-foreground"></div>
+                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-1 border-primary-foreground"></div>
                       </div>
                     ) : (
                       <p className="text-xl font-bold">
