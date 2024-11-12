@@ -85,7 +85,8 @@ export function FundDialog({
             </div>
           ))}
         </div>
-      )
+      ),
+      isNextDisabled: equitySplit.reduce((sum, cofounder) => sum + cofounder.equity, 0) !== 100
     },
     {
       title: 'Total Capital',
@@ -124,7 +125,8 @@ export function FundDialog({
             ))}
           </div>
         </div>
-      )
+      ),
+      isNextDisabled: !totalCapital || parseFloat(totalCapital) <= 0
     }
   ];
 
