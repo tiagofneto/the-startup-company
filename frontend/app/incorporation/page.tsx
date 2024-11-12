@@ -9,7 +9,7 @@ import {
   CheckCircleIcon
 } from '@heroicons/react/24/solid';
 import { createCompany, getCompany } from '@/services/api';
-import debounce from 'lodash/debounce';
+//import debounce from 'lodash/debounce';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -24,7 +24,7 @@ type Field = {
   name: keyof FormData;
   label: string;
   type: string;
-  validate: (value: string) => Promise<string | null>;
+  //validate: (value: string) => Promise<string | null>;
 };
 
 const fields: Field[] = [
@@ -32,28 +32,32 @@ const fields: Field[] = [
     name: 'name',
     label: 'Company Name',
     type: 'text',
-    validate: async (value) =>
+    /*validate: async (value) =>
       value.length < 2 ? 'Company name is required' : null
+    */
   },
   {
     name: 'handle',
     label: 'Company Handle',
     type: 'text',
+    /*
     validate: async (value) =>
       value.length < 3
         ? 'Company handle must be at least 3 characters'
         : (await getCompany(value)) === null
           ? null
           : 'Company handle already exists'
+    */
   },
   {
     name: 'description',
     label: 'Company Description',
     type: 'text',
-    validate: async (value) =>
+    /*validate: async (value) =>
       value.length < 10
         ? 'Company description must be at least 10 characters'
         : null
+    */
   }
 ];
 
@@ -67,27 +71,27 @@ export default function CompanyRegistration() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {}
   );
-  const [isLoading, setIsLoading] = useState(true);
+  //const [isLoading, setIsLoading] = useState(true);
   const [isWelcomePage, setIsWelcomePage] = useState(true);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    setIsLoading(true);
-    await debouncedValidateField(name as keyof FormData, value);
-    setIsLoading(false);
+    //setIsLoading(true);
+    //await debouncedValidateField(name as keyof FormData, value);
+    //setIsLoading(false);
   };
 
-  const validateField = async (fieldName: keyof FormData, value: string) => {
+  /* const validateField = async (fieldName: keyof FormData, value: string) => {
     const field = fields.find((f) => f.name === fieldName);
     if (field) {
       const error = await field.validate(value);
       setErrors((prev) => ({ ...prev, [fieldName]: error }));
     }
-  };
+  }; */
 
-  const debouncedValidateField = useCallback(debounce(validateField, 3000), []);
+  //const debouncedValidateField = useCallback(debounce(validateField, 3000), []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -248,15 +252,17 @@ export default function CompanyRegistration() {
                                 }`}
                                 placeholder={`Enter ${fields[currentField].label.toLowerCase()}`}
                               />
-                              {isLoading ? (
+                              
+                              {/*isLoading ? (
                                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                                   <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
                                 </div>
                               ) : (
+                               
                                 isFieldValid(fields[currentField].name) && (
                                   <CheckCircleIcon className="h-6 w-6 text-green-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
                                 )
-                              )}
+                              )*/}
                             </div>
                             {errors[fields[currentField].name] && (
                               <p className="mt-2 text-sm text-red-600 dark:text-red-400">
