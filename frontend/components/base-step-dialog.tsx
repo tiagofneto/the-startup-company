@@ -43,7 +43,7 @@ const StepCounter = ({
   steps: string[];
 }) => {
   return (
-    <div className="flex justify-between items-center w-full px-4 mb-6">
+    <div className="flex justify-center items-center w-full px-4 mb-6 gap-16">
       {steps.map((step, index) => (
         <div key={step} className="flex flex-col items-center">
           <div
