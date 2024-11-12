@@ -135,16 +135,16 @@ export default function CompanyRegistration() {
         <div className="text-center">
           <CheckCircleIcon className="mx-auto h-16 w-16 text-green-500" />
           <h2 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
-            Registration submitted!
+            Company registration submitted!
           </h2>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
             Your startup registration has been submitted to the Company House.
             <br className="hidden sm:inline" />
-            To get it registered, proceed to confirm your identity.
+            For it to be accepted, proceed to verify your identity.
           </p>
           <Button variant="default" className="mt-6">
             <Link href="/user" passHref className="flex items-center">
-              Go to Profile <ChevronRightIcon className="ml-2 w-5 h-5" />
+              Verify my identity <ChevronRightIcon className="ml-2 w-5 h-5" />
             </Link>
           </Button>
         </div>
@@ -164,20 +164,11 @@ export default function CompanyRegistration() {
           >
             <div className="text-center p-8 max-w-4xl mx-auto">
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Incorporate your Startup
+                Incorporate your Company
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 space-y-4">
-                <span className="block">
-                  TSC is the fastest way to start your company 100% online. We
-                  help you incorporate, open a bank account and charge your
-                  first customers.
-                </span>
-                <span className="block">
-                  Tell us about your startup and cofounders, and TSC will form
-                  your startup in Sark (UK), get your tax number and file all
-                  the required paperwork.
-                </span>
-                <span className="block">Get up and running in 5 minutes.</span>
+              Share your company information, verify your identity and purchase your shares. 
+              Go from company registration to charging your first customer in 5 minutes
               </p>
               <Button onClick={handleStartRegistration} size="lg">
                 Start Registration
@@ -203,7 +194,7 @@ export default function CompanyRegistration() {
                           Company Registration
                         </h1>
                         <p className="mt-2 text-gray-600 dark:text-gray-300">
-                          Fill in the details to register your company
+                          Tell us more about your company
                         </p>
                       </div>
                       <div className="mb-8">

@@ -17,7 +17,7 @@ export default function Home({
             <FadeText
               className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none"
               direction="up"
-              text="Welcome to the Isle of Sark Register of Companies"
+              text="Sark's Digital Company Register"
             />
             <FadeText
               className="mx-auto max-w-[700px] text-muted-foreground md:text-xl lg:text-2xl"
@@ -31,9 +31,6 @@ export default function Home({
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-up animate-delay-[1200ms] animate-once">
             <Button asChild size="lg" className="text-lg">
               <Link href="/incorporation">Register Company</Link>
-            </Button>
-            <Button variant="outline" asChild size="lg" className="text-lg">
-              <Link href="/companies">Search Companies House</Link>
             </Button>
           </div>
         </div>
