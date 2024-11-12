@@ -4,12 +4,13 @@ import { cn } from '@/lib/utils';
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & { transparent?: boolean }
+>(({ className, transparent = true, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      'rounded-xl border bg-card text-card-foreground shadow',
+      'rounded-xl border text-card-foreground shadow',
+      transparent ? 'bg-card/80' : 'bg-card',
       className
     )}
     {...props}

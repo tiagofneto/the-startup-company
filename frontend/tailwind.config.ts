@@ -65,9 +65,12 @@ const config: Config = {
             'offset-distance': '100%'
           }
         }
+      },
+      backgroundImage: {
+        'texture': "url('/gradient.png')"
       }
     }
   },
-  plugins: [require('tailwindcss-animate'), require('tailwindcss-animated')]
+  plugins: [require('tailwindcss-animate'), require('tailwindcss-animated')],
 };
 export default config;

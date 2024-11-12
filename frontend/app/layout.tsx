@@ -39,7 +39,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Header />
-            {children}
+            <div className="bg-texture">
+              {children}
+            </div>
           </ThemeProvider>
         </TanstackQueryProvider>
       </body>

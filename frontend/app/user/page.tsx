@@ -71,7 +71,7 @@ export default function UserDashboard() {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-semibold mb-8 text-gray-800 dark:text-gray-100 pt-16">
           Welcome back, {user?.user_metadata.full_name.split(' ')[0]}
@@ -104,7 +104,7 @@ export default function UserDashboard() {
                         href={`/dashboard/${company.handle}`}
                         passHref
                       >
-                        <div className="mb-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150">
+                        <div className="mb-4 p-4 border rounded-lg cursor-pointer bg-card hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-between transition-colors duration-150">
                           <div className="flex items-center">
                             <Avatar className="h-10 w-10 mr-4">
                               <AvatarImage
