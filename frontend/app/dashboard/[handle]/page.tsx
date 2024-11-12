@@ -118,6 +118,16 @@ export default function CompanyDashboard({
     addPersonMutation.mutate(emailToAdd);
   };
 
+  const isCompanyCompliant = (company: any) => {
+    return peopleQuery.data?.every((person: any) => person.kyc_verified);
+  };
+
+  const isCompanyRegistered = (company: any) => {
+    // Check if company has shareholders set up
+    return shareholdersQuery.data?.length > 0;
+  };
+
+
   if (companyQuery.isPending || kycStatusQuery.isPending || !user) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -144,8 +154,26 @@ export default function CompanyDashboard({
               {companyQuery.data?.name}
             </h1>
             <p className="text-xl text-muted-foreground">
-              {companyQuery.data?.handle}
+              @{companyQuery.data?.handle}
             </p>
+            <div className="flex gap-1 mt-1">
+              {isCompanyCompliant(companyQuery.data) && (
+                <Badge 
+                  variant="secondary" 
+                  className="bg-gray-300/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-700/70"
+                >
+                  Compliant
+                </Badge>
+              )}
+              {isCompanyRegistered(companyQuery.data) && (
+                <Badge 
+                  variant="secondary" 
+                  className="bg-gray-300/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-700/70"
+                >
+                  Registered
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
         {/* <Button variant="outline">Edit Profile</Button> */}
@@ -381,7 +409,7 @@ export default function CompanyDashboard({
               <CardTitle>Company Ownership</CardTitle>
             </CardHeader>
             <CardContent>
-              {shareholdersQuery.data?.length === 0 ? (
+              {!isCompanyRegistered(companyQuery.data) ? (
                 <div className="flex flex-col items-center space-y-4 py-4">
                   <FundDialog
                     handle={companyQuery.data?.handle}
