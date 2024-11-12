@@ -18,8 +18,7 @@ interface Cofounder {
 interface FundDialogProps {
   handle: string;
   companyName: string;
-  cofounders: string[];
-  currentCofounder: string;
+  cofounders: { email: string; name: string }[];
   children: React.ReactNode;
 }
 
@@ -31,7 +30,7 @@ export function FundDialog({
 }: FundDialogProps) {
   const [totalCapital, setTotalCapital] = useState('200');
   const [equitySplit, setEquitySplit] = useState<Cofounder[]>(
-    cofounders.map((email) => ({ email, equity: 100 / cofounders.length }))
+    cofounders.map((cofounder) => ({ email: cofounder.email, equity: 100 / cofounders.length }))
   );
 
   const queryClient = useQueryClient();
@@ -66,7 +65,7 @@ export function FundDialog({
           {equitySplit.map((cofounder, index) => (
             <div key={cofounder.email} className="space-y-1">
               <div className="flex justify-between items-center">
-                <Label className="text-sm">{cofounder.email}</Label>
+                <Label className="text-sm">{cofounders[index].name || cofounder.email}</Label>
                 <div className="relative">
                   <Input
                     type="number"

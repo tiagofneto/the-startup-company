@@ -438,9 +438,8 @@ export default function CompanyDashboard({
                     handle={companyQuery.data?.handle}
                     companyName={companyQuery.data?.name}
                     cofounders={peopleQuery.data?.map(
-                      (person: any) => person.email
+                      (person: any) => ({ email: person.email, name: person.name })
                     )}
-                    currentCofounder={companyQuery.data?.current_cofounder}
                   >
                     <Button className="w-2/3" disabled={!kycStatusQuery.data}>Fund the Company</Button>
                   </FundDialog>
