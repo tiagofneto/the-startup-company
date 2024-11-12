@@ -203,7 +203,7 @@ export default function CompanyRegistration() {
                             <div key={field.name} className="flex-1">
                               <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
                                 <motion.div
-                                  className="h-full bg-indigo-600"
+                                  className="h-full bg-primary"
                                   initial={{ width: '0%' }}
                                   animate={{
                                     width: index <= currentField ? '100%' : '0%'
@@ -241,10 +241,10 @@ export default function CompanyRegistration() {
                                 value={formData[fields[currentField].name]}
                                 onChange={handleInputChange}
                                 onKeyDown={handleKeyDown}
-                                className={`block w-full px-4 py-3 rounded-md border-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:outline-none transition duration-150 ease-in-out ${
+                                className={`block w-full px-4 py-3 rounded-md border-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none transition duration-150 ease-in-out ${
                                   errors[fields[currentField].name]
                                     ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500'
+                                    : 'border-gray-300 dark:border-gray-600'
                                 }`}
                                 placeholder={`Enter ${fields[currentField].label.toLowerCase()}`}
                               />
@@ -267,20 +267,21 @@ export default function CompanyRegistration() {
                         </AnimatePresence>
                       </div>
                       <div className="mt-8 flex justify-between">
-                        <button
+                        <Button
                           onClick={prevField}
                           disabled={currentField === 0}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-indigo-300 dark:hover:bg-gray-600 transition duration-150 ease-in-out"
+                          variant={"outline"}
+                          className="text-sm rounded-md transition duration-150 ease-in-out"
                         >
                           <ChevronUpIcon className="mr-2 h-5 w-5" />
                           Previous
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={nextField}
                           disabled={
                             currentField === fields.length - 1 && isPending
                           }
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition duration-150 ease-in-out"
+                          className="text-sm rounded-md transition duration-150 ease-in-out"
                         >
                           {currentField === fields.length - 1 ? (
                             isPending ? (
@@ -294,7 +295,7 @@ export default function CompanyRegistration() {
                               <ChevronDownIcon className="ml-2 h-5 w-5" />
                             </>
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
