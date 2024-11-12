@@ -118,12 +118,11 @@ export default function CompanyDashboard({
     addPersonMutation.mutate(emailToAdd);
   };
 
-  const isCompanyCompliant = (company: any) => {
+  const isCompanyCompliant = () => {
     return peopleQuery.data?.every((person: any) => person.kyc_verified);
   };
 
-  const isCompanyRegistered = (company: any) => {
-    // Check if company has shareholders set up
+  const isCompanyRegistered = () => {
     return shareholdersQuery.data?.length > 0;
   };
 
@@ -157,7 +156,7 @@ export default function CompanyDashboard({
               @{companyQuery.data?.handle}
             </p>
             <div className="flex gap-1 mt-1">
-              {isCompanyCompliant(companyQuery.data) && (
+              {isCompanyCompliant() && (
                 <Badge 
                   variant="secondary" 
                   className="bg-gray-300/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-700/70"
@@ -165,7 +164,7 @@ export default function CompanyDashboard({
                   Compliant
                 </Badge>
               )}
-              {isCompanyRegistered(companyQuery.data) && (
+              {isCompanyRegistered() && (
                 <Badge 
                   variant="secondary" 
                   className="bg-gray-300/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-700/70"
@@ -343,7 +342,7 @@ export default function CompanyDashboard({
                   </div>
                   
                   <SendMoneyDialog handle={companyQuery.data?.handle}>
-                    <Button className="w-1/3" disabled={!kycStatusQuery.data}>
+                    <Button className="w-1/3" disabled={!kycStatusQuery.data || !isCompanyRegistered()}>
                       <ArrowUpRight className="mr-2 h-4 w-4" />
                       Send Money
                     </Button>
