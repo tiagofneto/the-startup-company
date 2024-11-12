@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { BaseStepDialog, Step } from '@/components/base-step-dialog';
 import { Separator } from '@/components/ui/separator';
 import { issueShares } from '@/services/api';
+import { CheckCircle } from 'lucide-react';
 
 interface Cofounder {
   email: string;
@@ -94,40 +95,55 @@ export function FundDialog({
       description: 'Set the total capital contribution.',
       component: () => (
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="total-capital" className="text-sm">
-              Total Capital ($)
-            </Label>
-            <Input
-              id="total-capital"
-              type="number"
-              value={totalCapital}
-              onChange={(e) => setTotalCapital(e.target.value)}
-              className="text-sm"
-            />
-          </div>
-          <Separator className="my-2" />
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold">Individual Contributions:</h3>
-            {equitySplit.map((cofounder) => (
-              <div
-                key={cofounder.email}
-                className="flex justify-between items-center text-sm"
-              >
-                <span>{cofounder.email}</span>
-                <span className="font-medium">
-                  $
-                  {(
-                    parseFloat(totalCapital) *
-                    (cofounder.equity / 100)
-                  ).toFixed(2)}
-                </span>
+          {fundMutation.isSuccess ? (
+            <div className="text-green-600 dark:text-green-400 text-center flex items-center justify-center gap-2 pb-4">
+              <CheckCircle className="w-5 h-5" />
+              Funding complete
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="total-capital" className="text-sm">
+                  Total Capital ($)
+                </Label>
+                <Input
+                  id="total-capital"
+                  type="number"
+                  value={totalCapital}
+                  onChange={(e) => setTotalCapital(e.target.value)}
+                  className="text-sm"
+                />
               </div>
-            ))}
-          </div>
+              <Separator className="my-2" />
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold">Individual Contributions:</h3>
+                {equitySplit.map((cofounder) => (
+                  <div
+                    key={cofounder.email}
+                    className="flex justify-between items-center text-sm"
+                  >
+                    <span>{cofounder.email}</span>
+                    <span className="font-medium">
+                      $
+                      {(
+                        parseFloat(totalCapital) *
+                        (cofounder.equity / 100)
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {fundMutation.isPending && (
+            <div className="flex items-center gap-2 justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-900 dark:border-gray-100 border-t-transparent" />
+              <div>Processing funding...</div>
+            </div>
+          )}
         </div>
       ),
-      isNextDisabled: !totalCapital || parseFloat(totalCapital) <= 0
+      isNextDisabled: !totalCapital || parseFloat(totalCapital) <= 0 || fundMutation.isPending
     }
   ];
 

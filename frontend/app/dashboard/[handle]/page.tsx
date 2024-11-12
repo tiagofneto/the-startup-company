@@ -483,9 +483,16 @@ export default function CompanyDashboard({
                             <Button
                               size="sm"
                               onClick={() => fundCompanyMutation.mutate(shareholder.shares)}
-                              disabled={!kycStatusQuery.data}
+                              disabled={!kycStatusQuery.data || fundCompanyMutation.isPending}
                             >
-                              Fund
+                              {fundCompanyMutation.isPending ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary-foreground"></div>
+                                  Funding...
+                                </div>
+                              ) : (
+                                'Fund'
+                              )}
                             </Button>
                           )}
                         </div>

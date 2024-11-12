@@ -7,6 +7,7 @@ import { ReactNode, useState } from 'react';
 import { createStream, transferTokens } from '@/services/api';
 import { BaseStepDialog, Step } from '../../../components/base-step-dialog';
 import { Label } from '@/components/ui/label';
+import { CheckCircle } from 'lucide-react';
 
 const sendMoney = async (
   handle: string,
@@ -138,22 +139,37 @@ export function SendMoneyDialog({
       description: 'Review and confirm your transfer details.',
       component: ({ onNext }) => (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Payment Summary</h3>
-          <p>
-            <strong>Payment Type:</strong> {paymentType}
-          </p>
-          <p>
-            <strong>Recipient:</strong> {recipient}
-          </p>
-          <p>
-            <strong>Amount:</strong> {amount}$
-          </p>
-          <p>
-            <strong>Description:</strong> {description}
-          </p>
+          {sendMoneyMutation.isSuccess ? (
+            <div className="text-green-600 dark:text-green-400 text-center flex items-center justify-center gap-2 pb-4">
+              <CheckCircle className="w-5 h-5" />
+              Transfer complete
+            </div>
+          ) : (
+            <>
+              <h3 className="text-lg font-semibold">Payment Summary</h3>
+              <p>
+                <strong>Payment Type:</strong> {paymentType}
+              </p>
+              <p>
+                <strong>Recipient:</strong> {recipient}
+              </p>
+              <p>
+                <strong>Amount:</strong> {amount}$
+              </p>
+              <p>
+                <strong>Description:</strong> {description}
+              </p>
+            </>
+          )}
+          {sendMoneyMutation.isPending && (
+            <div className="flex items-center gap-2 justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-900 dark:border-gray-100 border-t-transparent" />
+              <div>Processing transfer...</div>
+            </div>
+          )}
         </div>
       ),
-      isNextDisabled: !recipient || !amount || !description || !paymentType
+      isNextDisabled: !recipient || !amount || !description || !paymentType || sendMoneyMutation.isPending || sendMoneyMutation.isSuccess
     }
   ];
 
