@@ -42,6 +42,11 @@ export async function getCompanies() {
       name: companies.name,
       handle: companies.handle,
       description: companies.description,
+      // TODO drizzle native way
+      hasShareholders: sql<boolean>`EXISTS (
+        SELECT 1 FROM ${shareholders} 
+        WHERE ${shareholders.companyId} = ${companies.id}
+      )`,
       userInfo: sql<Array<{ email: string; raw_user_meta_data: any, kyc_verified: boolean }>>`
         array_agg(
           json_build_object(

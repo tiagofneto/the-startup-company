@@ -17,6 +17,9 @@ export default function CompaniesRegistry() {
     if (company.directors.every((director: any) => director.kyc_verified)) {
       labels.push('Compliant')
     }
+    if (company.hasShareholders) {
+      labels.push('Registered')
+    }
     return { ...company, labels }
   }).filter((company: any) =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
