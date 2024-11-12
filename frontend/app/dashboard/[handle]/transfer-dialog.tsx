@@ -36,6 +36,7 @@ export function SendMoneyDialog({
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
+  const [currentStep, setCurrentStep] = useState(1);
 
   const queryClient = useQueryClient();
 
@@ -66,6 +67,7 @@ export function SendMoneyDialog({
             onClick={() => {
               setPaymentType('Wire');
               onNext();
+              setCurrentStep(2);
             }}
             variant="default"
           >
@@ -75,13 +77,15 @@ export function SendMoneyDialog({
             onClick={() => {
               setPaymentType('Stream');
               onNext();
+              setCurrentStep(2);
             }}
             variant="outline"
           >
             Stream
           </Button>
         </div>
-      )
+      ),
+      isNextDisabled: !paymentType
     },
     {
       title: 'Recipient',
@@ -126,7 +130,8 @@ export function SendMoneyDialog({
             />
           </div>
         </div>
-      )
+      ),
+      isNextDisabled: !recipient || !amount || !description
     },
     {
       title: 'Confirmation',
@@ -147,7 +152,8 @@ export function SendMoneyDialog({
             <strong>Description:</strong> {description}
           </p>
         </div>
-      )
+      ),
+      isNextDisabled: !recipient || !amount || !description || !paymentType
     }
   ];
 
@@ -156,6 +162,8 @@ export function SendMoneyDialog({
       title="Send Money"
       steps={steps}
       onComplete={() => sendMoneyMutation.mutate()}
+      currentStep={currentStep}
+      onStepChange={setCurrentStep}
     >
       {children}
     </BaseStepDialog>
