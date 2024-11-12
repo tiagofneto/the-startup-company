@@ -168,7 +168,7 @@ export default function CompanyDashboard({
                     {peopleQuery.data?.map((person: any) => (
                       <div
                         key={person.id}
-                        className={`flex items-center justify-between bg-background rounded-lg`}
+                        className={`flex items-center justify-between rounded-lg`}
                       >
                         <div className="flex items-center space-x-4">
                           <Avatar>
@@ -409,7 +409,7 @@ export default function CompanyDashboard({
                     return (
                       <div
                         key={shareholder.id}
-                        className={`flex items-center justify-between bg-background rounded-lg ${
+                        className={`flex items-center justify-between rounded-lg ${
                           !shareholder.funded && shareholder.email !== user?.email
                             ? 'opacity-50'
                             : ''
