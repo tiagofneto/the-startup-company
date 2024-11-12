@@ -77,7 +77,8 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
                         />
                     )}
                 </div>
-            )
+            ),
+            isNextDisabled: !attestation
         },
         {
             title: 'Face',
@@ -92,10 +93,17 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
                     ) : imgSrc ? (
                         <>
                             <Image src={imgSrc} alt="Captured selfie" width={1280} height={720} />
-                            <div className="flex gap-4 justify-center">
-                                <Button onClick={() => setImgSrc('')}>Retake photo</Button>
-                                <Button onClick={() => validateFaceMutation.mutate()} disabled={!!faceError}>Submit photo</Button>
-                            </div>
+                            {validateFaceMutation.isPending ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-900 dark:border-gray-100 border-t-transparent" />
+                                    <div>Verifying face...</div>
+                                </div>
+                            ) : (
+                                <div className="flex gap-4 justify-center">
+                                    <Button onClick={() => setImgSrc('')}>Retake photo</Button>
+                                    <Button onClick={() => validateFaceMutation.mutate()} disabled={!!faceError}>Submit photo</Button>
+                                </div>
+                            )}
                             {faceError && (
                                 <div className="text-red-600 dark:text-red-400 text-sm">
                                     {faceError}
@@ -117,7 +125,8 @@ export function KYCDialog({ children, userId }: { children: ReactNode, userId: s
                         </>
                     )}
                 </div>
-            )
+            ),
+            isNextDisabled: !validFace || kycMutation.isPending
         }
     ]
     return (

@@ -22,6 +22,7 @@ export interface Step {
   title: string;
   description: string;
   component: (props: StepComponentProps) => ReactNode;
+  isNextDisabled?: boolean;
 }
 
 interface BaseStepDialogProps {
@@ -87,7 +88,7 @@ export function BaseStepDialog({
     return currentStep.component({
       onNext: () => handleStepChange(step + 1),
       onBack: () => handleStepChange(step - 1),
-      isNextDisabled: false
+      isNextDisabled: currentStep.isNextDisabled
     });
   };
 
@@ -121,9 +122,14 @@ export function BaseStepDialog({
             </Button>
           )}
           {step < steps.length ? (
-            <Button onClick={() => handleStepChange(step + 1)}>Next</Button>
+            <Button 
+              onClick={() => handleStepChange(step + 1)}
+              disabled={steps[step - 1].isNextDisabled}
+            >
+              Next
+            </Button>
           ) : (
-            <Button onClick={onComplete}>Confirm</Button>
+            <Button onClick={onComplete} disabled={steps[step - 1].isNextDisabled}>Confirm</Button>
           )}
         </DialogFooter>
       </DialogContent>
