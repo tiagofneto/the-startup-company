@@ -64,8 +64,8 @@ export default function CompaniesRegistry() {
                     {company.labels?.map((label: string, index: number) => (
                       <Badge 
                         key={index} 
-                        variant="secondary" 
-                        className="bg-gray-300/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-700/70"
+                        variant={label === 'Compliant' ? 'green' : label === 'Registered' ? 'blue' : 'secondary'} 
+                        className="border-0"
                       >
                         {label}
                       </Badge>

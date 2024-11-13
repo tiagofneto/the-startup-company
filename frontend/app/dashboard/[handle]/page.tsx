@@ -158,16 +158,16 @@ export default function CompanyDashboard({
             <div className="flex gap-1 mt-1">
               {isCompanyCompliant() && (
                 <Badge 
-                  variant="secondary" 
-                  className="bg-gray-300/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-700/70"
+                  variant="green" 
+                  className="border-0"
                 >
                   Compliant
                 </Badge>
               )}
               {isCompanyRegistered() && (
                 <Badge 
-                  variant="secondary" 
-                  className="bg-gray-300/50 hover:bg-gray-300/70 dark:bg-gray-700/50 dark:hover:bg-gray-700/70"
+                  variant="blue" 
+                  className="border-0"
                 >
                   Registered
                 </Badge>
