@@ -49,10 +49,10 @@ export default function CompaniesRegistry() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-gray-300 dark:border-gray-700">
-              <TableHead className="text-base font-semibold text-center">Name</TableHead>
-              <TableHead className="text-base font-semibold text-center">Labels</TableHead>
-              <TableHead className="text-base font-semibold text-center">Directors</TableHead>
-              <TableHead className="text-base font-semibold text-center">Description</TableHead>
+              <TableHead className="text-base font-semibold text-center text-black dark:text-black">Name</TableHead>
+              <TableHead className="text-base font-semibold text-center text-black dark:text-black">Labels</TableHead>
+              <TableHead className="text-base font-semibold text-center text-black dark:text-black">Directors</TableHead>
+              <TableHead className="text-base font-semibold text-center text-black dark:text-black">Description</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
