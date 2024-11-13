@@ -51,8 +51,7 @@ export function FundDialog({
       component: () => (
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            You are about to purchase your shares of {companyName}. The capital
-            you use to buy your shares will fund {companyName}'s bank account.
+            You are about to issue and fund the ordinary shares in {companyName}.
           </p>
         </div>
       )

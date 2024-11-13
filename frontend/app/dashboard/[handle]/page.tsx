@@ -367,7 +367,7 @@ export default function CompanyDashboard({
                   <SendMoneyDialog handle={companyQuery.data?.handle}>
                     <Button className="w-1/3" disabled={!kycStatusQuery.data || !isCompanyRegistered()}>
                       <ArrowUpRight className="mr-2 h-4 w-4" />
-                      Send Money
+                      Make a Payment
                     </Button>
                   </SendMoneyDialog>
 
@@ -428,7 +428,7 @@ export default function CompanyDashboard({
         <div className="lg:col-span-1">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-8">
-              <CardTitle>Company Ownership</CardTitle>
+              <CardTitle>Cap Table</CardTitle>
             </CardHeader>
             <CardContent>
               {!isCompanyRegistered() ? (
@@ -441,10 +441,10 @@ export default function CompanyDashboard({
                       (person: any) => ({ email: person.email, name: person.name })
                     )}
                   >
-                    <Button className="w-2/3" disabled={!kycStatusQuery.data}>Fund the Company</Button>
+                    <Button className="w-2/3" disabled={!kycStatusQuery.data}>Issue Your First Shares</Button>
                   </FundDialog>
                   <p className="text-sm text-muted-foreground text-center">
-                    Set up the company ownership and buy your shares to register your company. You must be verified to do this.
+                    You have not yet created ordinary share capital for the company. You will be unable to do this until you have completed the KYC and AML steps above.
                   </p>
                 </div>
               ) : (
