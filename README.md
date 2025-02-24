@@ -1,5 +1,15 @@
 # The Startup Company
 
+## Context
+- We got a grant from [Aztec](https://aztec.network/) to build an MVP of an incorporation platform that lets founders register a company, verify their identity (KYC & AML), purchase company shares and initiate their first payment in 5 minutes.
+- Whilst we managed to build a basic version of the product, we did not manage to convince a jurisdiction to let us build their onchain company registry within a timeline compatible for us to raise a seed round.
+- We are now opensourcing our work and our learnings with the hope of motivating other teams to advance [INCs](https://inc.mirror.xyz/).
+<div align="center">
+    <a href="https://www.loom.com/share/1a3d767dae5b4c18acb4a1650d1e5faa">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/1a3d767dae5b4c18acb4a1650d1e5faa-6b1b0ee636647d2b-full-play.gif">
+    </a>
+</div>
+
 ## Prerequisites
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
